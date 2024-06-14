@@ -1,0 +1,15 @@
+{
+  "maxNumSuggestions": 5,
+  "entityType": "entityType1",
+  "entities": [
+    {
+      "id": "key_1",
+      "data" : {
+        "OriginTissue" : "bladder",
+        "TumorType" : "recurrent",
+        "SampleDiagnosis" : "t2 transitional cell carcinoma",
+        "DataSource" : "jax"
+      }
+    }
+  ]
+}
