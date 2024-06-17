@@ -20,6 +20,9 @@ public class MappingRequest {
     // Maximum number of suggested mappings per entity
     private int maxSuggestions;
 
+    // The name of the index to use in the mapping process
+    private String indexPath;
+
     // List of entities to map
     private List<SourceEntity> entities;
 

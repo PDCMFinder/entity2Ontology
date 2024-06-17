@@ -1,6 +1,7 @@
 {
   "maxNumSuggestions": 5,
   "entityType": "entityType1",
+  "indexPath": "IndexPath",
   "entities": [
     {
       "id": "key_1",

@@ -21,6 +21,11 @@ public class MappingResponse {
     private LocalDateTime end;
 
     /**
+     * The name of the index used in the process.
+     */
+    private String indexPath;
+
+    /**
      * The list of mapping response entries. Each entry contains a source entity and its list of suggestions.
      */
     private List<MappingResponseEntry> mappingsResults;

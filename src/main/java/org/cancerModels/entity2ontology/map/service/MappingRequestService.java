@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class MappingRequestService {
 
-    private static Logger logger = LogManager.getLogger(MappingRequestService.class);
-
+    private static final Logger logger = LogManager.getLogger(MappingRequestService.class);
+    private final MappingService mappingService = new MappingService();
     /**
      * Reads a {@link MappingRequest} from the specified JSON file, performs the mapping process,
      * and writes the results to the specified output file.
@@ -63,6 +63,7 @@ public class MappingRequestService {
         MappingResponse response = new MappingResponse();
         // Set the time the mapping process starts
         response.setStart(LocalDateTime.now());
+        response.setIndexPath(request.getIndexPath());
 
         List<MappingResponseEntry> entries = new ArrayList<>();
 
@@ -83,30 +84,10 @@ public class MappingRequestService {
      * @return a MappingResponseEntry object (entity - list of suggestions)
      */
     private MappingResponseEntry processEntity(SourceEntity entity) {
-        logger.info("Processing entity: {}", entity);
         MappingResponseEntry entry = new MappingResponseEntry();
-        // For now let's assign a list with a dummy result
-        List<Suggestion> dummy = new ArrayList<>();
-        Suggestion suggestion1 = new Suggestion();
-        suggestion1.setTargetId("reference_1");
-        suggestion1.setType("type_1");
-        //suggestion1.setSourceEntity(entity);
-        suggestion1.setScore(5);
-        suggestion1.setTermLabel("label_term_1");
-        suggestion1.setTermUrl("term_url_1");
-        dummy.add(suggestion1);
-
-        Suggestion suggestion2 = new Suggestion();
-        suggestion2.setTargetId("reference_2");
-        suggestion2.setType("type_2");
-        //suggestion2.setSourceEntity(entity);
-        suggestion2.setScore(0);
-        suggestion2.setTermLabel("label_term_2");
-        suggestion2.setTermUrl("term_url_2");
-        dummy.add(suggestion2);
-
+        List<Suggestion> suggestions = mappingService.mapEntity(entity, "", 0);
         entry.setEntity(entity);
-        entry.setSuggestions(dummy);
+        entry.setSuggestions(suggestions);
         return entry;
     }
 }
