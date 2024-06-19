@@ -27,9 +27,6 @@ import java.io.IOException;
     )
 public class IndexCommand implements Runnable {
 
-    @CommandLine.Option(names = "-l", description = "list existing indexes")
-    boolean list;
-
     private final IndexingRequestService indexingRequestService = new IndexingRequestService();
 
     /**

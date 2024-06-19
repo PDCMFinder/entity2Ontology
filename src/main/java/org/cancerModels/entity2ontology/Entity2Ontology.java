@@ -9,7 +9,7 @@ import picocli.CommandLine;
     description = "Maps entities to ontology terms.",
     mixinStandardHelpOptions = true,
     subcommands = {MapCommand.class, IndexCommand.class})
-public class Entity2Ontology /*implements Runnable*/ {
+public class Entity2Ontology {
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new Entity2Ontology()).execute(args);

@@ -5,13 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.cancerModels.entity2ontology.index.model.IndexingRequest;
 import org.cancerModels.entity2ontology.index.model.IndexingResponse;
 import org.cancerModels.entity2ontology.index.model.RuleSetTarget;
-import org.cancerModels.entity2ontology.map.model.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
