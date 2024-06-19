@@ -30,7 +30,11 @@ import java.io.IOException;
  * @see MappingIO
  * @see MappingRequestService
  */
-@CommandLine.Command(name = "map", description = "Performs mapping using a mapping request JSON.")
+@CommandLine.Command(
+    name = "map",
+    description = "Performs mapping using a mapping request JSON.",
+    mixinStandardHelpOptions = true //adds --help option to the command
+    )
 public class MapCommand implements Runnable {
 
     private final MappingRequestService mappingRequestService = new MappingRequestService();

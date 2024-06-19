@@ -56,6 +56,7 @@ public class MappingRequestService {
      * </pre>
      *
      * @param request the {@link MappingRequest} containing the entities to map and other relevant parameters
+     * @return A {@link MappingResponse} with the results of the mapping process
      * @throws IOException if an error occurs while writing to the output file
      */
     public MappingResponse processMappingRequest(MappingRequest request) {

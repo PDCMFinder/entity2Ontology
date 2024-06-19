@@ -1,0 +1,31 @@
+{
+  "indexPath": "IndexPath1",
+  "ruleSetTargets": [
+    {
+      "filePath": "/path/file/treatments.json",
+      "name": "treatment",
+      "ignore": false
+    },
+    {
+      "filePath": "/path/file/diagnosis.json",
+      "name": "diagnosis",
+      "ignore": false
+    },
+    {
+      "filePath": "/path/file/to_be_ignored.json",
+      "name": "to_be_ignored",
+      "ignore": true
+    }
+  ],
+  "ontologySources": [
+    {
+      "url": "http:ncit.owl",
+      "sourceName": "ncit ontology",
+      "branches": [
+        "b1",
+        "b2"
+      ],
+      "ignore": false
+    }
+  ]
+}
