@@ -2,7 +2,7 @@
   "indexPath": "IndexPath1",
   "ruleSetTargets": [
     {
-      "filePath": "src/test/resources/indexingRequest/small_treatment_mappings.json",
+      "filePath": "src/test/resources/indexingRequest/rules/correct_treatment_mappings.json",
       "name": "treatment",
       "ignore": false,
       "fieldsConversion":
