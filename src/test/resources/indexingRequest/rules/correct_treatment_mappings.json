@@ -1,0 +1,29 @@
+[ {
+  "mappingKey" : "000af81b6bc1715523ea537847899c3c7a1f589d1404b302cfeddce2a997eaec",
+  "entityType" : "treatment",
+  "mappingValues" : {
+    "DataSource" : "chop",
+    "TreatmentName" : "cisplatin"
+  },
+  "mappedTermUrl" : "http://purl.obolibrary.org/obo/NCIT_C376",
+  "mappedTermLabel" : "Cisplatin",
+  "status" : "Mapped",
+  "mappingType" : "Automatic-Review",
+  "source" : "Ontology",
+  "dateCreated" : "2023-12-13 12:28:29",
+  "dateUpdated" : "2023-12-13 19:00:42"
+}, {
+  "mappingKey" : "0055a7ad3bb5270aa9a6e53a95d5b730a11d0709830c13b69594a046c9a00ec5",
+  "entityType" : "treatment",
+  "mappingValues" : {
+    "DataSource" : "pdmr",
+    "TreatmentName" : "dutasteride"
+  },
+  "mappedTermUrl" : "http://purl.obolibrary.org/obo/NCIT_C47503",
+  "mappedTermLabel" : "Dutasteride",
+  "status" : "Mapped",
+  "mappingType" : "Automatic-Review",
+  "source" : "Ontology",
+  "dateCreated" : "2023-12-13 12:28:30",
+  "dateUpdated" : "2023-12-13 19:00:39"
+}]

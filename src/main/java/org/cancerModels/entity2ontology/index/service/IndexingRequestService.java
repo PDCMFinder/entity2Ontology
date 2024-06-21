@@ -76,12 +76,12 @@ public class IndexingRequestService {
         Map<String, Integer> indexedElementsPerTarget = new HashMap<>();
 
         // Process the ruleset targets, if any (and excluding the ones that need to be ignored)
-        request.getRuleSetTargets().forEach(s -> {
-            if (!s.isIgnore()) {
-                int count = processRuleSetTarget(s, request.getIndexPath());
-                indexedElementsPerTarget.put(s.getName(), count);
+        for (RuleSetTarget ruleSetTarget : request.getRuleSetTargets()) {
+            if (!ruleSetTarget.isIgnore()) {
+                int count = processRuleSetTarget(ruleSetTarget, request.getIndexPath());
+                indexedElementsPerTarget.put(ruleSetTarget.getName(), count);
             }
-        });
+        }
 
         response.setIndexedElementsPerTarget(indexedElementsPerTarget);
         response.setEnd(LocalDateTime.now());
@@ -93,8 +93,7 @@ public class IndexingRequestService {
      * @param ruleSetTarget {@link RuleSetTarget} which contains the path and an identifier for the ruleset
      * @return the number of indexed elements
      */
-    private int processRuleSetTarget(RuleSetTarget ruleSetTarget, String indexPath) {
-        logger.info("Processing rule set target: {} ({})", ruleSetTarget.getFilePath(), ruleSetTarget.getName());
-        return 0;
+    private int processRuleSetTarget(RuleSetTarget ruleSetTarget, String indexPath) throws IOException {
+        return indexingService.indexRuleSet(ruleSetTarget, indexPath);
     }
 }

@@ -1,0 +1,40 @@
+{
+  "indexPath": "IndexPath1",
+  "ruleSetTargets": [
+    {
+      "filePath": "src/test/resources/indexingRequest/small_treatment_mappings.json",
+      "name": "treatment",
+      "ignore": false,
+      "fieldsConversion":
+      {
+        "id": "mappingKey",
+        "entityType": "entityType",
+        "data": "mappingValues",
+        "label": "mappedTermLabel",
+        "url": "mappedTermUrl"
+
+      }
+    },
+    {
+      "filePath": "/path/file/diagnosis.json",
+      "name": "diagnosis",
+      "ignore": true
+    },
+    {
+      "filePath": "/path/file/to_be_ignored.json",
+      "name": "to_be_ignored",
+      "ignore": true
+    }
+  ],
+  "ontologySources": [
+    {
+      "url": "http:ncit.owl",
+      "sourceName": "ncit ontology",
+      "branches": [
+        "b1",
+        "b2"
+      ],
+      "ignore": true
+    }
+  ]
+}

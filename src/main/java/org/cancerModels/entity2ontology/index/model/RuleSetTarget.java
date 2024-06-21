@@ -3,6 +3,8 @@ package org.cancerModels.entity2ontology.index.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 /**
  * Represents a set of rules used for mapping entities to ontologies.
  *
@@ -37,4 +39,7 @@ public class RuleSetTarget {
      * index specific JSON files or ontologies
      */
     private boolean ignore;
+
+
+    Map<String, String> fieldsConversion;
 }

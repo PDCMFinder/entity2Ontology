@@ -1,0 +1,15 @@
+[ {
+  "mappingKey" : "000af81b6bc1715523ea537847899c3c7a1f589d1404b302cfeddce2a997eaec",
+  "entityType" : "treatment",
+  "mappingValues" : {
+    "DataSource" : "chop",
+    "TreatmentName" : "cisplatin"
+  },
+  "mappedTermUrl" : "http://purl.obolibrary.org/obo/NCIT_C376",
+  "mappedTermLabel_wrong" : "Cisplatin",
+  "status" : "Mapped",
+  "mappingType" : "Automatic-Review",
+  "source" : "Ontology",
+  "dateCreated" : "2023-12-13 12:28:29",
+  "dateUpdated" : "2023-12-13 19:00:42"
+}]
