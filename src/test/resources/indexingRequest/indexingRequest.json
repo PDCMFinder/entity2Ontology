@@ -1,6 +1,6 @@
 {
   "indexPath": "IndexPath1",
-  "ruleSetTargets": [
+  "ruleLocations": [
     {
       "filePath": "/path/file/treatments.json",
       "name": "treatment",

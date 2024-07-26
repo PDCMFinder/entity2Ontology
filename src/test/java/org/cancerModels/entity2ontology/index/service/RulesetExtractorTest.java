@@ -1,6 +1,6 @@
 package org.cancerModels.entity2ontology.index.service;
 
-import org.cancerModels.entity2ontology.index.model.RuleSetTarget;
+import org.cancerModels.entity2ontology.index.model.RuleLocation;
 import org.cancerModels.entity2ontology.map.model.TargetEntity;
 import org.junit.jupiter.api.Test;
 
@@ -21,10 +21,10 @@ class RulesetExtractorTest {
     @Test
     void shouldGetExpectedRuleset() throws IOException {
         // Given a ruleSetTarget with valid information
-        RuleSetTarget ruleSetTarget = buildRuleSetTarget();
+        RuleLocation ruleLocation = buildRuleSetTarget();
 
         // When we extract the ruleset
-        List<TargetEntity> entities = rulesetExtractor.extract(ruleSetTarget);
+        List<TargetEntity> entities = rulesetExtractor.extract(ruleLocation);
 
         // Then we get the expected ruleset
 
@@ -72,12 +72,12 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetNullFilePath() {
         // Given a ruleSetTarget without filePath
-        RuleSetTarget ruleSetTarget = buildRuleSetTarget();
-        ruleSetTarget.setFilePath(null);
+        RuleLocation ruleLocation = buildRuleSetTarget();
+        ruleLocation.setFilePath(null);
 
         // When we try to extract the ruleset
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            rulesetExtractor.extract(ruleSetTarget));
+            rulesetExtractor.extract(ruleLocation));
 
         // Then we get an IOException
         assertEquals("Invalid ruleset target. File path is empty.", exception.getMessage());
@@ -86,12 +86,12 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetFilePathNotFound() {
         // Given a ruleSetTarget without filePath
-        RuleSetTarget ruleSetTarget = buildRuleSetTarget();
-        ruleSetTarget.setFilePath("non_existent_file");
+        RuleLocation ruleLocation = buildRuleSetTarget();
+        ruleLocation.setFilePath("non_existent_file");
 
         // When we try to extract the ruleset
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            rulesetExtractor.extract(ruleSetTarget));
+            rulesetExtractor.extract(ruleLocation));
 
         // Then we get an IOException
         assertEquals("non_existent_file (No such file or directory)", exception.getMessage());
@@ -100,12 +100,12 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetNullName() {
         // Given a ruleSetTarget without name
-        RuleSetTarget ruleSetTarget = buildRuleSetTarget();
-        ruleSetTarget.setName(null);
+        RuleLocation ruleLocation = buildRuleSetTarget();
+        ruleLocation.setName(null);
 
         // When we try to extract the ruleset
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            rulesetExtractor.extract(ruleSetTarget));
+            rulesetExtractor.extract(ruleLocation));
 
         // Then we get an IOException
         assertEquals("Invalid ruleset target. Name is empty.", exception.getMessage());
@@ -114,12 +114,12 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetNullFieldsConversion() {
         // Given a ruleSetTarget without fields conversion
-        RuleSetTarget ruleSetTarget = buildRuleSetTarget();
-        ruleSetTarget.setFieldsConversion(null);
+        RuleLocation ruleLocation = buildRuleSetTarget();
+        ruleLocation.setFieldsConversion(null);
 
         // When we try to extract the ruleset
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            rulesetExtractor.extract(ruleSetTarget));
+            rulesetExtractor.extract(ruleLocation));
 
         // Then we get an IOException
         assertEquals("Invalid ruleset target. FieldsConversion is empty.", exception.getMessage());
@@ -128,12 +128,12 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetEmptyFieldsConversion() {
         // Given a ruleSetTarget without fields conversion
-        RuleSetTarget ruleSetTarget = buildRuleSetTarget();
-        ruleSetTarget.setFieldsConversion(new HashMap<>());
+        RuleLocation ruleLocation = buildRuleSetTarget();
+        ruleLocation.setFieldsConversion(new HashMap<>());
 
         // When we try to extract the ruleset
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            rulesetExtractor.extract(ruleSetTarget));
+            rulesetExtractor.extract(ruleLocation));
 
         // Then we get an IOException
         assertEquals("Invalid ruleset target. FieldsConversion is empty.", exception.getMessage());
@@ -198,12 +198,12 @@ class RulesetExtractorTest {
 
     private void checkFieldInFieldsConversion(String fieldName) {
         // Given a ruleSetTarget without an expected field in the FieldsConversion section
-        RuleSetTarget ruleSetTarget = buildRuleSetTarget();
-        ruleSetTarget.getFieldsConversion().remove(fieldName);
+        RuleLocation ruleLocation = buildRuleSetTarget();
+        ruleLocation.getFieldsConversion().remove(fieldName);
 
         // When we try to extract the ruleset
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            rulesetExtractor.extract(ruleSetTarget));
+            rulesetExtractor.extract(ruleLocation));
 
         // Then we get an IOException
         assertEquals(
@@ -213,12 +213,12 @@ class RulesetExtractorTest {
 
     private void checkMissingFieldInRule(String fieldName, String equivalentName, String rulesetFileName) {
         // Given a ruleSetTarget without an expected field in the FieldsConversion section
-        RuleSetTarget ruleSetTarget = buildRuleSetTarget();
-        ruleSetTarget.setFilePath(TEST_FOLDER + rulesetFileName);
+        RuleLocation ruleLocation = buildRuleSetTarget();
+        ruleLocation.setFilePath(TEST_FOLDER + rulesetFileName);
 
         // When we try to extract the ruleset
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            rulesetExtractor.extract(ruleSetTarget));
+            rulesetExtractor.extract(ruleLocation));
 
         // Then we get an IOException
         assertEquals(
@@ -228,14 +228,14 @@ class RulesetExtractorTest {
     }
 
     // Creates a valid ruleSetTarget to use in the tests
-    private RuleSetTarget buildRuleSetTarget() {
-        RuleSetTarget ruleSetTarget = new RuleSetTarget();
-        ruleSetTarget.setName("name");
+    private RuleLocation buildRuleSetTarget() {
+        RuleLocation ruleLocation = new RuleLocation();
+        ruleLocation.setName("name");
         Map<String, String> fieldsConversion = buildFieldsConversion();
-        ruleSetTarget.setFieldsConversion(fieldsConversion);
-        ruleSetTarget.setIgnore(false);
-        ruleSetTarget.setFilePath(TEST_FOLDER + "/correct_treatment_mappings.json");
-        return ruleSetTarget;
+        ruleLocation.setFieldsConversion(fieldsConversion);
+        ruleLocation.setIgnore(false);
+        ruleLocation.setFilePath(TEST_FOLDER + "/correct_treatment_mappings.json");
+        return ruleLocation;
     }
 
     private Map<String, String> buildFieldsConversion() {

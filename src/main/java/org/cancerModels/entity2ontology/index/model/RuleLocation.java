@@ -2,11 +2,12 @@ package org.cancerModels.entity2ontology.index.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cancerModels.entity2ontology.map.model.TargetEntity;
 
 import java.util.Map;
 
 /**
- * Represents a set of rules used for mapping entities to ontologies.
+ * Represents the location of a JSON file which contains rules.
  *
  * <p>This class encapsulates the information about a rule set, including the path to the JSON file
  * that contains the rules and the name of the rule set. The JSON file specified by {@code filePath}
@@ -23,7 +24,7 @@ import java.util.Map;
  */
 @Data
 @NoArgsConstructor
-public class RuleSetTarget {
+public class RuleLocation {
     /**
      * Path to the JSON file containing a set of rules (association between entities and ontologies)
      */
@@ -40,6 +41,8 @@ public class RuleSetTarget {
      */
     private boolean ignore;
 
-
-    Map<String, String> fieldsConversion;
+    /**
+     * A map to convert the fields of a rule into those of a {@link TargetEntity}
+     */
+    private Map<String, String> fieldsConversion;
 }

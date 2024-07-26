@@ -1,6 +1,6 @@
 {
   "indexPath": "IndexPath1",
-  "ruleSetTargets": [
+  "ruleLocations": [
     {
       "filePath": "src/test/resources/indexingRequest/rules/correct_treatment_mappings.json",
       "name": "treatment",

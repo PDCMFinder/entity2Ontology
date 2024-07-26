@@ -2,7 +2,7 @@ package org.cancerModels.entity2ontology.index.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cancerModels.entity2ontology.index.model.RuleSetTarget;
+import org.cancerModels.entity2ontology.index.model.RuleLocation;
 import org.cancerModels.entity2ontology.map.model.TargetEntity;
 
 import java.io.IOException;
@@ -14,8 +14,8 @@ import java.util.List;
  * <p>This class provides methods to handle the indexing process based on various input data, such as rule sets,
  * and creates a Lucene index at the specified path.
  *
- * @see com.yourdomain.entity2ontology.index.IndexingRequest
- * @see com.yourdomain.entity2ontology.rules.RuleSetTarget
+ * @see org.cancerModels.entity2ontology.index.model.IndexingRequest
+ * @see RuleLocation
  * @see org.apache.lucene.index.IndexWriter
  */
 public class IndexingService {
@@ -24,10 +24,12 @@ public class IndexingService {
 
     private static final RulesetExtractor rulesetExtractor = new RulesetExtractor();
 
+    private static final Indexer indexer = new Indexer();
+
     /**
      * Indexes the given rule set target into a Lucene index at the specified path.
      *
-     * <p>This method reads the rules from the specified {@link RuleSetTarget} and indexes them into a Lucene
+     * <p>This method reads the rules from the specified {@link RuleLocation} and indexes them into a Lucene
      * index at the given {@code indexPath}. The method returns an integer representing the number of rules
      * successfully indexed.
      *
@@ -44,16 +46,18 @@ public class IndexingService {
      * }
      * </pre>
      *
-     * @param ruleSetTarget the target rule set containing the rules to be indexed
+     * @param ruleLocation the target rule set containing the rules to be indexed
      * @param indexPath the path where the Lucene index will be created
      * @return the number of rules successfully indexed
      * @throws IOException if there is an error reading the rule set or writing to the index
      */
-    public int indexRuleSet(RuleSetTarget ruleSetTarget, String indexPath) throws IOException {
-        logger.info("Processing rule set target: {} ({})", ruleSetTarget.getFilePath(), ruleSetTarget.getName());
-        // Read the ruleset
-        List<TargetEntity> targetEntities = rulesetExtractor.extract(ruleSetTarget);
-        System.out.println("Got " + targetEntities.size() + " target entities");
-        return 0;
+    public int indexRuleSet(RuleLocation ruleLocation, String indexPath) throws IOException {
+        logger.info("Processing rule set target: {} ({})", ruleLocation.getFilePath(), ruleLocation.getName());
+        logger.info("Data will be indexed at {}", indexPath);
+        List<TargetEntity> targetEntities = rulesetExtractor.extract(ruleLocation);
+        logger.info("Deleting all documents with type '{}'", ruleLocation.getName());
+        indexer.deleteAllByEntityType(ruleLocation.getName(), indexPath);
+        indexer.indexEntities(targetEntities, indexPath);
+        return targetEntities.size();
     }
 }

@@ -48,5 +48,4 @@ public class TargetEntity {
      */
     private String url;
 
-
 }

@@ -23,7 +23,7 @@ import java.util.List;
  * all relevant data is properly included and organized for efficient indexing and retrieval.
  *
  * @see org.cancerModels.entity2ontology.index.command.IndexCommand
- * @see org.cancerModels.entity2ontology.index.command.IndexService
+ * @see org.cancerModels.entity2ontology.index.service.IndexingService
  */
 @Data
 @NoArgsConstructor
@@ -36,5 +36,5 @@ public class IndexingRequest {
     /**
      * The locations of the rules to index
      */
-    private List<RuleSetTarget> ruleSetTargets;
+    private List<RuleLocation> ruleLocations;
 }

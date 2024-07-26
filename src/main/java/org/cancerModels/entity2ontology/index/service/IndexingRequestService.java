@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cancerModels.entity2ontology.index.model.IndexingRequest;
 import org.cancerModels.entity2ontology.index.model.IndexingResponse;
-import org.cancerModels.entity2ontology.index.model.RuleSetTarget;
+import org.cancerModels.entity2ontology.index.model.RuleLocation;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -76,10 +76,10 @@ public class IndexingRequestService {
         Map<String, Integer> indexedElementsPerTarget = new HashMap<>();
 
         // Process the ruleset targets, if any (and excluding the ones that need to be ignored)
-        for (RuleSetTarget ruleSetTarget : request.getRuleSetTargets()) {
-            if (!ruleSetTarget.isIgnore()) {
-                int count = processRuleSetTarget(ruleSetTarget, request.getIndexPath());
-                indexedElementsPerTarget.put(ruleSetTarget.getName(), count);
+        for (RuleLocation ruleLocation : request.getRuleLocations()) {
+            if (!ruleLocation.isIgnore()) {
+                int count = processRuleLocation(ruleLocation, request.getIndexPath());
+                indexedElementsPerTarget.put(ruleLocation.getName(), count);
             }
         }
 
@@ -90,10 +90,11 @@ public class IndexingRequestService {
 
     /**
      * Processes a ruleset by reading the JSON file from the given location and indexing the data
-     * @param ruleSetTarget {@link RuleSetTarget} which contains the path and an identifier for the ruleset
+     * @param ruleLocation {@link RuleLocation} which contains the path and an identifier for the ruleset
+     * @param indexPath Path to the Lucene index
      * @return the number of indexed elements
      */
-    private int processRuleSetTarget(RuleSetTarget ruleSetTarget, String indexPath) throws IOException {
-        return indexingService.indexRuleSet(ruleSetTarget, indexPath);
+    private int processRuleLocation(RuleLocation ruleLocation, String indexPath) throws IOException {
+        return indexingService.indexRuleSet(ruleLocation, indexPath);
     }
 }

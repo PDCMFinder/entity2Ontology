@@ -3,7 +3,7 @@ package org.cancerModels.entity2ontology.index.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cancerModels.entity2ontology.common.utils.FileUtils;
-import org.cancerModels.entity2ontology.index.model.RuleSetTarget;
+import org.cancerModels.entity2ontology.index.model.RuleLocation;
 import org.cancerModels.entity2ontology.map.model.TargetEntity;
 
 import java.io.File;
@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * Extractor class for processing rule sets and transforming them into target entities.
  *
- * <p>This class is responsible for reading rules from a given {@link RuleSetTarget} and transforming
+ * <p>This class is responsible for reading rules from a given {@link RuleLocation} and transforming
  * them into {@link TargetEntity} objects. These target entities are then used as documents for the
  * Lucene index.
  *
@@ -35,27 +35,27 @@ import java.util.*;
  * }
  * </pre>
  *
- * @see org.cancerModels.entity2ontology.index.model.RuleSetTarget
+ * @see RuleLocation
  * @see org.cancerModels.entity2ontology.map.model.TargetEntity
  */
 class RulesetExtractor {
 
     /**
-     * Extracts rules from the given {@link RuleSetTarget} and transforms them into a list of {@link TargetEntity}.
+     * Extracts rules from the given {@link RuleLocation} and transforms them into a list of {@link TargetEntity}.
      *
      * <p>This method reads the rule set from the location specified in the {@code RuleSetTarget} and converts each
      * rule into a {@code TargetEntity}. The resulting list of target entities can then be used as documents for
      * the Lucene index.
      *
-     * @param ruleSetTarget the target rule set containing the rules to be extracted
+     * @param ruleLocation the target rule set containing the rules to be extracted
      * @return a list of {@link TargetEntity} objects transformed from the original rules
      * @throws IOException if there is an error reading the rule set from the specified location
      */
-    List<TargetEntity> extract(RuleSetTarget ruleSetTarget) throws IOException {
+    List<TargetEntity> extract(RuleLocation ruleLocation) throws IOException {
         List<TargetEntity> targetEntities = new ArrayList<>();
-        validateRuleSetTarget(ruleSetTarget);
-        File jsonFile = FileUtils.getNonEmptyFileFromPath(ruleSetTarget.getFilePath());
-        Map<String, String> fieldsConversion = ruleSetTarget.getFieldsConversion();
+        validateRuleSetTarget(ruleLocation);
+        File jsonFile = FileUtils.getNonEmptyFileFromPath(ruleLocation.getFilePath());
+        Map<String, String> fieldsConversion = ruleLocation.getFieldsConversion();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(jsonFile);
 
@@ -111,18 +111,18 @@ class RulesetExtractor {
         return node;
     }
 
-    private void validateRuleSetTarget(RuleSetTarget ruleSetTarget) {
-        if (ruleSetTarget == null) {
+    private void validateRuleSetTarget(RuleLocation ruleLocation) {
+        if (ruleLocation == null) {
             throw new IllegalArgumentException("Invalid ruleset target. It must not be null.");
         }
-        if (ruleSetTarget.getFilePath() == null || ruleSetTarget.getFilePath().isEmpty()) {
+        if (ruleLocation.getFilePath() == null || ruleLocation.getFilePath().isEmpty()) {
             throw new IllegalArgumentException("Invalid ruleset target. File path is empty.");
         }
-        if (ruleSetTarget.getName() == null || ruleSetTarget.getName().isEmpty()) {
+        if (ruleLocation.getName() == null || ruleLocation.getName().isEmpty()) {
             throw new IllegalArgumentException("Invalid ruleset target. Name is empty.");
         }
 
-        Map<String, String> fieldsConversion = ruleSetTarget.getFieldsConversion();
+        Map<String, String> fieldsConversion = ruleLocation.getFieldsConversion();
 
         if (fieldsConversion== null || fieldsConversion.isEmpty()) {
             throw new IllegalArgumentException("Invalid ruleset target. FieldsConversion is empty.");
