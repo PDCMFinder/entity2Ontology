@@ -2,10 +2,13 @@ package org.cancerModels.entity2ontology.common.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 public class FileUtils {
@@ -44,5 +47,11 @@ public class FileUtils {
             throw new IllegalArgumentException("File is empty: " + file.getPath());
         }
         return file;
+    }
+
+    public static String getStringFromUrl(String url) throws IOException {
+        String content = "";
+        content = new Scanner(new URL(url).openStream(), StandardCharsets.UTF_8).useDelimiter("\\A").next();
+        return content;
     }
 }

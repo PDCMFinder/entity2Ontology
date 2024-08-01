@@ -21,7 +21,7 @@ class RulesetExtractorTest {
     @Test
     void shouldGetExpectedRuleset() throws IOException {
         // Given a ruleSetTarget with valid information
-        RuleLocation ruleLocation = buildRuleSetTarget();
+        RuleLocation ruleLocation = buildRuleLocation();
 
         // When we extract the ruleset
         List<TargetEntity> entities = rulesetExtractor.extract(ruleLocation);
@@ -72,7 +72,7 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetNullFilePath() {
         // Given a ruleSetTarget without filePath
-        RuleLocation ruleLocation = buildRuleSetTarget();
+        RuleLocation ruleLocation = buildRuleLocation();
         ruleLocation.setFilePath(null);
 
         // When we try to extract the ruleset
@@ -86,7 +86,7 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetFilePathNotFound() {
         // Given a ruleSetTarget without filePath
-        RuleLocation ruleLocation = buildRuleSetTarget();
+        RuleLocation ruleLocation = buildRuleLocation();
         ruleLocation.setFilePath("non_existent_file");
 
         // When we try to extract the ruleset
@@ -100,7 +100,7 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetNullName() {
         // Given a ruleSetTarget without name
-        RuleLocation ruleLocation = buildRuleSetTarget();
+        RuleLocation ruleLocation = buildRuleLocation();
         ruleLocation.setName(null);
 
         // When we try to extract the ruleset
@@ -114,7 +114,7 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetNullFieldsConversion() {
         // Given a ruleSetTarget without fields conversion
-        RuleLocation ruleLocation = buildRuleSetTarget();
+        RuleLocation ruleLocation = buildRuleLocation();
         ruleLocation.setFieldsConversion(null);
 
         // When we try to extract the ruleset
@@ -128,7 +128,7 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleSetEmptyFieldsConversion() {
         // Given a ruleSetTarget without fields conversion
-        RuleLocation ruleLocation = buildRuleSetTarget();
+        RuleLocation ruleLocation = buildRuleLocation();
         ruleLocation.setFieldsConversion(new HashMap<>());
 
         // When we try to extract the ruleset
@@ -198,7 +198,7 @@ class RulesetExtractorTest {
 
     private void checkFieldInFieldsConversion(String fieldName) {
         // Given a ruleSetTarget without an expected field in the FieldsConversion section
-        RuleLocation ruleLocation = buildRuleSetTarget();
+        RuleLocation ruleLocation = buildRuleLocation();
         ruleLocation.getFieldsConversion().remove(fieldName);
 
         // When we try to extract the ruleset
@@ -213,7 +213,7 @@ class RulesetExtractorTest {
 
     private void checkMissingFieldInRule(String fieldName, String equivalentName, String rulesetFileName) {
         // Given a ruleSetTarget without an expected field in the FieldsConversion section
-        RuleLocation ruleLocation = buildRuleSetTarget();
+        RuleLocation ruleLocation = buildRuleLocation();
         ruleLocation.setFilePath(TEST_FOLDER + rulesetFileName);
 
         // When we try to extract the ruleset
@@ -227,8 +227,8 @@ class RulesetExtractorTest {
             exception.getMessage());
     }
 
-    // Creates a valid ruleSetTarget to use in the tests
-    private RuleLocation buildRuleSetTarget() {
+    // Creates a valid RuleLocation to use in the tests
+    private RuleLocation buildRuleLocation() {
         RuleLocation ruleLocation = new RuleLocation();
         ruleLocation.setName("name");
         Map<String, String> fieldsConversion = buildFieldsConversion();

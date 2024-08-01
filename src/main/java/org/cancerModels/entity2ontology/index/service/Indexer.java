@@ -50,7 +50,7 @@ public class Indexer {
     private final AnalyzerProvider analyzerProvider = new AnalyzerProvider();
 
     private static final Logger logger = LogManager.getLogger(Indexer.class);
-    
+
     /**
      * Creates a Lucene Index in {@code indexPath}. The path must be empty, so an exception will be
      * thrown if the directory contains data.

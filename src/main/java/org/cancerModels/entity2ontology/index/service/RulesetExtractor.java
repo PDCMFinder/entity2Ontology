@@ -23,12 +23,12 @@ import java.util.*;
  * <p>Example usage:
  * <pre>
  * {@code
- * RuleSetTarget ruleSetTarget = new RuleSetTarget();
- * ruleSetTarget.setFilePath("/path/to/rules.json");
- * ruleSetTarget.setName("Example Rule Set");
+ * RuleLocation ruleLocation = new RuleLocation();
+ * ruleLocation.setFilePath("/path/to/rules.json");
+ * ruleLocation.setName("Example Rule Set");
  *
  * RulesetExtractor extractor = new RulesetExtractor();
- * List<TargetEntity> targetEntities = extractor.extract(ruleSetTarget);
+ * List<TargetEntity> targetEntities = extractor.extract(ruleLocation);
  * for (TargetEntity entity : targetEntities) {
  *     System.out.println(entity);
  * }
@@ -43,11 +43,11 @@ class RulesetExtractor {
     /**
      * Extracts rules from the given {@link RuleLocation} and transforms them into a list of {@link TargetEntity}.
      *
-     * <p>This method reads the rule set from the location specified in the {@code RuleSetTarget} and converts each
+     * <p>This method reads the rule set from the location specified in the {@code RuleLocation} and converts each
      * rule into a {@code TargetEntity}. The resulting list of target entities can then be used as documents for
      * the Lucene index.
      *
-     * @param ruleLocation the target rule set containing the rules to be extracted
+     * @param ruleLocation the information about the rules to be extracted
      * @return a list of {@link TargetEntity} objects transformed from the original rules
      * @throws IOException if there is an error reading the rule set from the specified location
      */
