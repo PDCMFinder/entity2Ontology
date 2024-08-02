@@ -10,7 +10,9 @@ import org.cancerModels.entity2ontology.common.utils.FileUtils;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -62,13 +64,16 @@ public class OntologyDownloader {
         }
         try {
             validateOntologyExists(ontologyName);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException(String.format("The ontology %s does not exist in OLS", ontologyName));
         }
     }
 
     private void validateOntologyExists(String ontologyName) throws IOException {
-        FileUtils.getStringFromUrl(BASE_URL + ontologyName);
+        String r = FileUtils.getStringFromUrl(BASE_URL + ontologyName);
+        if (r.contains("\"Internal Server Error\"")) {
+            throw new IllegalArgumentException();
+        }
     }
 
     private String getDescendantsUrl(JsonNode jsonNode) throws IOException {
@@ -144,16 +149,16 @@ public class OntologyDownloader {
             }
         }
 
-        Set<String> synonymsSet = new HashSet<>();
+        List<String> synonyms = new ArrayList<>();
         if (jsonNode.has("synonyms")) {
             JsonNode synonymArray = jsonNode.path("synonyms");
             if (synonymArray.isArray()) {
                 for (JsonNode synonymNode : synonymArray) {
-                    synonymsSet.add(synonymNode.asText());
+                    synonyms.add(synonymNode.asText());
                 }
             }
         }
-        return new OntologyTerm(id, url, label, ontologyType, description, synonymsSet);
+        return new OntologyTerm(id, url, label, ontologyType, description, synonyms);
     }
 
     private Set<OntologyTerm> parseDescendantsResponseJson(JsonNode node, String ontologyType) {

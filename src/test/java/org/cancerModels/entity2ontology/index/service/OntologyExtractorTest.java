@@ -11,8 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,7 +21,7 @@ public class OntologyExtractorTest {
     OntologyExtractor instance = new OntologyExtractor();
 
     @Test
-    void dummy() throws IOException {
+    void shouldReturnListOfTargetEntities() throws IOException {
         // Given we have an OntologyLocation with 3 branches (with no descendants, to simplify)
         OntologyLocation ontologyLocation = createOntologyLocation();
 
@@ -37,6 +36,60 @@ public class OntologyExtractorTest {
 
         // Then we obtain 3 target entities with the expected data
         assertEquals(3, targetEntities.size());
+        TargetEntity te1 = find(targetEntities, "NCIT_C9305");
+        assertNotNull(te1);
+        assertEquals("Malignant Neoplasm", te1.getLabel());
+        assertEquals("http://purl.obolibrary.org/obo/NCIT_C9305", te1.getUrl());
+
+        TargetEntity te2 = find(targetEntities, "NCIT_C3262");
+        assertNotNull(te2);
+        assertEquals("Neoplasm", te2.getLabel());
+        assertEquals("http://purl.obolibrary.org/obo/NCIT_C3262", te2.getUrl());
+
+        TargetEntity te3 = find(targetEntities, "NCIT_C35814");
+        assertNotNull(te3);
+        assertEquals("Hematopoietic and Lymphatic System Disorder", te3.getLabel());
+        assertEquals("http://purl.obolibrary.org/obo/NCIT_C35814", te3.getUrl());
+
+    }
+
+    @Test
+    public void shouldRemoveDuplicateSynonyms() throws IOException {
+
+        OntologyLocation ontologyLocation = new OntologyLocation(
+            "ncit",
+            "onto_name",
+            Arrays.asList("NCIT_C65288"),
+            false
+        );
+
+        OntologyTerm ontologyTerm = new OntologyTerm(
+            "NCIT_C65288",
+            "http://purl.obolibrary.org/obo/NCIT_C65288",
+            "Carbon Dioxide",
+            "onto_name",
+            "A colorless, odorless, incombustible gas resulting from the oxidation of carbon",
+            Arrays.asList("carbon dioxide", "CARBON DIOXIDE", "CO2", "Carbon Dioxide", "Carbonic Acid Gas")
+        );
+
+        doReturn(new HashSet<>(List.of(ontologyTerm)))
+            .when(instance).downloadOntologyTerms("ncit", "NCIT_C65288", "onto_name");
+
+        // When we extract target entities
+        List<TargetEntity> targetEntities = instance.extract(ontologyLocation);
+
+        //The synonyms don't contain repeated values
+        List<String> synonyms = (List<String>) targetEntities.get(0).getData().get("synonyms");
+        assertEquals(Arrays.asList("co2", "carbonic acid gas"), synonyms);
+    }
+
+    private TargetEntity find(List<TargetEntity> targetEntities, String id) {
+        for (TargetEntity targetEntity : targetEntities) {
+            if (targetEntity.getId().equals(id)) {
+                return targetEntity;
+            }
+        }
+        return null;
     }
 
     private OntologyLocation createOntologyLocation() {
@@ -62,7 +115,7 @@ public class OntologyExtractorTest {
             "Malignant Neoplasm",
             "ncit ontology diagnosis",
             "A neoplasm composed of atypical neoplastic...",
-            new HashSet<>(Arrays.asList("malignancy", "Malignant Growth", "Malignant Neoplasm"))
+            Arrays.asList("malignancy", "Malignant Growth", "Malignant Neoplasm")
         );
         ontologyTerms.add(ontologyTerm);
         return ontologyTerms;
@@ -76,7 +129,7 @@ public class OntologyExtractorTest {
             "Neoplasm",
             "ncit ontology diagnosis",
             "A benign or malignant tissue growth resulting from uncontrolled cell proliferation...",
-            new HashSet<>(Arrays.asList("neoplasia", "Neoplasia", "Neoplasm, NOS"))
+            Arrays.asList("neoplasia", "Neoplasia", "Neoplasm, NOS")
         );
         ontologyTerms.add(ontologyTerm);
         return ontologyTerms;
@@ -90,7 +143,7 @@ public class OntologyExtractorTest {
             "Hematopoietic and Lymphatic System Disorder",
             "ncit ontology diagnosis",
             "A non-neoplastic or neoplastic disorder that affects the hematopoietic and lymphatic system.",
-            new HashSet<>(Arrays.asList("Hematopoietic and Lymphoid System Disorder"))
+            Arrays.asList("Hematopoietic and Lymphoid System Disorder")
         );
         ontologyTerms.add(ontologyTerm);
         return ontologyTerms;
@@ -104,7 +157,7 @@ public class OntologyExtractorTest {
             "Malignant Neoplasm",
             "ncit ontology diagnosis",
             "A neoplasm composed of atypical neoplastic...",
-            new HashSet<>(Arrays.asList("malignancy", "Malignant Growth", "Malignant Neoplasm"))
+            Arrays.asList("malignancy", "Malignant Growth", "Malignant Neoplasm")
         );
         OntologyTerm ontologyTerm2 = new OntologyTerm(
             "NCIT_C3262",
@@ -112,7 +165,7 @@ public class OntologyExtractorTest {
             "Neoplasm",
             "ncit ontology diagnosis",
             "A benign or malignant tissue growth resulting from uncontrolled cell proliferation...",
-            new HashSet<>(Arrays.asList("neoplasia", "Neoplasia", "Neoplasm, NOS"))
+            Arrays.asList("neoplasia", "Neoplasia", "Neoplasm, NOS")
         );
         OntologyTerm ontologyTerm3 = new OntologyTerm(
             "NCIT_C35814",
@@ -120,7 +173,7 @@ public class OntologyExtractorTest {
             "Hematopoietic and Lymphatic System Disorder",
             "ncit ontology diagnosis",
             "A non-neoplastic or neoplastic disorder that affects the hematopoietic and lymphatic system.",
-            new HashSet<>(Arrays.asList("Hematopoietic and Lymphoid System Disorder"))
+            List.of("Hematopoietic and Lymphoid System Disorder")
         );
         ontologyTerms.add(ontologyTerm1);
         ontologyTerms.add(ontologyTerm2);

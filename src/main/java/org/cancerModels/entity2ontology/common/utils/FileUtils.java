@@ -2,13 +2,15 @@ package org.cancerModels.entity2ontology.common.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Iterator;
-import java.util.Scanner;
 import java.util.stream.Stream;
 
 public class FileUtils {
@@ -50,8 +52,18 @@ public class FileUtils {
     }
 
     public static String getStringFromUrl(String url) throws IOException {
-        String content = "";
-        content = new Scanner(new URL(url).openStream(), StandardCharsets.UTF_8).useDelimiter("\\A").next();
-        return content;
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return response.body();
     }
 }
+

@@ -2,6 +2,7 @@ package org.cancerModels.entity2ontology.common.model;
 
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -37,7 +38,7 @@ public class OntologyTerm {
     /**
      * The list of synonyms for the ontology term.
      */
-    private Set<String> synonyms;
+    private List<String> synonyms;
 
     public OntologyTerm(
         String id,
@@ -45,7 +46,7 @@ public class OntologyTerm {
         String label,
         String type,
         String description,
-        Set<String> synonyms) {
+        List<String> synonyms) {
 
         String updatedLabel = label;
 

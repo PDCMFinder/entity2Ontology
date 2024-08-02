@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class OntologyExtractor {
 
-    private OntologyDownloader ontologyDownloader = new OntologyDownloader();
+    private final OntologyDownloader ontologyDownloader = new OntologyDownloader();
     private static final Logger logger = LogManager.getLogger(OntologyExtractor.class);
 
     /**
@@ -63,10 +63,7 @@ public class OntologyExtractor {
                 throw new RuntimeException(e);
             }
         });
-        ontologyTerms.forEach(ontologyTerm -> {
-            targetEntities.add(termToTargetEntity(ontologyTerm));
-        });
-        System.out.println(ontologyTerms.size());
+        ontologyTerms.forEach(ontologyTerm -> targetEntities.add(termToTargetEntity(ontologyTerm)));
         return targetEntities;
     }
 
@@ -80,9 +77,19 @@ public class OntologyExtractor {
         Map<String, Object> data = new HashMap<>();
         data.put("label", ontologyTerm.getLabel());
         data.put("description", ontologyTerm.getDescription());
-        data.put("synonyms", ontologyTerm.getSynonyms());
+        data.put("synonyms", formatSynonyms(ontologyTerm));
         targetEntity.setData(data);
         return targetEntity;
+    }
+
+    private List<String> formatSynonyms(OntologyTerm ontologyTerm) {
+        Set<String> uniqueValues = new HashSet<>();
+        ontologyTerm.getSynonyms().forEach(e -> {
+            uniqueValues.add(e.toLowerCase());
+        });
+        // We don't need the synonyms to contain the value that the label already has
+        uniqueValues.remove(ontologyTerm.getLabel().toLowerCase());
+        return new ArrayList<>(uniqueValues);
     }
 
     Set<OntologyTerm> downloadOntologyTerms(String ontologyId, String termId, String type) throws IOException {

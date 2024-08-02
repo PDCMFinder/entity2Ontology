@@ -1,5 +1,6 @@
 package org.cancerModels.entity2ontology.index.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cancerModels.entity2ontology.index.service.OntologyExtractor;
@@ -27,6 +28,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class OntologyLocation {
 
     /**

@@ -73,17 +73,17 @@ public class IndexingRequestService {
         response.setStart(LocalDateTime.now());
         response.setIndexPath(request.getIndexPath());
 
-        Map<String, Integer> indexedElementsPerTarget = new HashMap<>();
+        Map<String, Integer> indexedElementsPerLocation = new HashMap<>();
 
-        // Process the ruleset targets, if any (and excluding the ones that need to be ignored)
+        // Process the rules defined in the rule locations, if any (and excluding the ones that need to be ignored)
         for (RuleLocation ruleLocation : request.getRuleLocations()) {
             if (!ruleLocation.isIgnore()) {
                 int count = processRuleLocation(ruleLocation, request.getIndexPath());
-                indexedElementsPerTarget.put(ruleLocation.getName(), count);
+                indexedElementsPerLocation.put(ruleLocation.getName(), count);
             }
         }
 
-        response.setIndexedElementsPerTarget(indexedElementsPerTarget);
+        response.setIndexedElementsPerTarget(indexedElementsPerLocation);
         response.setEnd(LocalDateTime.now());
         return response;
     }

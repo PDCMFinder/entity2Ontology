@@ -52,7 +52,7 @@ public class IndexingService {
      * @throws IOException if there is an error reading the rule set or writing to the index
      */
     public int indexRuleSet(RuleLocation ruleLocation, String indexPath) throws IOException {
-        logger.info("Processing rule set target: {} ({})", ruleLocation.getFilePath(), ruleLocation.getName());
+        logger.info("Processing rule location: {} ({})", ruleLocation.getFilePath(), ruleLocation.getName());
         logger.info("Data will be indexed at {}", indexPath);
         List<TargetEntity> targetEntities = rulesetExtractor.extract(ruleLocation);
         logger.info("Deleting all documents with type '{}'", ruleLocation.getName());
