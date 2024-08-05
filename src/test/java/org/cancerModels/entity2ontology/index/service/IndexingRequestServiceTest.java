@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class IndexingRequestServiceTest {
 
     private static final String DATA_DIR = "src/test/resources/indexingRequest/";
@@ -20,6 +22,8 @@ class IndexingRequestServiceTest {
         IndexingResponse response = instance.processRequest(fileToRead);
 
         // Then we get the expected data
-
+        assertEquals("IndexPath1" , response.getIndexPath());
+        int indexedTreatments = response.getIndexedElementsPerTarget().get("treatment");
+        assertEquals(2 , indexedTreatments);
     }
 }

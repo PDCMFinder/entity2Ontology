@@ -77,7 +77,7 @@ class RulesetExtractor {
                 }
                 targetEntity.setId(id);
                 targetEntity.setEntityType(entityType);
-                targetEntity.setTargetType("Rule");
+                targetEntity.setTargetType("rule");
                 targetEntity.setData(data);
                 targetEntity.setUrl(url);
                 targetEntity.setLabel(label);

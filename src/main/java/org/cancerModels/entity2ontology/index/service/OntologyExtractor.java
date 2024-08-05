@@ -45,9 +45,8 @@ public class OntologyExtractor {
      *
      * @param ontologyLocation the location of the ontology, including the URL and branches of interest
      * @return a list of {@link TargetEntity} objects representing the extracted ontology data
-     * @throws IOException if an I/O error occurs while downloading or processing the ontology
      */
-    public List<TargetEntity> extract(OntologyLocation ontologyLocation) throws IOException {
+    public List<TargetEntity> extract(OntologyLocation ontologyLocation) {
         List<TargetEntity> targetEntities = new ArrayList<>();
         Set<OntologyTerm> ontologyTerms = new HashSet<>();
         ontologyLocation.getBranches().forEach(branch -> {
@@ -71,7 +70,7 @@ public class OntologyExtractor {
         TargetEntity targetEntity = new TargetEntity();
         targetEntity.setId(ontologyTerm.getId());
         targetEntity.setEntityType(ontologyTerm.getType());
-        targetEntity.setTargetType("Ontology");
+        targetEntity.setTargetType("ontology");
         targetEntity.setLabel(ontologyTerm.getLabel());
         targetEntity.setUrl(ontologyTerm.getUrl());
         Map<String, Object> data = new HashMap<>();

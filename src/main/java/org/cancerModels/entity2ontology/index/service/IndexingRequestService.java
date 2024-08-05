@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cancerModels.entity2ontology.index.model.IndexingRequest;
 import org.cancerModels.entity2ontology.index.model.IndexingResponse;
+import org.cancerModels.entity2ontology.index.model.OntologyLocation;
 import org.cancerModels.entity2ontology.index.model.RuleLocation;
 
 import java.io.IOException;
@@ -76,10 +77,22 @@ public class IndexingRequestService {
         Map<String, Integer> indexedElementsPerLocation = new HashMap<>();
 
         // Process the rules defined in the rule locations, if any (and excluding the ones that need to be ignored)
-        for (RuleLocation ruleLocation : request.getRuleLocations()) {
-            if (!ruleLocation.isIgnore()) {
-                int count = processRuleLocation(ruleLocation, request.getIndexPath());
-                indexedElementsPerLocation.put(ruleLocation.getName(), count);
+        if (request.getRuleLocations() != null) {
+            for (RuleLocation ruleLocation : request.getRuleLocations()) {
+                if (!ruleLocation.isIgnore()) {
+                    int count = processRuleLocation(ruleLocation, request.getIndexPath());
+                    indexedElementsPerLocation.put(ruleLocation.getName(), count);
+                }
+            }
+        }
+
+        // Process the ontologies defined in the ontology locations, if any (and excluding the ones that need to be ignored)
+        if (request.getOntologyLocations() != null) {
+            for (OntologyLocation ontologyLocation : request.getOntologyLocations()) {
+                if (!ontologyLocation.isIgnore()) {
+                    int count = processOntologyLocation(ontologyLocation, request.getIndexPath());
+                    indexedElementsPerLocation.put(ontologyLocation.getName(), count);
+                }
             }
         }
 
@@ -95,6 +108,16 @@ public class IndexingRequestService {
      * @return the number of indexed elements
      */
     private int processRuleLocation(RuleLocation ruleLocation, String indexPath) throws IOException {
-        return indexingService.indexRuleSet(ruleLocation, indexPath);
+        return indexingService.indexRules(ruleLocation, indexPath);
+    }
+
+    /**
+     * Processes a ruleset by reading the JSON file from the given location and indexing the data
+     * @param ontologyLocation {@link OntologyLocation} which contains the path and an identifier for the ontologies
+     * @param indexPath Path to the Lucene index
+     * @return the number of indexed elements
+     */
+    private int processOntologyLocation(OntologyLocation ontologyLocation, String indexPath) throws IOException {
+        return indexingService.indexOntologies(ontologyLocation, indexPath);
     }
 }

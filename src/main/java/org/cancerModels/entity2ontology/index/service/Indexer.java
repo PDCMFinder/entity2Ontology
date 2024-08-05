@@ -101,14 +101,15 @@ public class Indexer {
      */
     private Document entityToDocument(TargetEntity entity) {
         Document document = new Document();
-
+        document.add(new StringField("id", entity.getId(), Field.Store.YES));
         document.add(new StringField("entityType", entity.getEntityType(), Field.Store.YES));
         document.add(new StringField("targetType", entity.getTargetType(), Field.Store.YES));
         document.add(new TextField("label", entity.getLabel(), Field.Store.YES));
         document.add(new StringField("url", entity.getUrl(), Field.Store.YES));
 
         // Add the data
-        entity.getData().forEach((k, v) -> document.add(new TextField(k, v.toString(), Field.Store.YES)));
+        entity.getData().forEach((k, v) -> document.add(
+            new TextField(entity.getTargetType() + "." + k, v.toString(), Field.Store.YES)));
 
         return document;
     }
