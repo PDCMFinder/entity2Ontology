@@ -3,6 +3,8 @@ package org.cancerModels.entity2ontology.map.service;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cancerModels.entity2ontology.map.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -17,10 +19,18 @@ import java.util.List;
  * source entity and the value is a list of suggested mappings.
  * </p>
  */
+@Component
 public class MappingRequestService {
 
     private static final Logger logger = LogManager.getLogger(MappingRequestService.class);
-    private final MappingService mappingService = new MappingService();
+
+    private final MappingService mappingService;
+
+    @Autowired
+    public MappingRequestService(MappingService mappingService) {
+        this.mappingService = mappingService;
+    }
+
     /**
      * Reads a {@link MappingRequest} from the specified JSON file, performs the mapping process,
      * and writes the results to the specified output file.

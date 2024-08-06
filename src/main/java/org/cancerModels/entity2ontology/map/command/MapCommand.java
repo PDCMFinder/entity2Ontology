@@ -2,6 +2,8 @@ package org.cancerModels.entity2ontology.map.command;
 
 import org.cancerModels.entity2ontology.map.service.MappingIO;
 import org.cancerModels.entity2ontology.map.service.MappingRequestService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
 import java.io.IOException;
@@ -35,9 +37,10 @@ import java.io.IOException;
     description = "Performs mapping using a mapping request JSON.",
     mixinStandardHelpOptions = true //adds --help option to the command
     )
+@Component
 public class MapCommand implements Runnable {
 
-    private final MappingRequestService mappingRequestService = new MappingRequestService();
+    private final MappingRequestService mappingRequestService;
 
     /**
      * The JSON file containing the mapping request.
@@ -50,6 +53,11 @@ public class MapCommand implements Runnable {
      */
     @CommandLine.Option(names = "--output", required = true, description = "Output file to write the mapping results.")
     private String outputFile;
+
+    @Autowired
+    public MapCommand(MappingRequestService mappingRequestService) {
+        this.mappingRequestService = mappingRequestService;
+    }
 
     @Override
     public void run() {

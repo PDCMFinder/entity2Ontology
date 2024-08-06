@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.cancerModels.entity2ontology.index.service.Indexer;
 import org.cancerModels.entity2ontology.map.model.SourceEntity;
 import org.cancerModels.entity2ontology.map.model.Suggestion;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * Service class responsible for performing entity mappings.
  */
+@Component
 public class MappingService {
 
     private static final Logger logger = LogManager.getLogger(MappingService.class);

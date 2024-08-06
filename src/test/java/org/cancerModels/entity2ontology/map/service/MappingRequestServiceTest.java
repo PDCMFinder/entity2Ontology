@@ -4,7 +4,11 @@ import org.cancerModels.entity2ontology.common.utils.FileUtils;
 import org.cancerModels.entity2ontology.common.utils.JsonConverter;
 import org.cancerModels.entity2ontology.map.model.MappingRequest;
 import org.cancerModels.entity2ontology.map.model.MappingResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,10 +16,22 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ExtendWith(MockitoExtension.class)
 class MappingRequestServiceTest {
 
     private static final String DATA_DIR = "src/test/resources/mappingRequestReader/";
     private static final String OUTPUT_DATA_DIR = "src/test/output/";
+
+    @Mock
+    private MappingService mappingService;
+
+    private MappingRequestService instance;
+
+    @BeforeEach
+    public void setup()
+    {
+        instance = new MappingRequestService(mappingService);
+    }
 
     @Test
     void shouldProcessMappingRequestWithRequestFile() throws IOException {
@@ -23,9 +39,8 @@ class MappingRequestServiceTest {
         String fileToRead = DATA_DIR + "mappingRequest.json";
 
         // When we process the request
-        MappingRequestService mappingRequestService = new MappingRequestService();
         String outputFileName = OUTPUT_DATA_DIR + "mapping_request_with_file_output.json";
-        mappingRequestService.processMappingRequest(fileToRead, outputFileName);
+        instance.processMappingRequest(fileToRead, outputFileName);
 
         // We get an output file with the results of the mapping process
         File jsonFile = FileUtils.getNonEmptyFileFromPath(outputFileName);
@@ -45,8 +60,7 @@ class MappingRequestServiceTest {
         MappingRequest request = MappingIO.readMappingRequest(DATA_DIR + "mappingRequest.json");
 
         // When we process the request
-        MappingRequestService mappingRequestService = new MappingRequestService();
-        MappingResponse mappingResponse = mappingRequestService.processMappingRequest(request);
+        MappingResponse mappingResponse = instance.processMappingRequest(request);
 
         // We get an output file with the results of the mapping process
         assertEquals("IndexPath", mappingResponse.getIndexPath());
