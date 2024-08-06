@@ -1,0 +1,19 @@
+{
+  "name": "small_diagnosis_index",
+  "description": "test index with few diagnosis",
+  "targetEntities": [
+    {
+      "id": "",
+      "entityType": "entityType",
+      "targetType": "rule",
+      "data": {
+        "OriginTissue" : "orbit",
+        "TumorType" : "primary",
+        "SampleDiagnosis" : "fusion negative rhabdomyosarcoma",
+        "DataSource" : "gccri"
+      },
+      "label": "entityType",
+      "url": "entityType"
+    }
+  ]
+}

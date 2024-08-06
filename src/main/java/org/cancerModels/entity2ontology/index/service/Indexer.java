@@ -6,13 +6,13 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.index.*;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cancerModels.entity2ontology.map.model.TargetEntity;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,5 +124,25 @@ public class Indexer {
         Term term = new Term("entityType", entityType);
         writer.deleteDocuments(term);
         writer.commit();
+    }
+
+    /**
+     * Checks if the given path contains a valid Lucene index.
+     *
+     * @param indexPath the path to the index
+     * @return true if the path contains a valid index, false otherwise
+     */
+    public static boolean isValidLuceneIndex(String indexPath) {
+        Path path = Paths.get(indexPath);
+        try (Directory directory = FSDirectory.open(path)) {
+            DirectoryReader.open(directory).close();
+            return true;
+        } catch (IndexNotFoundException e) {
+            System.err.println("Index not found at path: " + indexPath);
+            return false;
+        } catch (IOException e) {
+            System.err.println("IOException while checking index at path: " + indexPath);
+            return false;
+        }
     }
 }

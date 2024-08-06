@@ -57,12 +57,11 @@ public class MappingRequestService {
      *
      * @param request the {@link MappingRequest} containing the entities to map and other relevant parameters
      * @return A {@link MappingResponse} with the results of the mapping process
-     * @throws IOException if an error occurs while writing to the output file
      */
     public MappingResponse processMappingRequest(MappingRequest request) {
         logger.info("Processing mapping request");
         MappingResponse response = new MappingResponse();
-        // Set the time the mapping process starts
+
         response.setStart(LocalDateTime.now());
         response.setIndexPath(request.getIndexPath());
 

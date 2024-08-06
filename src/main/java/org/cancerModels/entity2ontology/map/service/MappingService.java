@@ -2,6 +2,7 @@ package org.cancerModels.entity2ontology.map.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cancerModels.entity2ontology.index.service.Indexer;
 import org.cancerModels.entity2ontology.map.model.SourceEntity;
 import org.cancerModels.entity2ontology.map.model.Suggestion;
 
@@ -28,6 +29,8 @@ public class MappingService {
         String indexPath,
         int maxNumSuggestions) {
         logger.info("Mapping entity {} using index {}", entity, indexPath);
+        validateSourceEntity(entity);
+        validateIndex(indexPath);
         // For now let's assign a list with a dummy result
         List<Suggestion> dummy = new ArrayList<>();
         Suggestion suggestion1 = new Suggestion();
@@ -48,5 +51,29 @@ public class MappingService {
         suggestion2.setTermUrl("term_url_2");
         dummy.add(suggestion2);
         return dummy;
+    }
+
+    private void validateSourceEntity(SourceEntity entity) {
+        if (entity == null) {
+            throw new IllegalArgumentException("Entity cannot be null");
+        }
+        if (entity.getId() == null) {
+            throw new IllegalArgumentException("Entity id cannot be null");
+        }
+        if (entity.getType() == null) {
+            throw new IllegalArgumentException("Entity type cannot be null");
+        }
+        if (entity.getData() == null) {
+            throw new IllegalArgumentException("Entity data cannot be null");
+        }
+    }
+
+    private void validateIndex(String indexPath) {
+        if (indexPath == null) {
+            throw new IllegalArgumentException("Index cannot be null");
+        }
+        if (!Indexer.isValidLuceneIndex(indexPath)) {
+            throw new IllegalArgumentException("Index is not a valid lucene index");
+        }
     }
 }
