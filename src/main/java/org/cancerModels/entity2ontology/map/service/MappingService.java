@@ -75,7 +75,7 @@ public class MappingService {
             throw new IllegalArgumentException("Index cannot be null");
         }
         if (!Indexer.isValidLuceneIndex(indexPath)) {
-            throw new IllegalArgumentException("Index is not a valid lucene index");
+            throw new IllegalArgumentException(String.format("Index [%s] is not a valid lucene index", indexPath));
         }
     }
 }

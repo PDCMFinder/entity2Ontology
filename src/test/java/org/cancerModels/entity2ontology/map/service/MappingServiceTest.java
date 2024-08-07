@@ -98,6 +98,6 @@ public class MappingServiceTest {
         });
 
         // Then we get an IOException
-        assertEquals("Index is not a valid lucene index", exception.getMessage());
+        assertEquals("Index [unknown] is not a valid lucene index", exception.getMessage());
     }
 }

@@ -64,7 +64,7 @@ public class MapCommand implements Runnable {
         try {
             // Read the mapping request
             mappingRequestService.processMappingRequest(requestFile, outputFile);
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("Failed to perform mapping: " + e.getMessage());
             System.exit(1);
         }

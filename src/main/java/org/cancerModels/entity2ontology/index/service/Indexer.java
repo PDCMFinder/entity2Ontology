@@ -138,10 +138,10 @@ public class Indexer {
             DirectoryReader.open(directory).close();
             return true;
         } catch (IndexNotFoundException e) {
-            System.err.println("Index not found at path: " + indexPath);
+            System.err.printf("Index not found at path: [%s]%n", indexPath);
             return false;
         } catch (IOException e) {
-            System.err.println("IOException while checking index at path: " + indexPath);
+            System.err.printf("IOException while checking index at path: [%s]%n", indexPath);
             return false;
         }
     }
