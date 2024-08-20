@@ -3,6 +3,7 @@ package org.cancerModels.entity2ontology.map.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.List;
 
@@ -22,6 +23,9 @@ public class MappingRequest {
 
     // The name of the index to use in the mapping process
     private String indexPath;
+
+    // Path to the file containing the {@link MappingConfiguration} object for the mapping process
+    private String mappingConfigurationFile;
 
     // List of entities to map
     private List<SourceEntity> entities;

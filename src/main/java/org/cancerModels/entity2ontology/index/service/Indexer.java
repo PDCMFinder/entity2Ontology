@@ -127,6 +127,17 @@ public class Indexer {
     }
 
     /**
+     * Delete all documents in a given index {@code entityType}.
+     * @param indexPath Path of the index.
+     */
+    public void deleteAll(String indexPath) throws IOException {
+        IndexWriter writer = getIndexWriter(indexPath);
+        writer.deleteAll();
+        writer.commit();
+        logger.info("All documents at {} deleted", indexPath);
+    }
+
+    /**
      * Checks if the given path contains a valid Lucene index.
      *
      * @param indexPath the path to the index

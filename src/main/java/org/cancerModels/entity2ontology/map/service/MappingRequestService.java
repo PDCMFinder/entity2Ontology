@@ -50,8 +50,21 @@ public class MappingRequestService {
      */
     public void processMappingRequest(String requestFile, String outputFile) throws IOException {
         MappingRequest request = MappingIO.readMappingRequest(requestFile);
+        validateRequest(request);
         MappingResponse response = processMappingRequest(request);
         MappingIO.writeMappingResponse(response, outputFile);
+    }
+
+    private void validateRequest(MappingRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Mapping request cannot be null");
+        }
+        if (request.getIndexPath() == null) {
+            throw new IllegalArgumentException("Index path cannot be null");
+        }
+        if (request.getMappingConfigurationFile() == null) {
+            throw new IllegalArgumentException("Mapping configuration file cannot be null");
+        }
     }
 
     /**
@@ -68,16 +81,20 @@ public class MappingRequestService {
      * @param request the {@link MappingRequest} containing the entities to map and other relevant parameters
      * @return A {@link MappingResponse} with the results of the mapping process
      */
-    public MappingResponse processMappingRequest(MappingRequest request) {
+    public MappingResponse processMappingRequest(MappingRequest request) throws IOException {
         logger.info("Processing mapping request");
         MappingResponse response = new MappingResponse();
 
         response.setStart(LocalDateTime.now());
         response.setIndexPath(request.getIndexPath());
 
+        MappingConfiguration config = readMappingConfiguration(request.getMappingConfigurationFile());
+
         List<MappingResponseEntry> entries = new ArrayList<>();
 
-        request.getEntities().forEach(e -> entries.add(processEntity(e)));
+        for (SourceEntity entity : request.getEntities()) {
+            entries.add(processEntity(entity, config));
+        }
 
         response.setMappingsResults(entries);
 
@@ -88,14 +105,21 @@ public class MappingRequestService {
         return response;
     }
 
+    private MappingConfiguration readMappingConfiguration(String filePath) throws IOException {
+        MappingConfiguration config = MappingIO.readMappingConfiguration(filePath);
+        return config;
+    }
+
     /**
      * Gets the list of suggestions for an entity and creates a MappingResponseEntry object with that information
+     *
      * @param entity Entity to map
+     * @param config
      * @return a MappingResponseEntry object (entity - list of suggestions)
      */
-    private MappingResponseEntry processEntity(SourceEntity entity) {
+    private MappingResponseEntry processEntity(SourceEntity entity, MappingConfiguration config) throws IOException {
         MappingResponseEntry entry = new MappingResponseEntry();
-        List<Suggestion> suggestions = mappingService.mapEntity(entity, "", 0);
+        List<Suggestion> suggestions = mappingService.mapEntity(entity, "", 0, config);
         entry.setEntity(entity);
         entry.setSuggestions(suggestions);
         return entry;

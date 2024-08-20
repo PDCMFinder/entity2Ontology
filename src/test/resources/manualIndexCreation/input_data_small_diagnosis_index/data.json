@@ -3,8 +3,8 @@
   "description": "test index with few diagnosis",
   "targetEntities": [
     {
-      "id": "",
-      "entityType": "entityType",
+      "id": "rule_1",
+      "entityType": "diagnosis",
       "targetType": "rule",
       "data": {
         "OriginTissue" : "orbit",
@@ -12,8 +12,22 @@
         "SampleDiagnosis" : "fusion negative rhabdomyosarcoma",
         "DataSource" : "gccri"
       },
-      "label": "entityType",
-      "url": "entityType"
+      "label": "Fusion-Negative Alveolar Rhabdomyosarcoma",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C123732"
+    },
+    {
+      "id": "rule_2",
+      "entityType": "diagnosis",
+      "targetType": "ontology",
+      "data": {
+        "label" : "fusion negative rhabdomyosarcoma",
+        "description" : "An alveolar rhabdomyosarcoma characterized by the absence of chromosomal translocation t(1;13)(p36;q14) or t(2;13)(q35;q14) and therefore the absence of PAX7-FOXO1 or PAX3-FOXO1 gene fusion",
+        "synonyms": [
+          "Fusion Gene Negative Alveolar Rhabdomyosarcoma"
+        ]
+      },
+      "label": "Fusion-Negative Alveolar Rhabdomyosarcoma",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C123732"
     }
   ]
 }

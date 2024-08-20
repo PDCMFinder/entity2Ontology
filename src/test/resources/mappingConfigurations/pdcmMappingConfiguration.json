@@ -1,0 +1,47 @@
+{
+  "name": "pdcm configuration",
+  "ruleConfiguration": [
+    {
+      "entityType": "diagnosis",
+      "fields": [
+        {
+          "name": "SampleDiagnosis",
+          "weight": 1,
+          "main": true
+        },
+        {
+          "name": "OriginTissue",
+          "weight": 0.5,
+          "main": false
+        },
+        {
+          "name": "TumorType",
+          "weight": 0.5,
+          "main": false
+        }
+      ]
+    },
+    {
+      "entityType": "treatment",
+      "fields": [
+        {
+          "name": "TreatmentType",
+          "weight": 1,
+          "main": true
+        }
+      ]
+    }
+  ],
+  "ontologyConfiguration": {
+    "fields": [
+      {
+        "name": "label",
+        "weight": 1
+      },
+      {
+        "name": "synonyms",
+        "weight": 0.5
+      }
+    ]
+  }
+}

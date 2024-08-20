@@ -1,5 +1,6 @@
 package org.cancerModels.entity2ontology.map.service;
 
+import org.cancerModels.entity2ontology.map.model.MappingConfiguration;
 import org.cancerModels.entity2ontology.map.model.MappingRequest;
 import org.cancerModels.entity2ontology.common.utils.FileUtils;
 import org.cancerModels.entity2ontology.common.utils.JsonConverter;
@@ -9,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Utility class for reading and writing {@link MappingRequest} objects to and from JSON files.
+ * Utility class for reading and writing mapping related objects to and from JSON files.
  */
 public class MappingIO {
 
@@ -34,6 +35,18 @@ public class MappingIO {
      */
     public static void writeMappingResponse(MappingResponse response, String jsonFilePath) throws IOException {
         JsonConverter.toJsonFile(response, jsonFilePath);
+    }
+
+    /**
+     * Reads a {@link MappingConfiguration} from a JSON file.
+     *
+     * @param jsonFilePath the JSON file path
+     * @return the {@link MappingConfiguration}
+     * @throws IOException if an error occurs while reading the file
+     */
+    public static MappingConfiguration readMappingConfiguration(String jsonFilePath) throws IOException {
+        File jsonFile = FileUtils.getNonEmptyFileFromPath(jsonFilePath);
+        return JsonConverter.fromJsonFile(jsonFile, MappingConfiguration.class);
     }
 
 }

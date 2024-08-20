@@ -1,7 +1,8 @@
 {
   "maxNumSuggestions": 5,
-  "entityType": "entityType1",
+  "entityType": "diagnosis",
   "indexPath": "IndexPath",
+  "mappingConfigurationFile": "src/test/resources/mappingConfigurations/pdcmMappingConfiguration.json",
   "entities": [
     {
       "id": "key_1",

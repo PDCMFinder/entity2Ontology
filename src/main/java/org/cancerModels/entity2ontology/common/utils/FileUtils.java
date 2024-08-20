@@ -1,5 +1,7 @@
 package org.cancerModels.entity2ontology.common.utils;
 
+import org.springframework.util.FileSystemUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -64,6 +66,10 @@ public class FileUtils {
             throw new RuntimeException(e);
         }
         return response.body();
+    }
+
+    public static void deleteRecursively(File dir) {
+        FileSystemUtils.deleteRecursively(dir);
     }
 }
 

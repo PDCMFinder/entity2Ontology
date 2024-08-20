@@ -19,9 +19,8 @@ public class IndexTestCreator {
         String jsonFilePath = INPUT_DATA_DIR + inputFile;
         File jsonFile = FileUtils.getNonEmptyFileFromPath(jsonFilePath);
         IndexInputDataStructure input = JsonConverter.fromJsonFile(jsonFile, IndexInputDataStructure.class);
-        System.out.println(input.name);
-        System.out.println(input.targetEntities);
         String indexLocation = OUTPUT_DATA_DIR + input.name;
+        indexer.deleteAll(indexLocation);
         indexer.indexEntities(input.targetEntities, indexLocation);
         return indexLocation;
     }

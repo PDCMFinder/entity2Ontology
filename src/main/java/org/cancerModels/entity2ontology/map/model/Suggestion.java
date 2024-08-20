@@ -1,5 +1,6 @@
 package org.cancerModels.entity2ontology.map.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,8 +9,7 @@ import lombok.Setter;
  * Represents a suggestion for mapping a source entity to an ontology term.
  * Each suggestion includes a label, a URL, and a score indicating the match quality.
  */
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 public class Suggestion {
 

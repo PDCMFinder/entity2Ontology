@@ -1,0 +1,2 @@
+Index Path	Entry Id	SampleDiagnosis	OriginTissue	TumorType	Expected Label	Minimum Score
+small_diagnosis_index	entry_1	fusion negative rhabdomyosarcoma	orbit	primary	Fusion-Negative Alveolar Rhabdomyosarcoma	0
