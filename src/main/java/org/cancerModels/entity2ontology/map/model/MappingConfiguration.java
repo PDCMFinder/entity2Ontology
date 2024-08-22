@@ -10,14 +10,23 @@ public class MappingConfiguration {
     private List<RuleConfiguration> ruleConfiguration;
     private OntologyConfiguration ontologyConfiguration;
 
+    public RuleConfiguration getRuleConfigurationByEntityType(String entityType) {
+        for (RuleConfiguration ruleConfiguration : ruleConfiguration) {
+            if (ruleConfiguration.getEntityType().equals(entityType)) {
+                return ruleConfiguration;
+            }
+        }
+        return null;
+    }
+
     @Data
-    static class RuleConfiguration {
+    public static class RuleConfiguration {
         private String entityType;
         private List<RuleConfigurationField> fields;
     }
 
     @Data
-    static class RuleConfigurationField {
+    public static class RuleConfigurationField {
         private String name;
         private double weight;
         private boolean main;

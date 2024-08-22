@@ -26,7 +26,9 @@ public class MappingServiceTest {
 
     private MappingConfiguration config;
 
-    private final MappingService instance = new MappingService();
+    private QueryBuilder queryBuilder = new QueryBuilder();
+
+    private final MappingService instance = new MappingService(queryBuilder);
 
     public MappingServiceTest() throws IOException {
         config = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);

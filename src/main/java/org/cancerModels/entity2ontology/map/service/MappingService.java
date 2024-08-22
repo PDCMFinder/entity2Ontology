@@ -2,8 +2,7 @@ package org.cancerModels.entity2ontology.map.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.TopDocs;
 import org.cancerModels.entity2ontology.index.service.AnalyzerProvider;
 import org.cancerModels.entity2ontology.index.service.Indexer;
 import org.cancerModels.entity2ontology.map.model.MappingConfiguration;
@@ -21,6 +20,12 @@ import java.util.List;
 public class MappingService {
 
     private static final Logger logger = LogManager.getLogger(MappingService.class);
+
+    private final QueryBuilder queryBuilder;
+
+    public MappingService(QueryBuilder queryBuilder) {
+        this.queryBuilder = queryBuilder;
+    }
 
     /**
      * Generates a list of suggestions (sorted by score) for a given entity.
@@ -40,54 +45,16 @@ public class MappingService {
 
         List<Suggestion> suggestions = queryRuleFieldToField(entity, indexPath, maxNumSuggestions, config);
         return suggestions;
-
-        // For now let's assign a list with a dummy result
-        /*List<Suggestion> dummy = new ArrayList<>();
-        Suggestion suggestion1 = new Suggestion();
-        suggestion1.setTargetId("reference_1");
-        suggestion1.setType("type_1");
-        //suggestion1.setSourceEntity(entity);
-        suggestion1.setScore(5);
-        suggestion1.setTermLabel("label_term_1");
-        suggestion1.setTermUrl("term_url_1");
-        dummy.add(suggestion1);
-
-        Suggestion suggestion2 = new Suggestion();
-        suggestion2.setTargetId("reference_2");
-        suggestion2.setType("type_2");
-        //suggestion2.setSourceEntity(entity);
-        suggestion2.setScore(0);
-        suggestion2.setTermLabel("label_term_2");
-        suggestion2.setTermUrl("term_url_2");
-        dummy.add(suggestion2);
-        return dummy;*/
     }
 
     private List<Suggestion> queryRuleFieldToField(
         SourceEntity entity, String indexPath, int maxNumSuggestions, MappingConfiguration config) throws IOException {
-        System.out.println("Field to field query");
-        System.out.println("Entity: " + entity);
 
-        String sentence1 = entity.getData().get("SampleDiagnosis");
-        Query query1 = buildPhraseQuery("rule.SampleDiagnosis", sentence1, 0);
-        System.out.println("query1: " + query1);
         AnalyzerProvider analyzerProvider = new AnalyzerProvider();
         Searcher searcher = new Searcher(analyzerProvider);
-        TopDocs topDocs = searcher.search(query1, indexPath);
+        TopDocs topDocs = searcher.search(queryBuilder.buildExactMatchRulesQuery(entity, config), indexPath);
         QueryResultProcessor queryResultProcessor = new QueryResultProcessor();
-        List<Suggestion> suggestions = queryResultProcessor.processTopDocs(topDocs, searcher.getIndexSearcher(indexPath));
-        return suggestions;
-    }
-
-    private Query buildPhraseQuery(String field, String phrase, int maxEdits) {
-        String[] words = phrase.split(" ");
-        BooleanQuery.Builder builder = new BooleanQuery.Builder();
-        for (String word : words) {
-            FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(field, word), maxEdits);
-            builder.add(fuzzyQuery, BooleanClause.Occur.MUST); // Allow fuzzy matching on each word
-        }
-        BooleanQuery booleanQuery = builder.build();
-        return booleanQuery;
+        return queryResultProcessor.processTopDocs(topDocs, searcher.getIndexSearcher(indexPath));
     }
 
     private void validateSourceEntity(SourceEntity entity) {
