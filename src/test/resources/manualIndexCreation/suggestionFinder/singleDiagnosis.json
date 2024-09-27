@@ -1,0 +1,19 @@
+{
+  "name": "suggestion_finder_case1_index",
+  "description": "Case 1: One single diagnosis in the index",
+  "targetEntities": [
+    {
+      "id": "rule_1",
+      "entityType": "diagnosis",
+      "targetType": "rule",
+      "data": {
+        "OriginTissue" : "orbit",
+        "TumorType" : "primary",
+        "SampleDiagnosis" : "fusion negative rhabdomyosarcoma",
+        "DataSource" : "gccri"
+      },
+      "label": "Fusion-Negative Alveolar Rhabdomyosarcoma",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C123732"
+    }
+  ]
+}

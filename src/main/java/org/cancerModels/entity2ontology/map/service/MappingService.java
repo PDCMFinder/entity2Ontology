@@ -40,6 +40,7 @@ public class MappingService {
         SourceEntity entity, String indexPath, int maxNumSuggestions, MappingConfiguration config) throws IOException {
         logger.info("Mapping entity {} using index {}", entity, indexPath);
         logger.info("Using configuration {}", config.getName());
+
         validateSourceEntity(entity);
         validateIndex(indexPath);
 

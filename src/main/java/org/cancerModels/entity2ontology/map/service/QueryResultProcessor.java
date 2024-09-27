@@ -19,22 +19,24 @@ import java.util.Map;
 @Component
 public class QueryResultProcessor {
 
+    /**
+     * Generates a non-null list of {@code Suggestion} based on the top documents in a search.
+     *
+     * @param topDocs           results of a search in Lucene
+     * @param searcher          the {@code IndexSearcher} used in the search
+     * @return a non-null list of {@code Suggestion} with the score Lucene gave to the results ('score' will be zero
+     * as it is not calculated by Lucene)
+     */
     public List<Suggestion> processTopDocs(TopDocs topDocs, IndexSearcher searcher) throws IOException {
-        List<Document> documents = new ArrayList<>();
-
         List<Suggestion> suggestions = new ArrayList<>();
 
-        System.out.println("FOUND " + topDocs.totalHits + " documents");
         StoredFields storedFields = searcher.storedFields();
         for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-            System.out.println("Score: " + scoreDoc.score);
             Document doc = storedFields.document(scoreDoc.doc);
             TargetEntity targetEntity = docToEntity(doc);
-            System.out.println("TargetEntity: " + targetEntity);
-            Suggestion suggestion = new Suggestion();
-            suggestion.setType(targetEntity.getTargetType());
-            suggestion.setScore(scoreDoc.score);
-            suggestion.setTargetId(targetEntity.getId());
+            System.out.println("ADD THIS "+ targetEntity);
+            Suggestion suggestion = new Suggestion(targetEntity);
+            suggestion.setRawScore(scoreDoc.score);
             suggestion.setTermLabel(targetEntity.getLabel());
             suggestion.setTermUrl(targetEntity.getUrl());
             suggestions.add(suggestion);

@@ -36,23 +36,60 @@ public class QueryBuilder {
      */
     public Query buildExactMatchRulesQuery(SourceEntity entity, MappingConfiguration config) {
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
-        MappingConfiguration.RuleConfiguration ruleConfiguration =
+        MappingConfiguration.ConfigurationSection ruleConfiguration =
             config.getRuleConfigurationByEntityType(entity.getType());
+
+        // With maxEdits as zero, each word in the sentence must match exactly
+        int maxEdits = 0;
+
         for (var x : ruleConfiguration.getFields()) {
             String text = entity.getData().get(x.getName());
-            Query query = buildPhraseQuery("rule."+x.getName(), text, 0);
+
+            Query query = buildPhraseQuery("rule."+x.getName(), text, maxEdits, BooleanClause.Occur.MUST);
+            // The match must occur in all fields
             builder.add(query, BooleanClause.Occur.MUST);
         }
 
         return builder.build();
     }
 
-    private Query buildPhraseQuery(String field, String phrase, int maxEdits) {
+    /**
+     * Builds a Lucene {@link Query} for similar matches in already existing rules.
+     *
+     * <p>
+     * This method creates a {@link BooleanQuery} that searches for documents rules that partially match
+     * the {@link SourceEntity}
+     * </p>
+     *
+     * @param entity the {@link SourceEntity} to search
+     * @param config information about the fields to use in the query
+     * @return a {@link Query} that matches similar rules
+     */
+    public Query buildSimilarMatchRulesQuery(SourceEntity entity, MappingConfiguration config) {
+        BooleanQuery.Builder builder = new BooleanQuery.Builder();
+        MappingConfiguration.ConfigurationSection ruleConfiguration =
+            config.getRuleConfigurationByEntityType(entity.getType());
+
+        // With maxEdits as zero, each word in the sentence must match exactly
+        int maxEdits = 1;
+
+        for (var x : ruleConfiguration.getFields()) {
+            String text = entity.getData().get(x.getName());
+
+            Query query = buildPhraseQuery("rule."+x.getName(), text, maxEdits, BooleanClause.Occur.SHOULD);
+            // The match must occur in all fields
+            builder.add(query, BooleanClause.Occur.SHOULD);
+        }
+
+        return builder.build();
+    }
+
+    private Query buildPhraseQuery(String field, String phrase, int maxEdits, BooleanClause.Occur occur) {
         String[] words = phrase.split(" ");
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
         for (String word : words) {
             FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(field, word), maxEdits);
-            builder.add(fuzzyQuery, BooleanClause.Occur.MUST); // Allow fuzzy matching on each word
+            builder.add(fuzzyQuery, occur); // Allow fuzzy matching on each word
         }
         BooleanQuery booleanQuery = builder.build();
         return booleanQuery;

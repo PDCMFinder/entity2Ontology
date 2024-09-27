@@ -10,6 +10,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cancerModels.entity2ontology.index.service.AnalyzerProvider;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -39,6 +40,7 @@ import java.util.Map;
  * @see Query
  * @see TopDocs
  */
+@Component
 public class Searcher {
 
     // As there can exist several indexes, this structure keeps a reader per index, so they can be

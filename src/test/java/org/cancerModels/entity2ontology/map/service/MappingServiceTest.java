@@ -32,6 +32,7 @@ public class MappingServiceTest {
 
     public MappingServiceTest() throws IOException {
         config = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
+        System.out.println(config);
     }
 
     @Test
