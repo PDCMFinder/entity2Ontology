@@ -71,7 +71,7 @@ public class OntologyDownloader {
 
     private void validateOntologyExists(String ontologyName) throws IOException {
         String r = FileUtils.getStringFromUrl(BASE_URL + ontologyName);
-        if (r.contains("\"Internal Server Error\"")) {
+        if (r.contains("\"status\" : 500")) {
             throw new IllegalArgumentException();
         }
     }
