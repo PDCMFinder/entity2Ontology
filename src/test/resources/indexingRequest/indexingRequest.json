@@ -17,13 +17,13 @@
       "ignore": true
     }
   ],
-  "ontologySources": [
+  "ontologyLocations": [
     {
-      "url": "http:ncit.owl",
-      "sourceName": "ncit ontology",
+      "ontoId": "ncit",
+      "name": "ncit ontology diagnosis",
       "branches": [
-        "b1",
-        "b2"
+        "NCIT_C9305",
+        "NCIT_C3262"
       ],
       "ignore": false
     }

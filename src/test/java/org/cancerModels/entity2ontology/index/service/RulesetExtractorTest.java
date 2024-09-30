@@ -9,13 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RulesetExtractorTest {
 
-    private final RulesetExtractor rulesetExtractor = new RulesetExtractor();
-
     private static final String TEST_FOLDER = "src/test/resources/indexingRequest/rules/";
+    private final RulesetExtractor rulesetExtractor = new RulesetExtractor();
 
     // Happy path
     @Test
@@ -55,8 +55,6 @@ class RulesetExtractorTest {
         assertEquals("Dutasteride", entity2.getLabel());
         assertEquals("http://purl.obolibrary.org/obo/NCIT_C47503", entity2.getUrl());
     }
-
-    // Errors in the RuleSetTarget
 
     @Test
     void shouldFailIfRuleSetTargetNull() {
@@ -169,31 +167,31 @@ class RulesetExtractorTest {
     @Test
     void shouldFailIfRuleWithoutEquivalentId() {
         checkMissingFieldInRule(
-            "id", "mappingKey","missing_id_treatment_mappings.json");
+            "id", "mappingKey", "missing_id_treatment_mappings.json");
     }
 
     @Test
     void shouldFailIfRuleWithoutEquivalentEntityType() {
         checkMissingFieldInRule(
-            "entityType", "entityType","missing_entityType_treatment_mappings.json");
+            "entityType", "entityType", "missing_entityType_treatment_mappings.json");
     }
 
     @Test
     void shouldFailIfRuleWithoutEquivalentData() {
         checkMissingFieldInRule(
-            "data", "mappingValues","missing_data_treatment_mappings.json");
+            "data", "mappingValues", "missing_data_treatment_mappings.json");
     }
 
     @Test
     void shouldFailIfRuleWithoutEquivalentUrl() {
         checkMissingFieldInRule(
-            "url", "mappedTermUrl","missing_url_treatment_mappings.json");
+            "url", "mappedTermUrl", "missing_url_treatment_mappings.json");
     }
 
     @Test
     void shouldFailIfRuleWithoutEquivalentLabel() {
         checkMissingFieldInRule(
-            "label", "mappedTermLabel","missing_label_treatment_mappings.json");
+            "label", "mappedTermLabel", "missing_label_treatment_mappings.json");
     }
 
     private void checkFieldInFieldsConversion(String fieldName) {
@@ -223,7 +221,7 @@ class RulesetExtractorTest {
         // Then we get an IOException
         assertEquals(
             "The rule does not have a property called '" +
-                equivalentName + "' (the mapping for the field "+fieldName+")",
+                equivalentName + "' (the mapping for the field " + fieldName + ")",
             exception.getMessage());
     }
 

@@ -11,8 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 public class OntologyExtractorTest {
@@ -59,7 +60,7 @@ public class OntologyExtractorTest {
         OntologyLocation ontologyLocation = new OntologyLocation(
             "ncit",
             "onto_name",
-            Arrays.asList("NCIT_C65288"),
+            List.of("NCIT_C65288"),
             false
         );
 
@@ -143,42 +144,9 @@ public class OntologyExtractorTest {
             "Hematopoietic and Lymphatic System Disorder",
             "ncit ontology diagnosis",
             "A non-neoplastic or neoplastic disorder that affects the hematopoietic and lymphatic system.",
-            Arrays.asList("Hematopoietic and Lymphoid System Disorder")
-        );
-        ontologyTerms.add(ontologyTerm);
-        return ontologyTerms;
-    }
-
-    private Set<OntologyTerm> createMockedOntologyTerms() {
-        Set<OntologyTerm> ontologyTerms = new HashSet<>();
-        OntologyTerm ontologyTerm1 = new OntologyTerm(
-            "NCIT_C9305",
-            "http://purl.obolibrary.org/obo/NCIT_C9305",
-            "Malignant Neoplasm",
-            "ncit ontology diagnosis",
-            "A neoplasm composed of atypical neoplastic...",
-            Arrays.asList("malignancy", "Malignant Growth", "Malignant Neoplasm")
-        );
-        OntologyTerm ontologyTerm2 = new OntologyTerm(
-            "NCIT_C3262",
-            "http://purl.obolibrary.org/obo/NCIT_C3262",
-            "Neoplasm",
-            "ncit ontology diagnosis",
-            "A benign or malignant tissue growth resulting from uncontrolled cell proliferation...",
-            Arrays.asList("neoplasia", "Neoplasia", "Neoplasm, NOS")
-        );
-        OntologyTerm ontologyTerm3 = new OntologyTerm(
-            "NCIT_C35814",
-            "http://purl.obolibrary.org/obo/NCIT_C35814",
-            "Hematopoietic and Lymphatic System Disorder",
-            "ncit ontology diagnosis",
-            "A non-neoplastic or neoplastic disorder that affects the hematopoietic and lymphatic system.",
             List.of("Hematopoietic and Lymphoid System Disorder")
         );
-        ontologyTerms.add(ontologyTerm1);
-        ontologyTerms.add(ontologyTerm2);
-        ontologyTerms.add(ontologyTerm3);
-
+        ontologyTerms.add(ontologyTerm);
         return ontologyTerms;
     }
 

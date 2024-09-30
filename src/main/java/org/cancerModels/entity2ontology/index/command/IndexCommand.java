@@ -1,6 +1,7 @@
 package org.cancerModels.entity2ontology.index.command;
 
 import org.cancerModels.entity2ontology.index.service.IndexingRequestService;
+import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.io.IOException;
     description = "Indexes data into a Lucene index.",
     mixinStandardHelpOptions = true //adds --help option to the command
     )
+@Component
 public class IndexCommand implements Runnable {
 
     private final IndexingRequestService indexingRequestService = new IndexingRequestService();

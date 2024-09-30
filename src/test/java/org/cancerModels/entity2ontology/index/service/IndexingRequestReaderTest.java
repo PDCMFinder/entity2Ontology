@@ -1,9 +1,13 @@
 package org.cancerModels.entity2ontology.index.service;
 
 import org.cancerModels.entity2ontology.index.model.IndexingRequest;
+import org.cancerModels.entity2ontology.index.model.OntologyLocation;
+import org.cancerModels.entity2ontology.index.model.RuleLocation;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,19 +24,44 @@ class IndexingRequestReaderTest {
         IndexingRequest indexingRequest = IndexingRequestReader.readIndexingRequest(fileToRead);
 
         // Then we get the expected data
+
         assertNotNull(indexingRequest);
         assertEquals("IndexPath1", indexingRequest.getIndexPath());
-        assertNotNull(indexingRequest.getRuleLocations(), "Expected to have ruleSet sources");
-        assertEquals(3, indexingRequest.getRuleLocations().size(), "unexpected number of ruleset sources");
-        assertEquals("/path/file/treatments.json", indexingRequest.getRuleLocations().get(0).getFilePath());
-        assertEquals("treatment", indexingRequest.getRuleLocations().get(0).getName());
-        assertFalse(indexingRequest.getRuleLocations().get(0).isIgnore());
-        assertEquals("/path/file/diagnosis.json", indexingRequest.getRuleLocations().get(1).getFilePath());
-        assertEquals("diagnosis", indexingRequest.getRuleLocations().get(1).getName());
-        assertFalse(indexingRequest.getRuleLocations().get(1).isIgnore());
-        assertEquals("/path/file/to_be_ignored.json", indexingRequest.getRuleLocations().get(2).getFilePath());
-        assertEquals("to_be_ignored", indexingRequest.getRuleLocations().get(2).getName());
-        assertTrue(indexingRequest.getRuleLocations().get(2).isIgnore());
+
+        // Validate rule locations
+
+        List<RuleLocation> ruleLocations = indexingRequest.getRuleLocations();
+
+        assertNotNull(ruleLocations, "Expected to have rule locations");
+        assertEquals(3, ruleLocations.size(), "unexpected number of rule locations");
+
+        RuleLocation ruleLocation1 = ruleLocations.get(0);
+        assertEquals("/path/file/treatments.json", ruleLocation1.getFilePath());
+        assertEquals("treatment", ruleLocation1.getName());
+        assertFalse(ruleLocation1.isIgnore());
+
+        RuleLocation ruleLocation2 = ruleLocations.get(1);
+        assertEquals("/path/file/diagnosis.json", ruleLocation2.getFilePath());
+        assertEquals("diagnosis", ruleLocation2.getName());
+        assertFalse(ruleLocation2.isIgnore());
+
+        RuleLocation ruleLocation3 = ruleLocations.get(2);
+        assertEquals("/path/file/to_be_ignored.json", ruleLocation3.getFilePath());
+        assertEquals("to_be_ignored", ruleLocation3.getName());
+        assertTrue(ruleLocation3.isIgnore());
+
+        // Validate ontology locations
+
+        List<OntologyLocation> ontologyLocations = indexingRequest.getOntologyLocations();
+
+        assertNotNull(ontologyLocations, "Expected to have ontology locations");
+        assertEquals(1, ontologyLocations.size(), "unexpected number of ontology locations");
+
+        OntologyLocation ontLocation1 = ontologyLocations.get(0);
+        assertEquals("ncit", ontLocation1.getOntoId());
+        assertEquals("ncit ontology diagnosis", ontLocation1.getName());
+        assertEquals(Arrays.asList("NCIT_C9305", "NCIT_C3262"), ontLocation1.getBranches());
+        assertFalse(ontLocation1.isIgnore());
     }
 
     @Test
