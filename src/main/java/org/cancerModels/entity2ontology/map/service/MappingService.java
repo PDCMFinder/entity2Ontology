@@ -2,8 +2,6 @@ package org.cancerModels.entity2ontology.map.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.search.TopDocs;
-import org.cancerModels.entity2ontology.index.service.AnalyzerProvider;
 import org.cancerModels.entity2ontology.index.service.Indexer;
 import org.cancerModels.entity2ontology.map.model.MappingConfiguration;
 import org.cancerModels.entity2ontology.map.model.SourceEntity;
@@ -11,6 +9,7 @@ import org.cancerModels.entity2ontology.map.model.Suggestion;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,18 +43,8 @@ public class MappingService {
         validateSourceEntity(entity);
         validateIndex(indexPath);
 
-        List<Suggestion> suggestions = queryRuleFieldToField(entity, indexPath, maxNumSuggestions, config);
+        List<Suggestion> suggestions = new ArrayList<>();
         return suggestions;
-    }
-
-    private List<Suggestion> queryRuleFieldToField(
-        SourceEntity entity, String indexPath, int maxNumSuggestions, MappingConfiguration config) throws IOException {
-
-        AnalyzerProvider analyzerProvider = new AnalyzerProvider();
-        Searcher searcher = new Searcher(analyzerProvider);
-        TopDocs topDocs = searcher.search(queryBuilder.buildExactMatchRulesQuery(entity, config), indexPath);
-        QueryResultProcessor queryResultProcessor = new QueryResultProcessor();
-        return queryResultProcessor.processTopDocs(topDocs, searcher.getIndexSearcher(indexPath));
     }
 
     private void validateSourceEntity(SourceEntity entity) {

@@ -1,6 +1,6 @@
 {
   "name": "suggestion_finder_case1_index",
-  "description": "Case 1: One single diagnosis in the index",
+  "description": "One single diagnosis (rule) in the index",
   "targetEntities": [
     {
       "id": "rule_1",

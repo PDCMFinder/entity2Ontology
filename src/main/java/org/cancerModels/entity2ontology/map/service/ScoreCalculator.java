@@ -3,6 +3,7 @@ package org.cancerModels.entity2ontology.map.service;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.cancerModels.entity2ontology.map.model.SourceEntity;
 import org.cancerModels.entity2ontology.map.model.Suggestion;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import java.util.Map;
  * <p>
  * The similarity between both is calculated using a string similarity algorithm.
  */
+@Component
 public class ScoreCalculator {
 
     // The similarity between two strings will be calculated with the Levenshtein distance algorithm.
@@ -35,6 +37,8 @@ public class ScoreCalculator {
         double score = 0.0;
 
         double totalWeight = fieldsWeights.values().stream().reduce(0.0, Double::sum);
+
+//        TODO: Note, this only make sense when comparing rules with rules
 
         for (Map.Entry<String, Double> entry : fieldsWeights.entrySet()) {
             String fieldValueSourceEntity = sourceEntity.getData().get(entry.getKey());

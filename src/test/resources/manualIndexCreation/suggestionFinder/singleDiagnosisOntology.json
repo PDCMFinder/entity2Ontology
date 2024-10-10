@@ -1,0 +1,20 @@
+{
+  "name": "suggestion_finder_case1_index",
+  "description": "One single diagnosis (ontology) in the index",
+  "targetEntities": [
+    {
+      "id": "ontology_1",
+      "entityType": "diagnosis",
+      "targetType": "ontology",
+      "data": {
+        "label" : "Fusion-Negative Alveolar Rhabdomyosarcoma",
+        "description" : "An alveolar rhabdomyosarcoma characterized by the absence of chromosomal translocation t(1;13)(p36;q14) or t(2;13)(q35;q14) and therefore the absence of PAX7-FOXO1 or PAX3-FOXO1 gene fusion",
+        "synonyms": [
+          "Fusion Gene Negative Alveolar Rhabdomyosarcoma"
+        ]
+      },
+      "label": "Fusion-Negative Alveolar Rhabdomyosarcoma",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C123732"
+    }
+  ]
+}

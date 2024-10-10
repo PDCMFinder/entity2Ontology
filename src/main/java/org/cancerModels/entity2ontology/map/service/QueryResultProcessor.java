@@ -6,6 +6,8 @@ import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.cancerModels.entity2ontology.map.model.MappingConfiguration;
+import org.cancerModels.entity2ontology.map.model.SourceEntity;
 import org.cancerModels.entity2ontology.map.model.Suggestion;
 import org.cancerModels.entity2ontology.map.model.TargetEntity;
 import org.springframework.stereotype.Component;
@@ -27,14 +29,13 @@ public class QueryResultProcessor {
      * @return a non-null list of {@code Suggestion} with the score Lucene gave to the results ('score' will be zero
      * as it is not calculated by Lucene)
      */
-    public List<Suggestion> processTopDocs(TopDocs topDocs, IndexSearcher searcher) throws IOException {
+    public List<Suggestion> processQueryResponse(TopDocs topDocs, IndexSearcher searcher) throws IOException {
         List<Suggestion> suggestions = new ArrayList<>();
 
         StoredFields storedFields = searcher.storedFields();
         for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
             Document doc = storedFields.document(scoreDoc.doc);
             TargetEntity targetEntity = docToEntity(doc);
-            System.out.println("ADD THIS "+ targetEntity);
             Suggestion suggestion = new Suggestion(targetEntity);
             suggestion.setRawScore(scoreDoc.score);
             suggestion.setTermLabel(targetEntity.getLabel());
