@@ -30,7 +30,7 @@ class SuggestionsFinderTest {
     private final OntologiesSearcher ontologiesSearcher = new OntologiesSearcher(queryBuilder, templateQueryProcessor, searcher, queryResultProcessor, scoreCalculator);
 
 
-    private final SuggestionsFinder instance = new SuggestionsFinder(queryBuilder, searcher, queryResultProcessor, rulesSearcher, ontologiesSearcher);
+    private final SuggestionsFinder instance = new SuggestionsFinder(rulesSearcher, ontologiesSearcher);
 
     @Test
     public void shouldGetOnePerfectMatchRuleWhenOneDocumentMatches() throws IOException {

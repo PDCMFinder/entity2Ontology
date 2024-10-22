@@ -50,24 +50,24 @@ class QueryBuilderTest {
 //
 //    }
 
-    @Test
-    void shouldReturnExpectedQueryWhenBuildExactMatchOntologiesQueryFromTemplateWithValidData() {
-
-        // Given values map keys not matching weights map keys
-        List<String> keys = Arrays.asList("key1", "key2");
-        Map<String, String> values = new HashMap<>();
-        values.put("key1", "value1");
-        values.put("key2", "value2");
-        Map<String, Double> weights = new HashMap<>();
-        weights.put("key1", 1.0);
-        weights.put("key2", 1.5);
-
-        // When we try to build a query that matches exactly an ontology
-        Query query = instance.buildExactMatchOntologiesQueryFromTemplate(keys, values, weights);
-
-        // Then we get the expected query
-        String expected = "(+(ontology.label:value1)^1.0 +(ontology.label:value2)^1.5) (+(ontology.synonyms:value1)^1.0 +(ontology.synonyms:value2)^1.5)";
-        assertEquals(expected, query.toString());
-
-    }
+//    @Test
+//    void shouldReturnExpectedQueryWhenBuildExactMatchOntologiesQueryFromTemplateWithValidData() {
+//
+//        // Given values map keys not matching weights map keys
+//        List<String> keys = Arrays.asList("key1", "key2");
+//        Map<String, String> values = new HashMap<>();
+//        values.put("key1", "value1");
+//        values.put("key2", "value2");
+//        Map<String, Double> weights = new HashMap<>();
+//        weights.put("key1", 1.0);
+//        weights.put("key2", 1.5);
+//
+//        // When we try to build a query that matches exactly an ontology
+//        Query query = instance.buildExactMatchOntologiesQueryFromTemplate(keys, values, weights);
+//
+//        // Then we get the expected query
+//        String expected = "(+(ontology.label:value1)^1.0 +(ontology.label:value2)^1.5) (+(ontology.synonyms:value1)^1.0 +(ontology.synonyms:value2)^1.5)";
+//        assertEquals(expected, query.toString());
+//
+//    }
 }

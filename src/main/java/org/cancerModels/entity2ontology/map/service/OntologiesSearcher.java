@@ -4,17 +4,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
-import org.cancerModels.entity2ontology.map.model.MappingConfiguration;
-import org.cancerModels.entity2ontology.map.model.SearchQueryItem;
-import org.cancerModels.entity2ontology.map.model.SourceEntity;
-import org.cancerModels.entity2ontology.map.model.Suggestion;
+import org.cancerModels.entity2ontology.map.model.*;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@Component
 public class OntologiesSearcher {
+
     private static final Logger logger = LogManager.getLogger(OntologiesSearcher.class);
     // This allows us to create the different Lucene queries
     private final QueryBuilder queryBuilder;
@@ -26,7 +24,11 @@ public class OntologiesSearcher {
     private final ScoreCalculator scoreCalculator;
 
 
-    public OntologiesSearcher(QueryBuilder queryBuilder, TemplateQueryProcessor templateQueryProcessor, Searcher searcher, QueryResultProcessor queryResultProcessor, ScoreCalculator scoreCalculator) {
+    public OntologiesSearcher(
+        QueryBuilder queryBuilder,
+        TemplateQueryProcessor templateQueryProcessor,
+        Searcher searcher, QueryResultProcessor queryResultProcessor,
+        ScoreCalculator scoreCalculator) {
         this.queryBuilder = queryBuilder;
         this.templateQueryProcessor = templateQueryProcessor;
         this.searcher = searcher;
@@ -35,21 +37,47 @@ public class OntologiesSearcher {
     }
 
     public List<Suggestion> findExactMatchingOntologies(
-        SourceEntity entity, String indexPath, int maxNumSuggestions, MappingConfiguration config) throws IOException {
-        MappingConfiguration.ConfigurationPerType confByType = config.getConfigurationByEntityType(entity.getType());
-        List<String> ontologyTemplates = confByType.getOntologyTemplates();
+        SourceEntity entity, String indexPath, MappingConfiguration config) throws IOException {
 
-        for (String ontologyTemplate : ontologyTemplates) {
-            processTemplate(ontologyTemplate, entity, confByType.getWeightsMap(), indexPath);
+        Set<Suggestion> uniqueSuggestions = new HashSet<>();
+
+        // Fields and weights to use according to the entity type
+        MappingConfiguration.ConfigurationPerType confByType = config.getConfigurationByEntityType(entity.getType());
+
+        // All the templates that were configured to use in ontology search
+        List<String> ontologyTemplatesAsText = confByType.getOntologyTemplates();
+
+        // Each template should bring some suggestions. We use all of them
+        for (String ontologyTemplateAsText : ontologyTemplatesAsText) {
+            QueryTemplate queryTemplate = new QueryTemplate(ontologyTemplateAsText);
+
+            // We get the suggestions for the specific template
+            List<Suggestion> suggestionsPerTemplate = processTemplate(
+                queryTemplate, entity, confByType.getWeightsMap(), indexPath);
+
+            // Using all the found suggestions. This might need to be sorted first
+            uniqueSuggestions.addAll(suggestionsPerTemplate);
         }
-        List<Suggestion> suggestions = new ArrayList<>();
-        System.out.println("findExactMatchingOntologies==> " + suggestions.size());
-        return suggestions;
+        System.out.println("findExactMatchingOntologies==> " + uniqueSuggestions.size());
+        return new ArrayList<>(uniqueSuggestions);
     }
 
-    private List<Suggestion> processTemplate(String template, SourceEntity entity, Map<String, Double> weightsMap, String indexPath) throws IOException {
-        // The template is expected to have the format "${key1} ${key1} ${keyN}"
-        // Example: ${TumorType} ${SampleDiagnosis} ${OriginTissue}
+    /**
+     * Searches suggestions using a template as a guide to create the query, and assigns the respective scores
+     * by calculating the similarity between each suggestion and the phrase that the template represents.
+     *
+     * @param template   {@link QueryTemplate} with the fields to use in the query.
+     * @param entity     {@link SourceEntity} with the values to use in the query.
+     * @param weightsMap The weights for the fields.
+     * @param indexPath  Location of the lucene index.
+     * @return A list of {@link Suggestion} which are the documents that are more similar to the phrase that the
+     * template represents.
+     * @throws IOException
+     */
+    private List<Suggestion> processTemplate(
+        QueryTemplate template, SourceEntity entity, Map<String, Double> weightsMap, String indexPath) throws IOException {
+        System.out.println("\nprocessTemplate==> " + template.getText());
+
         List<Suggestion> suggestions;
         List<SearchQueryItem> searchQueryItems;
 
@@ -62,11 +90,15 @@ public class OntologiesSearcher {
         }
 
         Query query = queryBuilder.buildExactMatchOntologiesQuery(searchQueryItems);
-        System.out.println("query for template " + template);
-        System.out.println(query);
+
         suggestions = executeQuery(query, indexPath);
-        System.out.println("$$$$$");
-        System.out.println(suggestions);
+        // Calculate the score for each suggestion
+        for (Suggestion suggestion : suggestions) {
+            double score = scoreCalculator.calculateScoreInOntologySuggestion(searchQueryItems, suggestion);
+            System.out.println("--->>"+score);
+            suggestion.setScore(score);
+        }
+
         return suggestions;
     }
 
@@ -77,6 +109,5 @@ public class OntologiesSearcher {
         TopDocs topDocs = searcher.search(query, indexPath);
         return queryResultProcessor.processQueryResponse(topDocs, searcher.getIndexSearcher(indexPath));
     }
-
 
 }

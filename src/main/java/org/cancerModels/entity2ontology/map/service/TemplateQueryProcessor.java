@@ -3,15 +3,13 @@ package org.cancerModels.entity2ontology.map.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cancerModels.entity2ontology.common.utils.MapUtils;
+import org.cancerModels.entity2ontology.map.model.QueryTemplate;
 import org.cancerModels.entity2ontology.map.model.SearchQueryItem;
 import org.cancerModels.entity2ontology.map.model.SourceEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A class that manipulates templates. A template is a string with placeholders
@@ -41,13 +39,14 @@ public class TemplateQueryProcessor {
      * @throws IllegalArgumentException if the template is invalid, a key is missing from the source entity's data map,
      *                                  or a key is missing from the weights map
      */
-    public List<SearchQueryItem> extractSearchQueryItems(String template, SourceEntity entity, Map<String, Double> weightsMap ) {
+    public List<SearchQueryItem> extractSearchQueryItems(
+        QueryTemplate template, SourceEntity entity, Map<String, Double> weightsMap ) {
         List<SearchQueryItem> searchQueryItems = new ArrayList<>();
 
         try {
             validateInput(template, entity, weightsMap);
 
-            List<String> keys = extractKeys(template);
+            List<String> keys = template.extractKeys();
 
             for (String key : keys) {
                 String value = MapUtils.getValueOrThrow(entity.getData(), key, "entity values");
@@ -66,15 +65,79 @@ public class TemplateQueryProcessor {
             logger.error(exception);
             throw new IllegalArgumentException(exception.getMessage());
         }
+        searchQueryItems = removeOverlappingTerms(searchQueryItems);
+
         return searchQueryItems;
     }
 
-    private static void validateInput(String template, SourceEntity entity, Map<String, Double> weightsMap) {
+    /**
+     * Returns a new list of {@link SearchQueryItem} where repeated words, the same word in different terms, are removed.
+     * This helps to build queries that make more sense. So instead of having, for instance, a (simplified) query like
+     * "recurrent lung lung carcinona", we get "recurrent carcinoma".
+     *
+     * if a word is present in more than one item/term, the one to keep is the one in the term with more weight.
+     *
+     * The number of terms in the final list could be less than the original one, if all the words in an item are also
+     * in other items with more weight.
+     *
+     * @param searchQueryItems Original list of {@link SearchQueryItem}.
+     * @return The new list of {@link SearchQueryItem} with removed repetition of words.
+     */
+    private List<SearchQueryItem> removeOverlappingTerms(List<SearchQueryItem> searchQueryItems) {
+        List<SearchQueryItem> cleanedSearchQueryItems = new ArrayList<>();
+        Map<SearchQueryItem, String[]> wordsByItem = new HashMap<>();
+
+        // Indicates in which items a word is
+        Map<String, SearchQueryItem> highestWeightItemByWords = new HashMap<>();
+
+        // Get the words that compose each item
+        for (SearchQueryItem searchQueryItem : searchQueryItems) {
+            wordsByItem.put(searchQueryItem, searchQueryItem.getValue().toLowerCase().trim().split(" "));
+        }
+
+        // Find in which terms each word appears
+        wordsByItem.forEach((searchQueryItem, words) -> {
+            for (String word : words) {
+                if (!highestWeightItemByWords.containsKey(word)) {
+                    highestWeightItemByWords.put(word, searchQueryItem);
+                } else {
+                    // Update if new item has a higher weight
+                    SearchQueryItem current = highestWeightItemByWords.get(word);
+                    if (searchQueryItem.getWeight() > current.getWeight()) {
+                        highestWeightItemByWords.put(word, searchQueryItem);
+                    }
+                }
+            }
+        });
+
+        // Rebuild the list of items but removing repeated words. This could lead to have fewer items than at the beginning
+        for (SearchQueryItem searchQueryItem : searchQueryItems) {
+            StringBuilder newValueBuilder = new StringBuilder();
+            // Analyze each word in the item. If it appears in more than one term, leave only the one with
+            // the greatest weight.
+            String[] words = wordsByItem.get(searchQueryItem);
+
+            for (String word : words) {
+                SearchQueryItem highestWeight = highestWeightItemByWords.get(word);
+                // Keep the word only if this term is the one with the highest weight
+                if (highestWeight == searchQueryItem) {
+                    newValueBuilder.append(" ").append(word.trim());
+                }
+            }
+
+            // Keep the item only if there were words left after the cleaning
+            if (!newValueBuilder.isEmpty()) {
+                String newValue = newValueBuilder.toString().trim();
+                searchQueryItem.setValue(newValue);
+                cleanedSearchQueryItems.add(searchQueryItem);
+            }
+        }
+        return cleanedSearchQueryItems;
+    }
+
+    private static void validateInput(QueryTemplate template, SourceEntity entity, Map<String, Double> weightsMap) {
         if (template == null) {
             throw new IllegalArgumentException("Template cannot be null");
-        }
-        if (template.isEmpty()) {
-            throw new IllegalArgumentException("Template cannot be empty");
         }
         if (entity.getData() == null) {
             throw new IllegalArgumentException("Source entity data cannot be null");
@@ -91,25 +154,12 @@ public class TemplateQueryProcessor {
     }
 
     /**
-     * Extracts keys from a templated string.
-     * <p>
-     * The method looks for placeholders in the form of `${key}`, where `key` is any sequence of letters, and returns
-     * a list of all the unique keys found in the template.
-     *
-     * @param template The string containing placeholders in the form `${key}`.
-     * @return A list of keys (the content inside `${}`) found in the template.
+     * Translates a list of SearchQueryItem into an approximation of the phrase used in a template based query.
+     * It is useful to compute the similarity of the obtained suggestions.
+     * @param items A list of {@link SearchQueryItem} derived from a template.
+     * @return The phrase representing the query
      */
-    private List<String> extractKeys(String template) {
-        List<String> keys = new ArrayList<>();
-        // Regular expression to match placeholders in the form ${key}
-        Pattern pattern = Pattern.compile("\\$\\{([a-zA-Z][a-zA-Z0-9]*)\\}");
-        Matcher matcher = pattern.matcher(template);
-
-        // Find all matches and add the key (without ${}) to the list
-        while (matcher.find()) {
-            keys.add(matcher.group(1));  // group(1) captures the content inside ${}
-        }
-
-        return keys;
+    public String convertItemListToPhrase(List<SearchQueryItem> items) {
+        return items.stream().map(SearchQueryItem::getValue).collect(Collectors.joining(" "));
     }
 }

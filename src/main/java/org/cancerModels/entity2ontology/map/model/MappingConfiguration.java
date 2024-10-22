@@ -50,8 +50,6 @@ public class MappingConfiguration {
         return null;
     }
 
-
-
     /**
      * This class contains the name of the field in the indexed documents which will be used in a query. It also
      * contains the weight, which determines how important the field is respect of other fields in a query.

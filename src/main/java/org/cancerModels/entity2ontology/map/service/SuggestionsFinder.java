@@ -1,7 +1,5 @@
 package org.cancerModels.entity2ontology.map.service;
 
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TopDocs;
 import org.cancerModels.entity2ontology.map.model.MappingConfiguration;
 import org.cancerModels.entity2ontology.map.model.SourceEntity;
 import org.cancerModels.entity2ontology.map.model.Suggestion;
@@ -22,23 +20,11 @@ import java.util.List;
 @Component
 class SuggestionsFinder {
 
-    // This allows us to create the different Lucene queries
-    private final QueryBuilder queryBuilder;
-
-    // This allows us to execute Lucene queries
-    private final Searcher searcher;
-
-    // This allows us to process the result of Lucene queries
-    private final QueryResultProcessor queryResultProcessor;
-
     private final RulesSearcher rulesSearcher;
     private final OntologiesSearcher ontologiesSearcher;
 
 
-    SuggestionsFinder(QueryBuilder queryBuilder, Searcher searcher, QueryResultProcessor queryResultProcessor, RulesSearcher rulesSearcher, OntologiesSearcher ontologiesSearcher) {
-        this.queryBuilder = queryBuilder;
-        this.searcher = searcher;
-        this.queryResultProcessor = queryResultProcessor;
+    SuggestionsFinder(RulesSearcher rulesSearcher, OntologiesSearcher ontologiesSearcher) {
         this.rulesSearcher = rulesSearcher;
         this.ontologiesSearcher = ontologiesSearcher;
     }
@@ -74,7 +60,7 @@ class SuggestionsFinder {
         // Check if there are enough exact matches in ontologies
         if (!done) {
             done = collectResults(
-                suggestions, ontologiesSearcher.findExactMatchingOntologies(entity, indexPath, maxNumSuggestions, config),
+                suggestions, ontologiesSearcher.findExactMatchingOntologies(entity, indexPath, config),
                 maxNumSuggestions);
         }
 
@@ -113,56 +99,6 @@ class SuggestionsFinder {
             }
         }
         return done;
-    }
-
-    private List<Suggestion> executeQuery(
-        SourceEntity entity,
-        Query query,
-        String indexPath,
-        MappingConfiguration config) throws IOException {
-        if (query == null) {
-            throw new IllegalArgumentException("query cannot be null");
-        }
-        TopDocs topDocs = searcher.search(query, indexPath);
-        return queryResultProcessor.processQueryResponse(topDocs, searcher.getIndexSearcher(indexPath));
-    }
-
-    private List<Suggestion> findExactMatchingRules(
-        SourceEntity entity, String indexPath, int maxNumSuggestions, MappingConfiguration config) throws IOException {
-        System.out.println("************************findExactMatchingRules*************************");
-        System.out.println("entity: " + entity);
-        System.out.println("indexPath: " + indexPath);
-        System.out.println("maxNumSuggestions: " + maxNumSuggestions);
-        System.out.println("config: " + config);
-        Query query = queryBuilder.buildExactMatchRulesQuery(entity, config);
-        System.out.println("Query: " + query);
-        List<Suggestion> suggestions = executeQuery(entity, query, indexPath, config);
-
-        // Assign a `score` of 100 as results are perfect matches
-        suggestions.forEach(suggestion -> suggestion.setScore(100));
-
-        System.out.println("findExactMatchingRules==> " + suggestions.size());
-        System.out.println("=======================================================================");
-        return suggestions;
-    }
-
-    private List<Suggestion> findSimilarRules(
-        SourceEntity entity, String indexPath, int maxNumSuggestions, MappingConfiguration config) throws IOException {
-        //suggestions.add(new Suggestion());
-        Query query = queryBuilder.buildSimilarMatchRulesQuery(entity, config);
-        List<Suggestion> suggestions = executeQuery(entity, query, indexPath, config);
-        System.out.println("findSimilarRules==> " + suggestions.size());
-        return suggestions;
-    }
-
-    private List<Suggestion> findExactMatchingOntologies(
-        SourceEntity entity, String indexPath, int maxNumSuggestions, MappingConfiguration config) throws IOException {
-        Query query = queryBuilder.buildExactMatchOntologiesQuery(entity, config);
-        List<Suggestion> suggestions = new ArrayList<>();
-//        List<Suggestion> suggestions = executeQuery(query, indexPath);
-        //suggestions.add(new Suggestion());
-        System.out.println("findExactMatchingOntologies==> " + suggestions.size());
-        return suggestions;
     }
 
     private List<Suggestion> findSimilarOntologies(
