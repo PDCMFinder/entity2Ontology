@@ -123,8 +123,6 @@ public class ScoreCalculator {
         // the phrase by concatenating the keys from the template
         String phrase = searchQueryItems.stream().map(SearchQueryItem::getValue).collect(Collectors.joining(" "));
 
-
-
         int fuzzinessThreshold = 2;
 
         double highestScore = 0;
@@ -133,15 +131,11 @@ public class ScoreCalculator {
         String label = MapUtils.getValueOrThrow(
             suggestion.getTargetEntity().getData(), "label", "suggestion data").toString();
 
-        System.out.println("phrase: [" + phrase + "]");
-        System.out.println("label:  [" + label + "]");
-
         List<String> synonyms = GeneralUtils.castList( MapUtils.getValueOrThrow(
             suggestion.getTargetEntity().getData(), "synonyms", "suggestion data"), String.class);
 
         // First let's calculate the similarity between `phrase` and the ontology label
-        double labelScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, label, fuzzinessThreshold);
-        highestScore = labelScore;
+        highestScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, label, fuzzinessThreshold);
 
         // Only look for similarity in synonyms if there is need to
         if (highestScore < 1.0) {
@@ -155,9 +149,6 @@ public class ScoreCalculator {
             }
         }
 
-
-
         return highestScore * 100;
     }
 }
-

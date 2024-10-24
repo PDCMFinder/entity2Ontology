@@ -98,12 +98,11 @@ class OntologiesSearcherTest {
         when(searcherMock.search(any(), eq("indexPath"))).thenReturn(topDocsMock);
         when(queryResultProcessorMock.processQueryResponse(topDocsMock, indexSearcherMock)).thenReturn(suggestionList);
 
-        List<Suggestion> got = instance.findExactMatchingOntologies(sourceEntity, "indexPath", mappingConfiguration);
-        System.out.println(got);
-        System.out.println("---------");
-        for (Suggestion s : got) {
-            System.out.println("Score: " + s.getScore());
-        }
+        List<Suggestion> suggestions = instance.findExactMatchingOntologies(
+            sourceEntity, "indexPath", mappingConfiguration);
+
+        assertEquals(1, suggestions.size());
+        assertEquals(100.0, suggestions.get(0).getScore());
     }
 
     }
