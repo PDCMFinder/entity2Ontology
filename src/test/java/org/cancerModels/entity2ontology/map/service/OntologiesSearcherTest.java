@@ -1,108 +1,165 @@
 package org.cancerModels.entity2ontology.map.service;
 
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TopDocs;
+import org.cancerModels.entity2ontology.IndexTestCreator;
 import org.cancerModels.entity2ontology.index.service.AnalyzerProvider;
 import org.cancerModels.entity2ontology.map.model.MappingConfiguration;
 import org.cancerModels.entity2ontology.map.model.SourceEntity;
 import org.cancerModels.entity2ontology.map.model.Suggestion;
-import org.cancerModels.entity2ontology.map.model.TargetEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
+
 class OntologiesSearcherTest {
 
     private static final String CONFIGURATION_FILE =
         "src/test/resources/mappingConfigurations/pdcmMappingConfiguration.json";
 
+    private static final String INDEX_DATA_DIR = "ontologiesSearcher/";
+
     private final QueryBuilder queryBuilder = new QueryBuilder();
-
-
-
-//    private final QueryResultProcessor queryResultProcessor = new QueryResultProcessor();
     private final TemplateQueryProcessor templateQueryProcessor = new TemplateQueryProcessor();
     private final ScoreCalculator scoreCalculator = new ScoreCalculator();
 
-    @Mock
-    private Searcher searcherMock;
-
-    @Mock
-    private IndexSearcher indexSearcherMock;
-
-    @Mock
-    private QueryResultProcessor queryResultProcessorMock;
-
-
-    @Mock
-    private TopDocs topDocsMock;
+    private final Searcher searcher = new Searcher(new AnalyzerProvider());
+    private final QueryProcessor queryProcessor = new QueryProcessor(searcher);
 
     private OntologiesSearcher instance;
 
     @BeforeEach
-    public void setup()
-    {
-        instance = new OntologiesSearcher(queryBuilder, templateQueryProcessor, searcherMock, queryResultProcessorMock, scoreCalculator);
+    public void setup() {
+        instance = new OntologiesSearcher(queryBuilder, templateQueryProcessor, queryProcessor, scoreCalculator);
     }
 
     @Test
-    public void testFindExactMatchingOntologies_validData() throws IOException {
+    public void testFindExactMatchingOntologies_exactMatchLabel() throws IOException {
+
+        String fileName = "smallNumberDiagnosisOntology.json";
+        String indexLocation = IndexTestCreator.createIndex(INDEX_DATA_DIR + fileName);
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
         sourceEntity.setType("diagnosis");
         Map<String, String> data = new HashMap<>();
-        data.put("SampleDiagnosis", "Lung Carcinoma");
-        data.put("OriginTissue", "lung");
-        data.put("TumorType", "Recurrent ");
+        data.put("SampleDiagnosis", "Fusion Negative Alveolar Rhabdomyosarcoma");
+        data.put("OriginTissue", "orbit");
+        data.put("TumorType", "primary");
         sourceEntity.setData(data);
 
         MappingConfiguration mappingConfiguration = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
+        // Override templates to use a simple single one
+        List<String> templates = List.of("${SampleDiagnosis}");
 
-        String indexPath = "indexPath";
-
-        List<Suggestion> suggestionList = new ArrayList<>();
-
-        TargetEntity targetEntity = new TargetEntity();
-        targetEntity.setId("id_1");
-        targetEntity.setEntityType("diagnosis");
-        targetEntity.setTargetType("ontology");
-        targetEntity.setLabel("Recurrent Lung Carcinoma");
-        Map<String, Object> targetEntityEntityData = new HashMap<>();
-        targetEntityEntityData.put("label", "Recurrent Lung Carcinoma");
-        targetEntityEntityData.put(
-            "synonyms",
-            Arrays.asList(
-                "Recurrent Lung Cancer",
-                "Recurrent Unspecified Carcinoma of Lung",
-                "Recurrent Unspecified Carcinoma of the Lung",
-                "Recurrent Unspecified Lung Carcinoma"));
-        targetEntity.setData(targetEntityEntityData);
-        Suggestion suggestion = new Suggestion(targetEntity);
-
-        suggestionList.add(suggestion);
-
-        when(searcherMock.getIndexSearcher(indexPath)).thenReturn(indexSearcherMock);
-        when(searcherMock.search(any(), eq("indexPath"))).thenReturn(topDocsMock);
-        when(queryResultProcessorMock.processQueryResponse(topDocsMock, indexSearcherMock)).thenReturn(suggestionList);
+        mappingConfiguration.getConfigurationByEntityType("diagnosis").setOntologyTemplates(templates);
 
         List<Suggestion> suggestions = instance.findExactMatchingOntologies(
-            sourceEntity, "indexPath", mappingConfiguration);
+            sourceEntity, indexLocation, mappingConfiguration);
 
+        Suggestion suggestion = suggestions.getFirst();
+
+        assertEquals(1, suggestions.size());
+        assertEquals("ontology_1", suggestion.getTargetEntity().getId());
+        assertEquals(100.0, suggestion.getScore());
+    }
+
+    @Test
+    public void testFindExactMatchingOntologies_exactMatchSynonym() throws IOException {
+
+        String fileName = "smallNumberDiagnosisOntology.json";
+        String indexLocation = IndexTestCreator.createIndex(INDEX_DATA_DIR + fileName);
+
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("key_2");
+        sourceEntity.setType("diagnosis");
+        Map<String, String> data = new HashMap<>();
+        data.put("SampleDiagnosis", "Skull Osteoma");
+        data.put("OriginTissue", "skull");
+        data.put("TumorType", "primary");
+        sourceEntity.setData(data);
+
+        MappingConfiguration mappingConfiguration = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
+        // Override templates to use a simple single one
+        List<String> templates = List.of("${SampleDiagnosis}");
+
+        mappingConfiguration.getConfigurationByEntityType("diagnosis").setOntologyTemplates(templates);
+
+        List<Suggestion> suggestions = instance.findExactMatchingOntologies(
+            sourceEntity, indexLocation, mappingConfiguration);
+
+        Suggestion suggestion = suggestions.getFirst();
+
+        assertEquals(1, suggestions.size());
+        assertEquals("ontology_2", suggestion.getTargetEntity().getId());
         assertEquals(1, suggestions.size());
         assertEquals(100.0, suggestions.get(0).getScore());
     }
 
+    @Test
+    public void testFindSimilarMatchingOntologies_similarMatchLabel() throws IOException {
+
+        String fileName = "smallNumberDiagnosisOntology.json";
+        String indexLocation = IndexTestCreator.createIndex(INDEX_DATA_DIR + fileName);
+
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("key_1");
+        sourceEntity.setType("diagnosis");
+        Map<String, String> data = new HashMap<>();
+        data.put("SampleDiagnosis", "Fusion POSITIVE Alveolar Rhabdomyosarcoma");
+        data.put("OriginTissue", "orbit");
+        data.put("TumorType", "primary");
+        sourceEntity.setData(data);
+
+        MappingConfiguration mappingConfiguration = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
+        // Override templates to use a simple single one
+        List<String> templates = List.of("${SampleDiagnosis}");
+
+        mappingConfiguration.getConfigurationByEntityType("diagnosis").setOntologyTemplates(templates);
+
+        List<Suggestion> suggestions = instance.findSimilarMatchingOntologies(
+            sourceEntity, indexLocation, mappingConfiguration);
+
+        Suggestion suggestion = suggestions.getFirst();
+
+        assertEquals(1, suggestions.size());
+        assertEquals("ontology_1", suggestion.getTargetEntity().getId());
+        assertTrue(suggestion.getScore() <= 60.0);
     }
+
+
+    @Test
+    public void testFindSimilarMatchingOntologies_similarMatchSynonym() throws IOException {
+
+        String fileName = "smallNumberDiagnosisOntology.json";
+        String indexLocation = IndexTestCreator.createIndex(INDEX_DATA_DIR + fileName);
+
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("key_1");
+        sourceEntity.setType("diagnosis");
+        Map<String, String> data = new HashMap<>();
+        data.put("SampleDiagnosis", "Head Osteoma");
+        data.put("OriginTissue", "skull");
+        data.put("TumorType", "primary");
+        sourceEntity.setData(data);
+
+        MappingConfiguration mappingConfiguration = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
+        // Override templates to use a simple single one
+        List<String> templates = List.of("${SampleDiagnosis}");
+
+        mappingConfiguration.getConfigurationByEntityType("diagnosis").setOntologyTemplates(templates);
+
+        List<Suggestion> suggestions = instance.findSimilarMatchingOntologies(
+            sourceEntity, indexLocation, mappingConfiguration);
+
+        Suggestion suggestion = suggestions.getFirst();
+
+        assertEquals(1, suggestions.size());
+        assertEquals("ontology_2", suggestion.getTargetEntity().getId());
+        assertTrue(suggestion.getScore() <= 60.0);
+    }
+
+}

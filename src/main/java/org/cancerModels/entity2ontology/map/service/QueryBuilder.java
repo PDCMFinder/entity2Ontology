@@ -123,13 +123,63 @@ public class QueryBuilder {
             String value = searchQueryItem.getValue();
             float weight = (float) searchQueryItem.getWeight();
 
-            Term labelTerm = new Term(ONTOLOGY_PREFIX + LABEL_FIELD, value);
-            Query labelQuery = new BoostQuery(new TermQuery(labelTerm), weight);
-            labelQueryBuilder.add(labelQuery, BooleanClause.Occur.MUST);
+            String labelFieldName = ONTOLOGY_PREFIX + LABEL_FIELD;
+            String synonymsFieldName = ONTOLOGY_PREFIX + SYNONYMS_FIELD;
 
-            Term synonymsTerm = new Term(ONTOLOGY_PREFIX + SYNONYMS_FIELD, value);
-            Query synonymsQuery = new BoostQuery(new TermQuery(synonymsTerm), weight);
-            synonymsQueryBuilder.add(synonymsQuery, BooleanClause.Occur.MUST);
+            PhraseQuery labelPhraseQuery = new PhraseQuery(labelFieldName, value);
+            Query boostedLabelPhraseQuery = new BoostQuery(labelPhraseQuery, weight);
+            labelQueryBuilder.add(boostedLabelPhraseQuery, BooleanClause.Occur.MUST);
+
+            PhraseQuery synonymsPhraseQuery = new PhraseQuery(synonymsFieldName, value);
+            Query boostedSynonymPhraseQuery = new BoostQuery(synonymsPhraseQuery, weight);
+            synonymsQueryBuilder.add(boostedSynonymPhraseQuery, BooleanClause.Occur.MUST);
+        }
+        booleanQueryBuilder.add(labelQueryBuilder.build(), BooleanClause.Occur.SHOULD);
+        booleanQueryBuilder.add(synonymsQueryBuilder.build(), BooleanClause.Occur.SHOULD);
+
+        return booleanQueryBuilder.build();
+    }
+
+    /**
+     * Builds a Lucene query that performs a similar match search on ontology labels and synonyms
+     * based on a list of {@link SearchQueryItem}. Each item contains the search term and its associated weight.
+     * <p>
+     * The method creates two subqueries: one for matching the labels and one for matching synonyms of ontologies.
+     * Each subquery contains terms with corresponding weights (boost factors). The two subqueries are then combined
+     * into a Boolean query where both label and synonym matches are considered.
+     * </p>
+     *
+     * @param searchQueryItems the list of {@link SearchQueryItem} objects, each containing a field, value, and weight.
+     *                         These items represent the terms and their respective weights (boosts) for querying.
+     *                         The field is used to determine the specific label or synonym to search.
+     * @return a {@link Query} object combining the label and synonym exact matches, where either a label match
+     * or a synonym match will satisfy the query.
+     * @throws IllegalArgumentException if {@code searchQueryItems} is null or empty.
+     */
+    public Query buildSimilarMatchOntologiesQuery(List<SearchQueryItem> searchQueryItems) {
+        BooleanQuery.Builder labelQueryBuilder = new BooleanQuery.Builder();
+        BooleanQuery.Builder synonymsQueryBuilder = new BooleanQuery.Builder();
+        BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
+
+        int maxEdits = 1;
+
+        String labelFieldName = ONTOLOGY_PREFIX + LABEL_FIELD;
+        String synonymsFieldName = ONTOLOGY_PREFIX + SYNONYMS_FIELD;
+
+        for (SearchQueryItem searchQueryItem : searchQueryItems) {
+
+            String value = searchQueryItem.getValue();
+            float weight = (float) searchQueryItem.getWeight();
+
+            // The presence of the term in the label is optional
+            Query labelPhraseQuery = buildPhraseQuery(labelFieldName, value, maxEdits, BooleanClause.Occur.SHOULD);
+            labelQueryBuilder.add(labelPhraseQuery, BooleanClause.Occur.SHOULD);
+
+            // The presence of the term in the synonym is optional
+            Query synonymsPhraseQuery = buildPhraseQuery(synonymsFieldName, value, maxEdits, BooleanClause.Occur.SHOULD);
+
+            Query synonymsQuery = new BoostQuery(synonymsPhraseQuery, weight);
+            synonymsQueryBuilder.add(synonymsQuery, BooleanClause.Occur.SHOULD);
         }
         booleanQueryBuilder.add(labelQueryBuilder.build(), BooleanClause.Occur.SHOULD);
         booleanQueryBuilder.add(synonymsQueryBuilder.build(), BooleanClause.Occur.SHOULD);
@@ -144,8 +194,7 @@ public class QueryBuilder {
             FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(field, word), maxEdits);
             builder.add(fuzzyQuery, occur); // Allow fuzzy matching on each word
         }
-        BooleanQuery booleanQuery = builder.build();
-        return booleanQuery;
+        return builder.build();
     }
 
 }

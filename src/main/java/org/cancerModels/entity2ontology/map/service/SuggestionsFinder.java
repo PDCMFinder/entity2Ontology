@@ -43,9 +43,10 @@ class SuggestionsFinder {
         int maxNumSuggestions,
         MappingConfiguration config) throws IOException {
 
-        boolean done;
+        boolean done = false;
 
         List<Suggestion> suggestions = new ArrayList<>();
+
 
         // Check if there are enough exact matches in rules
         done = collectResults(

@@ -8,6 +8,7 @@ import org.cancerModels.entity2ontology.map.model.SourceEntity;
 import org.cancerModels.entity2ontology.map.model.Suggestion;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -131,8 +132,21 @@ public class ScoreCalculator {
         String label = MapUtils.getValueOrThrow(
             suggestion.getTargetEntity().getData(), "label", "suggestion data").toString();
 
-        List<String> synonyms = GeneralUtils.castList( MapUtils.getValueOrThrow(
-            suggestion.getTargetEntity().getData(), "synonyms", "suggestion data"), String.class);
+        // Synonyms as list
+        List<String> synonyms = new ArrayList<>();
+
+        // Get synonyms as object
+        Object synonymsObj = MapUtils.getValueOrThrow(
+            suggestion.getTargetEntity().getData(), "synonyms", "suggestion data");
+
+        if (synonymsObj != null) {
+            if (synonymsObj instanceof List) {
+                synonyms = GeneralUtils.castList(synonymsObj, String.class);
+            } else if (synonymsObj instanceof String) {
+                synonyms = List.of(synonymsObj.toString());
+            }
+
+        }
 
         // First let's calculate the similarity between `phrase` and the ontology label
         highestScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, label, fuzzinessThreshold);

@@ -2,7 +2,8 @@ package org.cancerModels.entity2ontology.map.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+
+import java.util.Collection;
 
 /**
  * Represents a suggestion for mapping a source entity to an ontology term.
@@ -22,13 +23,6 @@ public class Suggestion {
     @EqualsAndHashCode.Include
     String uniqueSuggestionId;
 
-    // Indicates the origin of the data that lead to this suggestion. It could be directly an ontology term, or it could
-    // be an already existing association between entity-ontology term (a Rule).
-    //private String type;
-
-    // The id to the ontology term or rule that represents this suggestion
-    //private String targetId;
-
     // A reference to the {@link TargetEntity} from which this suggestion was created
     private TargetEntity targetEntity;
 
@@ -47,5 +41,14 @@ public class Suggestion {
 
     public String calculateUniqueSuggestionId(TargetEntity targetEntity) {
         return targetEntity.getTargetType() + "|" + targetEntity.getEntityType() + "|" + targetEntity.getId();
+    }
+
+    public static void printCollection(Collection<Suggestion> suggestions) {
+        for (Suggestion suggestion : suggestions) {
+            System.out.println("targetEntityId: " + suggestion.getTargetEntity().getId());
+            System.out.println(suggestion.getTargetEntity().getData());
+            System.out.println("score: " + suggestion.getScore());
+            System.out.println();
+        }
     }
 }

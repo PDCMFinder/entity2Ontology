@@ -23,11 +23,13 @@ class SuggestionsFinderTest {
 
     private final QueryBuilder queryBuilder = new QueryBuilder();
     private final Searcher searcher = new Searcher(new AnalyzerProvider());
-    private final QueryResultProcessor queryResultProcessor = new QueryResultProcessor();
     private final TemplateQueryProcessor templateQueryProcessor = new TemplateQueryProcessor();
     private final ScoreCalculator scoreCalculator = new ScoreCalculator();
-    private final RulesSearcher rulesSearcher = new RulesSearcher(queryBuilder, searcher, queryResultProcessor, scoreCalculator);
-    private final OntologiesSearcher ontologiesSearcher = new OntologiesSearcher(queryBuilder, templateQueryProcessor, searcher, queryResultProcessor, scoreCalculator);
+    private final QueryProcessor queryProcessor = new QueryProcessor(searcher);
+    private final RulesSearcher rulesSearcher = new RulesSearcher(queryBuilder, queryProcessor, scoreCalculator);
+
+    private final OntologiesSearcher ontologiesSearcher =
+        new OntologiesSearcher(queryBuilder, templateQueryProcessor, queryProcessor, scoreCalculator);
 
 
     private final SuggestionsFinder instance = new SuggestionsFinder(rulesSearcher, ontologiesSearcher);
@@ -107,14 +109,15 @@ class SuggestionsFinderTest {
     @Test
     public void shouldGetOnePerfectMatchOntologyWhenOneDocumentMatches() throws IOException {
 
-        String fileName = "singleDiagnosisOntology.json";
+        String fileName = "smallNumberDiagnosisOntology.json";
         String indexLocation = IndexTestCreator.createIndex(INDEX_DATA_DIR + fileName);
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
         sourceEntity.setType("diagnosis");
         Map<String, String> data = new HashMap<>();
-        data.put("SampleDiagnosis", "fusion negative rhabdomyosarcoma");
+//        data.put("SampleDiagnosis", "Fusion Negative Alveolar Rhabdomyosarcoma");
+        data.put("SampleDiagnosis", "Rhabdomyosarcoma");
         data.put("OriginTissue", "orbit");
         data.put("TumorType", "primary");
         sourceEntity.setData(data);

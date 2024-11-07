@@ -3,7 +3,6 @@ package org.cancerModels.entity2ontology.map.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TopDocs;
 import org.cancerModels.entity2ontology.map.model.*;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +19,7 @@ public class OntologiesSearcher {
     private static final Logger logger = LogManager.getLogger(OntologiesSearcher.class);
     private final QueryBuilder queryBuilder;
     private final TemplateQueryProcessor templateQueryProcessor;
-    private final Searcher searcher;
-    private final QueryResultProcessor queryResultProcessor;
+    private final QueryProcessor queryProcessor;
     private final ScoreCalculator scoreCalculator;
 
     /**
@@ -30,20 +28,17 @@ public class OntologiesSearcher {
      *
      * @param queryBuilder           The component responsible for building Lucene queries.
      * @param templateQueryProcessor The component responsible for processing query templates.
-     * @param searcher               The component responsible for executing Lucene queries.
-     * @param queryResultProcessor   The component responsible for processing Lucene query results.
+     * @param queryProcessor         The component responsible for processing queries.
      * @param scoreCalculator        The component responsible for calculating scores for ontology suggestions.
      */
     public OntologiesSearcher(
         QueryBuilder queryBuilder,
         TemplateQueryProcessor templateQueryProcessor,
-        Searcher searcher,
-        QueryResultProcessor queryResultProcessor,
+        QueryProcessor queryProcessor,
         ScoreCalculator scoreCalculator) {
         this.queryBuilder = queryBuilder;
         this.templateQueryProcessor = templateQueryProcessor;
-        this.searcher = searcher;
-        this.queryResultProcessor = queryResultProcessor;
+        this.queryProcessor = queryProcessor;
         this.scoreCalculator = scoreCalculator;
     }
 
@@ -59,6 +54,37 @@ public class OntologiesSearcher {
      */
     public List<Suggestion> findExactMatchingOntologies(
         SourceEntity entity, String indexPath, MappingConfiguration config) throws IOException {
+        return findMatchingOntologies(entity, indexPath, config, true);
+    }
+
+    /**
+     * Finds the similar matching ontologies for a given {@code SourceEntity} by searching against an index of ontologies.
+     * The method iterates over ontology search templates and updates the highest score for each suggestion.
+     *
+     * @param entity    The source entity to use for the query.
+     * @param indexPath The path to the Lucene index to search in.
+     * @param config    The configuration object providing the templates and weights to use.
+     * @return A list of ontology suggestions with updated scores.
+     * @throws IOException If an error occurs while accessing the Lucene index.
+     */
+    public List<Suggestion> findSimilarMatchingOntologies(
+        SourceEntity entity, String indexPath, MappingConfiguration config) throws IOException {
+        return findMatchingOntologies(entity, indexPath, config, false);
+    }
+
+    /**
+     * Finds the best matching ontologies for a given {@code SourceEntity} by searching against an index of ontologies.
+     * The method iterates over ontology search templates and updates the highest score for each suggestion.
+     *
+     * @param entity    The source entity to use for the query.
+     * @param indexPath The path to the Lucene index to search in.
+     * @param config    The configuration object providing the templates and weights to use.
+     * @param exactMatch Indicates if the suggestion should be exact matches or not.
+     * @return A list of ontology suggestions with updated scores.
+     * @throws IOException If an error occurs while accessing the Lucene index.
+     */
+    private List<Suggestion> findMatchingOntologies(
+        SourceEntity entity, String indexPath, MappingConfiguration config, boolean exactMatch) throws IOException {
 
         // The same suggestion can have different scores if compared against different templates so this structure
         // keeps the best score per suggestion.
@@ -74,9 +100,12 @@ public class OntologiesSearcher {
         for (String ontologyTemplateAsText : ontologyTemplatesAsText) {
             QueryTemplate queryTemplate = new QueryTemplate(ontologyTemplateAsText);
 
+            // Builds the query terms for that template
+            List<SearchQueryItem> searchQueryItems =
+                buildSearchQueryItemsFromTemplate(queryTemplate, entity, confByType.getWeightsMap());
+
             // We get the suggestions for the specific template
-            List<Suggestion> suggestionsPerTemplate = processTemplate(
-                queryTemplate, entity, confByType.getWeightsMap(), indexPath);
+            List<Suggestion> suggestionsPerTemplate = processSearchItems(searchQueryItems, indexPath, exactMatch);
 
             // Keep the highest scoring suggestions
             for (Suggestion suggestion : suggestionsPerTemplate) {
@@ -121,7 +150,7 @@ public class OntologiesSearcher {
 
         Query query = queryBuilder.buildExactMatchOntologiesQuery(searchQueryItems);
 
-        suggestions = executeQuery(query, indexPath);
+        suggestions = queryProcessor.executeQuery(query, indexPath);
         // Calculate the score for each suggestion
         for (Suggestion suggestion : suggestions) {
             double score = scoreCalculator.calculateScoreInOntologySuggestion(searchQueryItems, suggestion);
@@ -132,18 +161,51 @@ public class OntologiesSearcher {
     }
 
     /**
-     * Executes a Lucene query on the specified index and returns the matching suggestions.
+     * Searches for ontology suggestions using a given list of search terms, and calculates the scores.
      *
-     * @param query     The Lucene query to execute.
-     * @param indexPath The path to the Lucene index.
-     * @return A list of suggestions based on the query results.
-     * @throws IOException If an error occurs while searching the index.
+     * @param searchQueryItems List of {@link SearchQueryItem} to use in the query.
+     * @param indexPath  The path to the Lucene index to search in.
+     * @return A list of ontology suggestions with calculated scores.
+     * @throws IOException If an error occurs while searching or processing the Lucene query.
      */
-    private List<Suggestion> executeQuery(Query query, String indexPath) throws IOException {
-        if (query == null) {
-            throw new IllegalArgumentException("query cannot be null");
+    private List<Suggestion> processSearchItems(
+        List<SearchQueryItem> searchQueryItems, String indexPath, boolean exactMatch) throws IOException {
+
+        List<Suggestion> suggestions;
+        Query query;
+
+        if (exactMatch) {
+            query = queryBuilder.buildExactMatchOntologiesQuery(searchQueryItems);
         }
-        TopDocs topDocs = searcher.search(query, indexPath);
-        return queryResultProcessor.processQueryResponse(topDocs, searcher.getIndexSearcher(indexPath));
+
+       else {
+            query = queryBuilder.buildSimilarMatchOntologiesQuery(searchQueryItems);
+        }
+
+        suggestions = queryProcessor.executeQuery(query, indexPath);
+        // Calculate the score for each suggestion
+        for (Suggestion suggestion : suggestions) {
+            double score = scoreCalculator.calculateScoreInOntologySuggestion(searchQueryItems, suggestion);
+            suggestion.setScore(score);
+        }
+
+        return suggestions;
     }
+
+    private List<SearchQueryItem> buildSearchQueryItemsFromTemplate(
+        QueryTemplate template, SourceEntity entity, Map<String, Double> weightsMap) {
+
+        List<SearchQueryItem> searchQueryItems;
+
+        try {
+            searchQueryItems = templateQueryProcessor.extractSearchQueryItems(
+                template, entity, weightsMap);
+        } catch (IllegalArgumentException exception) {
+            logger.error("Error processing template [{}]: ", template, exception);
+            throw new IllegalArgumentException(exception.getMessage());
+        }
+        return searchQueryItems;
+    }
+
+
 }

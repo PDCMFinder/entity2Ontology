@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
@@ -50,10 +52,13 @@ public class Searcher {
     // This should be the same used to create the index
     private final AnalyzerProvider analyzerProvider;
 
+    private final QueryParser queryParser;
+
     private static final Logger logger = LogManager.getLogger(Searcher.class);
 
     public Searcher(AnalyzerProvider analyzerProvider) {
         this.analyzerProvider = analyzerProvider;
+        queryParser = new QueryParser("", analyzerProvider.getAnalyzer());
     }
 
     private IndexSearcher createSearcher(String indexPath) throws IOException {
@@ -78,27 +83,17 @@ public class Searcher {
 
     public TopDocs search(Query query, String indexPath) throws IOException {
         logger.info("Search with query: {\n{}\n}", query.toString());
-        IndexSearcher indexSearcher = getOrCreateIndexSearcher(indexPath);
-        return indexSearcher.search(query, 10);
-
-
-        /*StoredFields storedFields = indexSearcher.storedFields();
-        List<Document> documents = new ArrayList<>();
-        System.out.println("FOUND " + topDocs.totalHits);
-        for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-            Document doc = storedFields.document(scoreDoc.doc);
-            String id = doc.get("id");
-            String
-            System.out.println("doc=" + scoreDoc.doc + " score=" + scoreDoc.score);
-            System.out.println("DOC");
-            System.out.println(doc);
-            String id = doc.get("id");
-            System.out.println(id);
-            System.out.println("entityType "+doc.get("entityType"));
-            documents.add(doc);
+        // To make sure the queries use the same analyser used to index, we rebuild the query by parsing the string version
+        // or the original one
+        String queryAsString = query.toString();
+        Query reparsedQuery;
+        try {
+            reparsedQuery = queryParser.parse(queryAsString);
+            System.out.println("reparsedQuery: " + reparsedQuery);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
-        return documents;*/
+        IndexSearcher indexSearcher = getOrCreateIndexSearcher(indexPath);
+        return indexSearcher.search(reparsedQuery, 10);
     }
-
-
 }

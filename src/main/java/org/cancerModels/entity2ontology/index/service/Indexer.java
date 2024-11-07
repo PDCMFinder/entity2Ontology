@@ -108,8 +108,20 @@ public class Indexer {
         document.add(new StringField("url", entity.getUrl(), Field.Store.YES));
 
         // Add the data
-        entity.getData().forEach((k, v) -> document.add(
-            new TextField(entity.getTargetType() + "." + k, v.toString(), Field.Store.YES)));
+
+        entity.getData().forEach((k, v) ->  {
+            // If the value is a list, then we store it as individual items, all sharing the same field.
+            // For example "synonyms": "s1", "synonyms": "s2"
+            if (v instanceof List<?>) {
+                for (var e : (List<?>) v) {
+                    document.add(new TextField(entity.getTargetType() + "." + k, e.toString(), Field.Store.YES));
+                }
+            } else {
+                document.add(
+                    new TextField(entity.getTargetType() + "." + k, v.toString(), Field.Store.YES));
+            }
+
+        });
 
         return document;
     }
