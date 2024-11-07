@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RulesSearcherTest {
 
+    // File with the configuration for the search
     private static final String CONFIGURATION_FILE =
         "src/test/resources/mappingConfigurations/pdcmMappingConfiguration.json";
 

@@ -23,7 +23,6 @@ class SuggestionsFinder {
     private final RulesSearcher rulesSearcher;
     private final OntologiesSearcher ontologiesSearcher;
 
-
     SuggestionsFinder(RulesSearcher rulesSearcher, OntologiesSearcher ontologiesSearcher) {
         this.rulesSearcher = rulesSearcher;
         this.ontologiesSearcher = ontologiesSearcher;
@@ -47,7 +46,6 @@ class SuggestionsFinder {
 
         List<Suggestion> suggestions = new ArrayList<>();
 
-
         // Check if there are enough exact matches in rules
         done = collectResults(
             suggestions, rulesSearcher.findExactMatchingRules(entity, indexPath, config), maxNumSuggestions);
@@ -68,7 +66,7 @@ class SuggestionsFinder {
         // Check if there are enough similar matches in ontologies
         if (!done) {
             collectResults(
-                suggestions, findSimilarOntologies(entity, indexPath, maxNumSuggestions, config),
+                suggestions, ontologiesSearcher.findSimilarMatchingOntologies(entity, indexPath, config),
                 maxNumSuggestions);
         }
         System.out.println("***");
@@ -100,15 +98,6 @@ class SuggestionsFinder {
             }
         }
         return done;
-    }
-
-    private List<Suggestion> findSimilarOntologies(
-        SourceEntity entity, String indexPath, int maxNumSuggestions, MappingConfiguration config) {
-        List<Suggestion> suggestions = new ArrayList<>();
-//        suggestions.add(new Suggestion());
-//        suggestions.add(new Suggestion());
-        System.out.println("findSimilarOntologies==> " + suggestions.size());
-        return suggestions;
     }
 
     public void prettyPrintSuggestions(List<Suggestion> suggestions) {
