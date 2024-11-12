@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Core logic of the mapping process. This class is in charge of applying the search strategy
@@ -69,10 +71,9 @@ class SuggestionsFinder {
                 suggestions, ontologiesSearcher.findSimilarMatchingOntologies(entity, indexPath, config),
                 maxNumSuggestions);
         }
-        System.out.println("***");
-        System.out.printf("Wanted %d Suggestions found %d%n", maxNumSuggestions, suggestions.size());
-        prettyPrintSuggestions(suggestions);
-        return suggestions;
+        // Suggestions need to be sorted (descending order) by 'score'
+        return sortSuggestionsByScoreDesc(suggestions);
+
     }
 
     /**
@@ -107,5 +108,10 @@ class SuggestionsFinder {
             System.out.println("suggestion::: {" + suggestion.getTermLabel() + "} raw score: " + suggestion.getRawScore());
             System.out.println("with detail " + suggestion);
         }
+    }
+    private List<Suggestion> sortSuggestionsByScoreDesc(List<Suggestion> suggestions) {
+        return suggestions.stream()
+            .sorted(Comparator.comparingDouble(Suggestion::getScore).reversed())
+            .collect(Collectors.toList());
     }
 }
