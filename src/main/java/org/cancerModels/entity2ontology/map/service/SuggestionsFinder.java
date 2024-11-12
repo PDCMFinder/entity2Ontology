@@ -101,14 +101,6 @@ class SuggestionsFinder {
         return done;
     }
 
-    public void prettyPrintSuggestions(List<Suggestion> suggestions) {
-        System.out.println("************************Suggestions***********************");
-        System.out.println("Total suggestions: " + suggestions.size());
-        for (Suggestion suggestion : suggestions) {
-            System.out.println("suggestion::: {" + suggestion.getTermLabel() + "} raw score: " + suggestion.getRawScore());
-            System.out.println("with detail " + suggestion);
-        }
-    }
     private List<Suggestion> sortSuggestionsByScoreDesc(List<Suggestion> suggestions) {
         return suggestions.stream()
             .sorted(Comparator.comparingDouble(Suggestion::getScore).reversed())

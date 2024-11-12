@@ -25,6 +25,7 @@ public class DiagnosisMappingInputReader {
                 entry.setOriginTissue(values[3]);
                 entry.setTumorType(values[4]);
                 entry.setExpectedLabel(values[5]);
+                entry.setMinimumScore(Double.parseDouble(values[6]));
 
                 entries.add(entry);
             }

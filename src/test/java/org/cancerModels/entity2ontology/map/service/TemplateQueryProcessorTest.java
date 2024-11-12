@@ -45,15 +45,15 @@ class TemplateQueryProcessorTest {
 
         // Verify each SearchQueryItem's properties
         assertEquals("TumorType", result.get(0).getField());
-        assertEquals("Metastatic", result.get(0).getValue());
+        assertEquals("metastatic", result.get(0).getValue());
         assertEquals(1.0, result.get(0).getWeight());
 
         assertEquals("SampleDiagnosis", result.get(1).getField());
-        assertEquals("Malignant Neoplasm", result.get(1).getValue());
+        assertEquals("malignant neoplasm", result.get(1).getValue());
         assertEquals(2.0, result.get(1).getWeight());
 
         assertEquals("OriginTissue", result.get(2).getField());
-        assertEquals("Larynx", result.get(2).getValue());
+        assertEquals("larynx", result.get(2).getValue());
         assertEquals(1.0, result.get(2).getWeight());
     }
 
@@ -82,11 +82,11 @@ class TemplateQueryProcessorTest {
 
         // Verify each SearchQueryItem's properties
         assertEquals("TumorType", result.get(0).getField());
-        assertEquals("Recurrent", result.get(0).getValue());
+        assertEquals("recurrent", result.get(0).getValue());
         assertEquals(0.5, result.get(0).getWeight());
 
         assertEquals("SampleDiagnosis", result.get(1).getField());
-        assertEquals("Lung Carcinoma", result.get(1).getValue());
+        assertEquals("lung carcinoma", result.get(1).getValue());
         assertEquals(1.5, result.get(1).getWeight());
 
     }
@@ -116,11 +116,11 @@ class TemplateQueryProcessorTest {
 
         // Verify each SearchQueryItem's properties
         assertEquals("TumorType", result.get(0).getField());
-        assertEquals("Recurrent", result.get(0).getValue());
+        assertEquals("recurrent", result.get(0).getValue());
         assertEquals(0.5, result.get(0).getWeight());
 
         assertEquals("SampleDiagnosis", result.get(1).getField());
-        assertEquals("Lung Carcinoma", result.get(1).getValue());
+        assertEquals("lung carcinoma", result.get(1).getValue());
         assertEquals(1.5, result.get(1).getWeight());
 
     }

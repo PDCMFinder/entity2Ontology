@@ -12,4 +12,5 @@ public class DiagnosisMappingInputFileEntry {
     private String originTissue;
     private String tumorType;
     private String expectedLabel;
+    private double minimumScore;
 }

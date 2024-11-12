@@ -3,6 +3,7 @@ package org.cancerModels.entity2ontology.map.service;
 import org.cancerModels.entity2ontology.DiagnosisMappingInputFileEntry;
 import org.cancerModels.entity2ontology.DiagnosisMappingInputReader;
 import org.cancerModels.entity2ontology.IndexTestCreator;
+import org.cancerModels.entity2ontology.index.service.AnalyzerProvider;
 import org.cancerModels.entity2ontology.map.model.MappingConfiguration;
 import org.cancerModels.entity2ontology.map.model.SourceEntity;
 import org.cancerModels.entity2ontology.map.model.Suggestion;
@@ -14,8 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MappingServiceTest {
 
@@ -24,11 +24,26 @@ public class MappingServiceTest {
     private static final String CONFIGURATION_FILE =
         "src/test/resources/mappingConfigurations/pdcmMappingConfiguration.json";
 
-    private MappingConfiguration config;
+    private final MappingConfiguration config;
 
-    private QueryBuilder queryBuilder = new QueryBuilder();
+    private final Searcher searcher = new Searcher(new AnalyzerProvider());
 
-    private final MappingService instance = new MappingService(queryBuilder);
+    private final QueryBuilder queryBuilder = new QueryBuilder();
+
+    private final QueryProcessor queryProcessor = new QueryProcessor(searcher);
+
+    private final ScoreCalculator scoreCalculator = new ScoreCalculator();
+
+    private final RulesSearcher rulesSearcher = new RulesSearcher(queryBuilder, queryProcessor, scoreCalculator);
+
+    private final TemplateQueryProcessor templateQueryProcessor = new TemplateQueryProcessor();
+
+    private final OntologiesSearcher ontologiesSearcher =
+        new OntologiesSearcher(queryBuilder, templateQueryProcessor, queryProcessor, scoreCalculator);
+
+    private final SuggestionsFinder suggestionsFinder = new SuggestionsFinder(rulesSearcher, ontologiesSearcher);
+
+    private final MappingService instance = new MappingService(suggestionsFinder);
 
     public MappingServiceTest() throws IOException {
         config = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
@@ -162,7 +177,12 @@ public class MappingServiceTest {
         score = bestSuggestion.getScore();
 
         try {
+            // Gets the expected mapping
             assertEquals(entry.getExpectedLabel(), label);
+            assertTrue(
+                score >= entry.getMinimumScore(),
+                String.format(
+                    "Obtained score %s expected to be equal or greater than %s", score, entry.getMinimumScore()));
         } catch (AssertionFailedError e) {
             System.err.println("Assertion failed for entry: " + entry.getEntryId());
             throw e;

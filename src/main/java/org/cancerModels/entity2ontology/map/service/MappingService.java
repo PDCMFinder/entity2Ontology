@@ -9,7 +9,6 @@ import org.cancerModels.entity2ontology.map.model.Suggestion;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,10 +19,10 @@ public class MappingService {
 
     private static final Logger logger = LogManager.getLogger(MappingService.class);
 
-    private final QueryBuilder queryBuilder;
+    private final SuggestionsFinder suggestionsFinder;
 
-    public MappingService(QueryBuilder queryBuilder) {
-        this.queryBuilder = queryBuilder;
+    public MappingService(SuggestionsFinder suggestionsFinder) {
+        this.suggestionsFinder = suggestionsFinder;
     }
 
     /**
@@ -43,8 +42,7 @@ public class MappingService {
         validateSourceEntity(entity);
         validateIndex(indexPath);
 
-        List<Suggestion> suggestions = new ArrayList<>();
-        return suggestions;
+        return suggestionsFinder.findSuggestions(entity, indexPath, maxNumSuggestions, config);
     }
 
     private void validateSourceEntity(SourceEntity entity) {
