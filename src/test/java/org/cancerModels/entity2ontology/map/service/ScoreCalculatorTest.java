@@ -39,7 +39,7 @@ class ScoreCalculatorTest {
         fieldsWeights.put("OriginTissue", 1.0);
         fieldsWeights.put("TumorType", 1.0);
 
-        double got = instance.calculateScoreAsPercentage(suggestion, sourceEntity, fieldsWeights);
+        double got = instance.calculateRuleSuggestionScoreAsPercentage(suggestion, sourceEntity, fieldsWeights);
 
         assertEquals(100.0, got);
     }
@@ -69,7 +69,7 @@ class ScoreCalculatorTest {
         fieldsWeights.put("OriginTissue", 0.2);
         fieldsWeights.put("TumorType", 0.2);
 
-        double got = instance.calculateScoreAsPercentage(suggestion, sourceEntity, fieldsWeights);
+        double got = instance.calculateRuleSuggestionScoreAsPercentage(suggestion, sourceEntity, fieldsWeights);
 
         assertTrue(got < 85);
     }

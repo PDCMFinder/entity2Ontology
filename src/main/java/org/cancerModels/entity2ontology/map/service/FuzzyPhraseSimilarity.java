@@ -7,6 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Utility to perform a set-based comparison with two phrases in Java for similarity without considering the word order.
+ * Using Jaccard similarity index as the metric. Useful for instances like "lung cancer" and "cancer in lung",
+ * which should be scored as almost identical
+ */
 public class FuzzyPhraseSimilarity {
 
     // The similarity between two strings will be calculated with the Levenshtein distance algorithm.
@@ -59,14 +64,5 @@ public class FuzzyPhraseSimilarity {
             }
         }
         return filteredWords;
-    }
-
-    public static void main(String[] args) {
-        String phrase1 = "lung cancer";
-        String phrase2 = "cancer in lunges";
-
-        double fuzzinessThreshold = 2;  // Tolerance for fuzzy matching (edit distance)
-        double similarity = fuzzyJaccardSimilarity(phrase1, phrase2, fuzzinessThreshold);
-        System.out.println("Fuzzy Jaccard Similarity: " + similarity);
     }
 }

@@ -151,9 +151,8 @@ class SuggestionsFinderTest {
                 suggestionExactRule, suggestionSimilarRule, suggestionExactOntology, suggestionSimilarOntology));
 
         List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, indexPath, 10, conf);
-        Suggestion.printCollection(suggestions);
-        assertEquals(4, suggestions.size(), "We expect 4 suggestions");
 
+        assertEquals(4, suggestions.size(), "We expect 4 suggestions");
         assertTrue(isSortedDescending(suggestions), "The suggestions should be sorted (desc) by `score`");
     }
 

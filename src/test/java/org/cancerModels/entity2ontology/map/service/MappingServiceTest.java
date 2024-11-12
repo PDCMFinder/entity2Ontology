@@ -47,7 +47,6 @@ public class MappingServiceTest {
 
     public MappingServiceTest() throws IOException {
         config = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
-        System.out.println(config);
     }
 
     @Test
@@ -172,7 +171,6 @@ public class MappingServiceTest {
         double score = 0;
 
         Suggestion bestSuggestion = getTopSuggestion(sourceEntity, indexName, 1);
-        System.out.println("TOP bestSuggestion " + bestSuggestion);
         label = bestSuggestion.getTermLabel();
         score = bestSuggestion.getScore();
 

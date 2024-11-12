@@ -76,7 +76,6 @@ class RulesSearcherTest {
 
         List<Suggestion> suggestions = instance.findExactMatchingRules(
             sourceEntity, indexLocation, mappingConfiguration);
-        Suggestion.printCollection(suggestions);
 
         Suggestion suggestion = suggestions.getFirst();
 
@@ -121,7 +120,6 @@ class RulesSearcherTest {
 
         List<Suggestion> suggestions = instance.findSimilarRules(
             sourceEntity, indexLocation, mappingConfiguration);
-        Suggestion.printCollection(suggestions);
 
         Suggestion suggestion = suggestions.getFirst();
 
@@ -145,7 +143,6 @@ class RulesSearcherTest {
 
         List<Suggestion> suggestions = instance.findSimilarRules(
             sourceEntity, indexLocation, mappingConfiguration);
-        Suggestion.printCollection(suggestions);
 
         assertTrue(suggestions.isEmpty(), "The suggestion list should be empty");
     }

@@ -89,7 +89,6 @@ public class Searcher {
         Query reparsedQuery;
         try {
             reparsedQuery = queryParser.parse(queryAsString);
-            System.out.println("reparsedQuery: " + reparsedQuery);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

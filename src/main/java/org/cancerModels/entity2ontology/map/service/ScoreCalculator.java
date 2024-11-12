@@ -26,7 +26,7 @@ public class ScoreCalculator {
     private final LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
 
     /**
-     * Calculates the suggestion score as a percentage, based on how similar the suggestion and the sourceEntity are.
+     * Calculates the suggestion (a rule) score as a percentage, based on how similar the suggestion and the sourceEntity are.
      * A string similarity comparison is used.
      * Note that {@link Suggestion} has a `rawScore` assigned by Lucene. We are not using it as that's a value that helps
      * in sorting results but doesn't say anything about how good the result by its own is.
@@ -35,7 +35,7 @@ public class ScoreCalculator {
      * @param sourceEntity The entity we are trying to map
      * @return A number (percentage) representing how similar the suggestion and the source entity are.
      */
-    public double calculateScoreAsPercentage(
+    public double calculateRuleSuggestionScoreAsPercentage(
         Suggestion suggestion,
         SourceEntity sourceEntity,
         Map<String, Double> fieldsWeights) {
@@ -44,28 +44,22 @@ public class ScoreCalculator {
 
         double totalWeight = fieldsWeights.values().stream().reduce(0.0, Double::sum);
 
-//        TODO: Note, this only make sense when comparing rules with rules
-
         for (Map.Entry<String, Double> entry : fieldsWeights.entrySet()) {
             String fieldValueSourceEntity = sourceEntity.getData().get(entry.getKey());
             String fieldValueSuggestion = suggestion.getTargetEntity().getData().get(entry.getKey()).toString();
             double scorePerField = calculateScorePerField(
                 fieldValueSourceEntity, fieldValueSuggestion, entry.getValue(), totalWeight);
             score += scorePerField;
-            System.out.println("scorePerField (" + entry.getKey() + ") ==> " + scorePerField);
         }
         return score;
     }
 
-    double calculateScorePerField(
+    private double calculateScorePerField(
         String sourceEntityFieldValue, String suggestionFieldValue, double fieldWeight, double totalWeight) {
 
         // Calculate the similarity between the value of the source entity field vs the one in the suggestion (0 - 100).
         double stringsSimilarityPercentage = calculateStringsSimilarityPercentage(
             sourceEntityFieldValue, suggestionFieldValue);
-        System.out.println(
-            "stringsSimilarityPercentage between [" + sourceEntityFieldValue + "] and [" + suggestionFieldValue + "] : "
-                + stringsSimilarityPercentage);
 
         // Calculate how important the field is in the global calculation of the score
         double fieldRelevance = fieldWeight * 100 / totalWeight;
@@ -82,7 +76,7 @@ public class ScoreCalculator {
      * @param b The second string to compare.
      * @return A value between 0 and 1 representing how similar the strings are.
      */
-    double calculateStringsSimilarityPercentage(String a, String b) {
+    private double calculateStringsSimilarityPercentage(String a, String b) {
         double similarity = 0.0;
 
         if (a == null || b == null) {
@@ -92,8 +86,6 @@ public class ScoreCalculator {
         } else {
             double maxDistancePossible = Math.max(a.length(), b.length());
             int distanceValue = levenshteinDistance.apply(a, b);
-            System.out.println("maxDistancePossible: " + maxDistancePossible);
-            System.out.println("distanceValue: " + distanceValue);
             similarity = 1 - (distanceValue / maxDistancePossible);
         }
         return similarity;
@@ -102,7 +94,8 @@ public class ScoreCalculator {
     /**
      * Calculates the score of a {@link Suggestion} that represents an ontology.
      * @param searchQueryItems List of {@link SearchQueryItem} representing each term in the query (field, value, weight).
-     * @param suggestion A {@link Suggestion} which contains an ontology term. Returned by the searcher after executing a query based on `searchQueryItems`.
+     * @param suggestion A {@link Suggestion} which contains an ontology term. Returned by the searcher after executing
+     *                  a query based on `searchQueryItems`.
      * @return A number representing the percentage of similarity for the suggestion. 100 represents a perfect suggestion.
      */
 
@@ -113,8 +106,8 @@ public class ScoreCalculator {
      *
      * @param searchQueryItems List of {@link SearchQueryItem} objects, where each item represents a field, value,
      *                         and weight from the query. These are used to assess the relevance of the suggestion.
-     * @param suggestion A {@link Suggestion} that contains the ontology term returned by the searcher. This term is evaluated
-     *                   against a string representation `searchQueryItems` to determine how well it matches.
+     * @param suggestion A {@link Suggestion} that contains the ontology term returned by the searcher. This term
+     *                   is evaluated against a string representation `searchQueryItems` to determine how well it matches.
      * @return A score between 0 and 100, where 100 represents a perfect match between the {@link Suggestion} and
      *         the search query items, and 0 represents no similarity.
      */
@@ -145,7 +138,6 @@ public class ScoreCalculator {
             } else if (synonymsObj instanceof String) {
                 synonyms = List.of(synonymsObj.toString());
             }
-
         }
 
         // First let's calculate the similarity between `phrase` and the ontology label

@@ -91,7 +91,8 @@ public class RulesSearcher {
         Map<String, Double> fieldsWeightsByEntityType = config.getFieldsWeightsByEntityType(entity.getType());
 
         suggestions.forEach(suggestion -> {
-            double score = scoreCalculator.calculateScoreAsPercentage(suggestion, entity, fieldsWeightsByEntityType);
+            double score = scoreCalculator.calculateRuleSuggestionScoreAsPercentage(
+                suggestion, entity, fieldsWeightsByEntityType);
             suggestion.setScore(score);
         });
 

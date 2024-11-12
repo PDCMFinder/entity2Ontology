@@ -15,7 +15,6 @@ public class DiagnosisMappingInputReader {
             // Skip the header line if there is one
             br.readLine(); // assuming the first line is the header
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
                 String[] values = line.split("\t");
 
                 DiagnosisMappingInputFileEntry entry = new DiagnosisMappingInputFileEntry();
@@ -32,14 +31,5 @@ public class DiagnosisMappingInputReader {
         }
 
         return entries;
-    }
-
-    public static void main(String[] args) {
-        try {
-            List<DiagnosisMappingInputFileEntry> entries = parseTSV("path/to/your/file.tsv");
-            entries.forEach(System.out::println);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
