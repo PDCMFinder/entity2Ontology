@@ -1,12 +1,12 @@
 package org.cancerModels.entity2ontology.map.command;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cancerModels.entity2ontology.map.service.MappingIO;
 import org.cancerModels.entity2ontology.map.service.MappingRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
-
-import java.io.IOException;
 
 /**
  * Command class responsible for executing the mapping process.
@@ -41,6 +41,7 @@ import java.io.IOException;
 public class MapCommand implements Runnable {
 
     private final MappingRequestService mappingRequestService;
+    private static final Logger logger = LogManager.getLogger(MapCommand.class);
 
     /**
      * The JSON file containing the mapping request.
@@ -65,7 +66,7 @@ public class MapCommand implements Runnable {
             // Read the mapping request
             mappingRequestService.processMappingRequest(requestFile, outputFile);
         } catch (Exception e) {
-            System.err.println("Failed to perform mapping: " + e.getMessage());
+            logger.error("Failed to perform mapping. Error: {}", e.getMessage());
             System.exit(1);
         }
     }

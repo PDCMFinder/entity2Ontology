@@ -2,6 +2,7 @@ package org.cancerModels.entity2ontology.map.model;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +13,12 @@ import java.util.Map;
  */
 @Data
 public class MappingConfiguration {
+
+    // Name of the configuration. For tracking, not used for logic.
     private String name;
-    private List<ConfigurationPerType> configurations;
+
+    // Configuration per entity type as the fields change
+    private List<ConfigurationPerType> configurations = new ArrayList<>();
 
     public Map<String, Double> getFieldsWeightsByEntityType(String entityType) {
         Map<String, Double> weights = new HashMap<>();
@@ -47,7 +52,7 @@ public class MappingConfiguration {
                 return configuration;
             }
         }
-        return null;
+        throw new IllegalArgumentException("No configuration found for entity type [" + entityType + "]");
     }
 
     /**

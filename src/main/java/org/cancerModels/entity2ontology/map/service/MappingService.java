@@ -9,6 +9,7 @@ import org.cancerModels.entity2ontology.map.model.Suggestion;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,8 +37,9 @@ public class MappingService {
      */
     public List<Suggestion> mapEntity(
         SourceEntity entity, String indexPath, int maxNumSuggestions, MappingConfiguration config) throws IOException {
-        logger.info("Mapping entity {} using index {}", entity, indexPath);
-        logger.info("Using configuration {}", config.getName());
+        logger.info("Mapping entity: {}", entity);
+        logger.info("Using index: [{}]", indexPath);
+        logger.info("Using configuration: {}", config.getName());
 
         validateSourceEntity(entity);
         validateIndex(indexPath);

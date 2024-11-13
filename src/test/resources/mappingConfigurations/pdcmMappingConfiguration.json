@@ -33,48 +33,5 @@
         }
       ]
     }
-  ],
-  "ruleConfiguration": [
-    {
-      "sectionName": "diagnosis",
-      "fields": [
-        {
-          "name": "SampleDiagnosis",
-          "weight": 1
-        },
-        {
-          "name": "OriginTissue",
-          "weight": 0.5
-        },
-        {
-          "name": "TumorType",
-          "weight": 0.5
-        }
-      ]
-    },
-    {
-      "sectionName": "treatment",
-      "fields": [
-        {
-          "name": "TreatmentType",
-          "weight": 1
-        }
-      ]
-    }
-  ],
-  "ontologyConfiguration": [
-    {
-      "sectionName": "ncit onto",
-      "fields": [
-        {
-          "name": "label",
-          "weight": 1
-        },
-        {
-          "name": "synonyms",
-          "weight": 0.5
-        }
-      ]
-    }
   ]
 }

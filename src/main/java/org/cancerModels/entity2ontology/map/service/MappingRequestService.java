@@ -82,7 +82,7 @@ public class MappingRequestService {
      * @return A {@link MappingResponse} with the results of the mapping process
      */
     public MappingResponse processMappingRequest(MappingRequest request) throws IOException {
-        logger.info("Processing mapping request");
+        logger.info("Starts processing mapping request with {} entities", request.getEntities().size());
         MappingResponse response = new MappingResponse();
 
         response.setStart(LocalDateTime.now());
@@ -93,7 +93,7 @@ public class MappingRequestService {
         List<MappingResponseEntry> entries = new ArrayList<>();
 
         for (SourceEntity entity : request.getEntities()) {
-            entries.add(processEntity(entity, config));
+            entries.add(processEntity(entity, config, request.getIndexPath(), request.getMaxSuggestions()));
         }
 
         response.setMappingsResults(entries);
@@ -107,19 +107,31 @@ public class MappingRequestService {
 
     private MappingConfiguration readMappingConfiguration(String filePath) throws IOException {
         MappingConfiguration config = MappingIO.readMappingConfiguration(filePath);
-        return config;
+        // Basic validations
+        if (config == null) {
+            String error = String.format("Mapping configuration file %s cannot be null", filePath);
+            throw new IllegalArgumentException(error);
+        }
+        if (config.getConfigurations().isEmpty()) {
+            String error = String.format("Mapping configuration file %s has an empty `configurations` property", filePath);
+            throw new IllegalArgumentException(error);
+        }
+        return MappingIO.readMappingConfiguration(filePath);
     }
 
     /**
      * Gets the list of suggestions for an entity and creates a MappingResponseEntry object with that information
      *
-     * @param entity Entity to map
-     * @param config
+     * @param entity         Entity to map
+     * @param config         Configuration with the fields to use per entity type
+     * @param indexPath      The location of the Lucene index to use
+     * @param maxSuggestions Maximum number of suggestions
      * @return a MappingResponseEntry object (entity - list of suggestions)
      */
-    private MappingResponseEntry processEntity(SourceEntity entity, MappingConfiguration config) throws IOException {
+    private MappingResponseEntry processEntity(
+        SourceEntity entity, MappingConfiguration config, String indexPath, int maxSuggestions) throws IOException {
         MappingResponseEntry entry = new MappingResponseEntry();
-        List<Suggestion> suggestions = mappingService.mapEntity(entity, "", 0, config);
+        List<Suggestion> suggestions = mappingService.mapEntity(entity, indexPath, maxSuggestions, config);
         entry.setEntity(entity);
         entry.setSuggestions(suggestions);
         return entry;
