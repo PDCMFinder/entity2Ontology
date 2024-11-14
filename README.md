@@ -1,5 +1,5 @@
 # Entity2Ontology - Mapping entities to Ontology terms
-============
+
 `Entity2Ontology` is a Java tool that maps entities to specific ontology terms, useful for cases where non-textual 
 information with attributes must be mapped accurately to a controlled vocabulary.
 
