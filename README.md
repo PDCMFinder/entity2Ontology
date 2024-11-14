@@ -59,6 +59,19 @@ Example of a rule:
 **Note**: Your rules can look different, but they must contain the fields and values of the mapped entity, as well as the label
 and URL of the ontology term. Currently only JSON files are supported, but the name of the attributes is configurable.
 
+### Entity types
+`Entity2Ontology` allows you to map different types of entities, that is, entities representing different concepts,
+having different attributes.
+
+For instance, this is the structure of 2 different entities, `diagnosis` and `treatment`:
+- entity type: diagnosis
+    - OriginTissue
+    - SampleDiagnosis
+    - TumorType
+    - DataSource
+- entity type: treatment
+    - TreatmentName
+  
 ## Commands
 
 ### Index command
@@ -81,7 +94,7 @@ Indexes data into a Lucene index.
 #### Options
 ##### `--request`
 This option allows passing a configuration JSON file with all the parameters needed to define an index, like its
-location (a path), and the location of the data to index. An example of such configuration is shown later.
+location (a path), and the location of the data to index. See [Indexing request file](#indexing_request_file).
 
 ### Map command
 This is where the actual mapping happens. It takes the user input and tries to match the entities to a document in the 
@@ -101,7 +114,169 @@ Performs mapping using a mapping request JSON.
 #### Options
 ##### `--request`
 This option passing a configuration JSON file with the list of entities to map, the location of the index to use, and
-other parameters to tune the mapping process to the specific needs.
+other parameters to tune the mapping process to the specific needs. See [configuration file](#mapping_request_file).
+
+## Request files
+<a id="indexing_request_file"></a>
+### Indexing Request File
+The `index` command requires an *Index Request File* whose structure is as follows:
+
+- `indexPath`: A directory where you have writing access, and you want the index to be created.
+- `ruleLocations`: Indicates where the JSON files with the rules are.
+  - `filePath`: Path to the JSON file with the rules related to this entity type.
+  - `name`: Identifier for this set of rules.
+  - `ignore`: Whether this set of rules should be ignored in the indexing process.
+  - `fieldsConversion`: Some fields are mandatory for a rule, this section allows to define their equivalences in the
+                        rules file in use.
+    - `id`: A string uniquely identifying an entry in the rules file.
+    - `entityType`: Each rule must define the entity type it applies to.
+    - `data`: A map holding the attributes (fields) and values for the entity.
+    - `label`: The label of the mapped ontology term.
+    - `url`: The URL of the mapped ontology term.
+- `ontologyLocations`: Indicates the ontology (currently only from OLS) from which the terms
+                       will be downloaded.
+  - `ontoId`: ID of the ontology in [OLS](https://www.ebi.ac.uk/ols4/ontologies).
+  - `name`: Name to identify this set of ontologies.
+  - `branches`: List of root terms to download.
+  - `ignore`: Whether this set of ontologies should be ignored in the indexing process.
+
+<details>
+<summary>Click to see an example of an index request file</summary>
+
+```json
+{
+  "indexPath": "IndexPath1",
+  "ruleLocations": [
+    {
+      "filePath": "/path/file/treatments.json",
+      "name": "treatment",
+      "ignore": false,
+      "fieldsConversion": {
+        "id": "mappingKey",
+        "entityType": "entityType",
+        "data": "mappingValues",
+        "label": "mappedTermLabel",
+        "url": "mappedTermUrl"
+      }
+    }
+  ],
+  "ontologyLocations": [
+    {
+      "ontoId": "ncit",
+      "name": "ncit ontology diagnosis",
+      "branches": [
+        "NCIT_C9305",
+        "NCIT_C3262"
+      ],
+      "ignore": false
+    }
+  ]
+}
+```
+</details>
+
+<a id="mapping_request_file"></a>
+### Mapping Request File
+The `map` command requires a *Mapping Request File* which contains a set of entities to map, as well as the index to use.
+This is the structure of the file:
+
+- `maxNumSuggestions`: The maximum number of suggestions per entity.
+- `indexPath`: The path on the Lucene index.
+- `mappingConfigurationFile`: Path to the [configuration file](#mapping_configuration_file) defining the fields and 
+                              weights.
+- `entities`: An array with the entities to map.
+  - `id`: A string uniquely identifying the entity.
+  - `type`: The entity type.
+  - `data`: Map with the attributes (fields) and values of the entity being mapped.
+
+<details>
+<summary>Click to see an example of a mapping request file</summary>
+
+```json
+{
+  "maxNumSuggestions": 5,
+  "indexPath": "/path/to/index",
+  "mappingConfigurationFile": "/Users/.../pdcmMappingConfiguration.json",
+  "entities": [
+    {
+      "id": "key_1",
+      "type": "diagnosis",
+      "data" : {
+        "OriginTissue" : "bladder",
+        "TumorType" : "recurrent",
+        "SampleDiagnosis" : "t2 transitional cell carcinoma",
+        "DataSource" : "jax"
+      }
+    }
+  ]
+}
+```
+</details>
+
+<a id="mapping_configuration_file"></a>
+## Mapping Configuration file
+The mapping configuration is a JSON file where users can define the fields to use in the mapping process, as well as
+their relevance. They also contain sections to define ontology templates, where users can customize how the fields
+in the entities are going to be combined to find appropriate matches.
+
+This file is set in the property `mappingConfigurationFile` in [mapping request file](#mapping_request_file).
+
+Example:
+
+<details>
+<summary>Click to see an example of a mapping configuration file</summary>
+
+```json
+{
+  "name": "pdcm configuration",
+  "configurations": [
+    {
+      "entityType": "diagnosis",
+      "fields": [
+        {
+          "name": "SampleDiagnosis",
+          "weight": 1
+        },
+        {
+          "name": "OriginTissue",
+          "weight": 0.5
+        },
+        {
+          "name": "TumorType",
+          "weight": 0.5
+        }
+      ],
+      "ontologyTemplates": [
+        "${TumorType} ${SampleDiagnosis} in the ${OriginTissue}",
+        "${TumorType} ${OriginTissue} ${SampleDiagnosis}",
+        "${TumorType} ${SampleDiagnosis}",
+        "${OriginTissue} ${SampleDiagnosis}"
+      ]
+    },
+    {
+      "entityType": "treatment",
+      "fields": [
+        {
+          "name": "TreatmentName",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}
+
+```
+</details>
+
+### Properties
+- `name`: An arbitrary name for this configuration.
+- `configurations`: An array containing a configuration per entity type.
+  - `entityType`: A string with the type of entity to configure.
+  - `fields`: Array of fields and weights. 
+    - `name`: Name of the field or attribute.
+    - `weight`: Positive number indicating how relevant this field is relative to other fields for this entity type.
+  - `ontologyTemplates`: Array of strings representing templates. Format: `"${field_a} ${field_b}`. They represent
+                         combinations of the fields to find suitable matches against a label in an ontology term.
 
 ## License
 This project is licensed under the Apache License 2.0.
