@@ -1,5 +1,5 @@
 # Entity2Ontology - Mapping entities to Ontology terms
-
+============
 `Entity2Ontology` is a Java tool that maps entities to specific ontology terms, useful for cases where non-textual 
 information with attributes must be mapped accurately to a controlled vocabulary.
 
@@ -14,8 +14,18 @@ weights for attributes, enabling you to control the mapping process with precisi
 The application is written in Java 22, as a Maven project. The jar file, *entity2Ontology-[version].jar*, can be 
 accessed through the command line or used as a dependency in your project.
 
+---
+## Table of Contents
+* [Overview](#Overview)
+* [Technologies](#technologies)
+* [Usage](#usage)
+* [Configuration](#configuration)
+  * [Mapping Configuration file](#mapping-configuration-file)
+  * [Indexing Request file](#indexing-request-file)
+  * [Mapping Request file](#mapping-request-file)
+---
 
-## Overview of the project
+## Overview
 
 The `Entity2Ontology` mapping process consists of two steps: first, creating an index of ontology terms and, second, 
 mapping entities to those terms.
@@ -71,8 +81,16 @@ For instance, this is the structure of 2 different entities, `diagnosis` and `tr
     - DataSource
 - entity type: treatment
     - TreatmentName
-  
-## Commands
+
+---
+
+## Technologies
+* Java 22
+* JUnit 5
+* Apache Lucene 9.11.1
+---
+
+## Usage
 
 ### Index command
 This command will produce a Lucene Index based in the information provided in the file `requestFile`.
@@ -96,6 +114,10 @@ Indexes data into a Lucene index.
 This option allows passing a configuration JSON file with all the parameters needed to define an index, like its
 location (a path), and the location of the data to index. See [Indexing request file](#indexing_request_file).
 
+#### Command Usage Example
+``` 
+java -jar entity2Ontology.jar index --request=myIndexRequestConfig.json
+```
 ### Map command
 This is where the actual mapping happens. It takes the user input and tries to match the entities to a document in the 
 Lucene index, which will contain the rules and ontologies indexed in the previous step.
@@ -116,7 +138,96 @@ Performs mapping using a mapping request JSON.
 This option passing a configuration JSON file with the list of entities to map, the location of the index to use, and
 other parameters to tune the mapping process to the specific needs. See [configuration file](#mapping_request_file).
 
-## Request files
+##### `--output`
+The path of the file with the output of the mapping process. The output is a JSON file with contains some information
+about the mapping process. It also contains an array `mappingsResults` with every entity that was processed, and a list
+of suggestions for each one. 
+
+A suggestion is the match that the mapping process found. The suggestions per entity are 
+sorted by score. The `score` value is a number from 0 to 100 indicating how similar the suggestion was respect to the 
+entity.
+
+#### Command Usage Example
+``` 
+java -jar entity2Ontology.jar map --request=myMappingRequestConfig.json --output output/output.json
+```
+
+---
+## Configuration
+There are 3 JSON files used to configure the indexing and mapping tasks:
+- **Mapping Configuration file**: The configuration of entities and fields relevant for your use cases.
+  Once defined it should rarely change.
+- **Indexing Request File**: Used to request the creation of an index. Only used when an index needs to be created or updated.
+- **Mapping Request File**: Used to request the mapping of a list of entities.
+
+
+<a id="mapping_configuration_file"></a>
+### Mapping Configuration file
+The mapping configuration is a JSON file where users can define the fields to use in the mapping process, as well as
+their relevance. They also contain sections to define ontology templates, where users can customize how the fields
+in the entities are going to be combined to find appropriate matches.
+
+This file is set in the property `mappingConfigurationFile` in [mapping request file](#mapping_request_file).
+
+Example:
+
+<details>
+<summary>Click to see an example of a mapping configuration file</summary>
+
+```json
+{
+  "name": "pdcm configuration",
+  "configurations": [
+    {
+      "entityType": "diagnosis",
+      "fields": [
+        {
+          "name": "SampleDiagnosis",
+          "weight": 1
+        },
+        {
+          "name": "OriginTissue",
+          "weight": 0.5
+        },
+        {
+          "name": "TumorType",
+          "weight": 0.5
+        }
+      ],
+      "ontologyTemplates": [
+        "${TumorType} ${SampleDiagnosis} in the ${OriginTissue}",
+        "${TumorType} ${OriginTissue} ${SampleDiagnosis}",
+        "${TumorType} ${SampleDiagnosis}",
+        "${OriginTissue} ${SampleDiagnosis}"
+      ]
+    },
+    {
+      "entityType": "treatment",
+      "fields": [
+        {
+          "name": "TreatmentName",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}
+
+```
+</details>
+
+#### Properties
+- `name`: An arbitrary name for this configuration.
+- `configurations`: An array containing a configuration per entity type.
+    - `entityType`: A string with the type of entity to configure.
+    - `fields`: Array of fields and weights.
+        - `name`: Name of the field or attribute.
+        - `weight`: Positive number indicating how relevant this field is relative to other fields for this entity type.
+    - `ontologyTemplates`: Array of strings representing templates. Format: `"${field_a} ${field_b}`. They represent
+      combinations of the fields to find suitable matches against a label in an ontology term.
+
+
+---
 <a id="indexing_request_file"></a>
 ### Indexing Request File
 The `index` command requires an *Index Request File* whose structure is as follows:
@@ -213,70 +324,7 @@ This is the structure of the file:
 ```
 </details>
 
-<a id="mapping_configuration_file"></a>
-## Mapping Configuration file
-The mapping configuration is a JSON file where users can define the fields to use in the mapping process, as well as
-their relevance. They also contain sections to define ontology templates, where users can customize how the fields
-in the entities are going to be combined to find appropriate matches.
-
-This file is set in the property `mappingConfigurationFile` in [mapping request file](#mapping_request_file).
-
-Example:
-
-<details>
-<summary>Click to see an example of a mapping configuration file</summary>
-
-```json
-{
-  "name": "pdcm configuration",
-  "configurations": [
-    {
-      "entityType": "diagnosis",
-      "fields": [
-        {
-          "name": "SampleDiagnosis",
-          "weight": 1
-        },
-        {
-          "name": "OriginTissue",
-          "weight": 0.5
-        },
-        {
-          "name": "TumorType",
-          "weight": 0.5
-        }
-      ],
-      "ontologyTemplates": [
-        "${TumorType} ${SampleDiagnosis} in the ${OriginTissue}",
-        "${TumorType} ${OriginTissue} ${SampleDiagnosis}",
-        "${TumorType} ${SampleDiagnosis}",
-        "${OriginTissue} ${SampleDiagnosis}"
-      ]
-    },
-    {
-      "entityType": "treatment",
-      "fields": [
-        {
-          "name": "TreatmentName",
-          "weight": 1
-        }
-      ]
-    }
-  ]
-}
-
-```
-</details>
-
-### Properties
-- `name`: An arbitrary name for this configuration.
-- `configurations`: An array containing a configuration per entity type.
-  - `entityType`: A string with the type of entity to configure.
-  - `fields`: Array of fields and weights. 
-    - `name`: Name of the field or attribute.
-    - `weight`: Positive number indicating how relevant this field is relative to other fields for this entity type.
-  - `ontologyTemplates`: Array of strings representing templates. Format: `"${field_a} ${field_b}`. They represent
-                         combinations of the fields to find suitable matches against a label in an ontology term.
+---
 
 ## License
 This project is licensed under the Apache License 2.0.
