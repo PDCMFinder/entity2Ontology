@@ -90,6 +90,21 @@ For instance, this is the structure of 2 different entities, `diagnosis` and `tr
 * Apache Lucene 9.11.1
 ---
 
+## Current Version
+
+The latest version of `Entity2Ontology` is **1.0-SNAPSHOT**.
+
+You can pull the Docker image using:
+
+```bash
+docker pull pdxfinder/entity2ontology:1.0
+```
+For the latest version
+```bash
+docker pull pdxfinder/entity2ontology:latest
+```
+
+
 ## Usage
 
 ### Index command
@@ -326,5 +341,60 @@ This is the structure of the file:
 
 ---
 
+## Installation
+To use the Entity2Ontology application, follow these steps to clone the repository, build the project, and execute the 
+generated JAR file.
+
+### Prerequisites
+Ensure you have the following installed on your system:
+
+[Java Development Kit (JDK) 21+](https://www.oracle.com/java/technologies/downloads/#java21)
+[Apache Maven](https://maven.apache.org/install.html)
+
+###  Steps to Install and Build
+
+**1. Clone the Repository**
+Open a terminal and clone the repository using Git:
+
+```bash
+git clone https://github.com/PDCMFinder/entity2Ontology.git
+cd entity2Ontology
+```
+
+**2. Build the Project**
+Use Maven to compile the project and package it into a JAR file:
+
+```bash
+mvn clean package
+```
+
+This command will compile the source code, run tests, and package the application into a JAR file.
+
+
+**3. Locate the JAR File**
+After the build completes successfully, the JAR file will be located in the target/ directory:
+
+```bash
+target/entity2Ontology-1.0-SNAPSHOT.jar
+```
+
+### Running the Application
+You can run the application using the java command. For example, to display help information:
+
+```bash
+java -cp "target/entity2Ontology-1.0-SNAPSHOT.jar:target/lib/*" org.cancerModels.entity2ontology.Entity2Ontology --help
+```
+
+This command executes the Entity2Ontology application with the specified classpath, including the generated JAR file 
+and its dependencies.
+
+### Additional Notes
+- Replace `entity2Ontology-1.0-SNAPSHOT.jar` with the correct file name if the version differs.
+- If you encounter any issues, ensure that all dependencies are correctly downloaded by Maven.
+---
+
 ## License
 This project is licensed under the Apache License 2.0.
+
+## Acknowledgements
+`Entity2Ontology` is supported by NCI U24CA253539 and the European Molecular Biology Laboratory.
