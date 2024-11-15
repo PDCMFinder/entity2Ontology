@@ -52,13 +52,13 @@ public class MappingService {
             throw new IllegalArgumentException("Entity cannot be null");
         }
         if (entity.getId() == null) {
-            throw new IllegalArgumentException("Entity id cannot be null");
+            throw new IllegalArgumentException(String.format("Entity id cannot be null: %s", entity));
         }
         if (entity.getType() == null) {
-            throw new IllegalArgumentException("Entity type cannot be null");
+            throw new IllegalArgumentException(String.format("Entity type cannot be null: %s", entity));
         }
         if (entity.getData() == null) {
-            throw new IllegalArgumentException("Entity data cannot be null");
+            throw new IllegalArgumentException(String.format("Entity data cannot be null: %s", entity));
         }
     }
 

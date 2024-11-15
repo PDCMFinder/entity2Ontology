@@ -39,7 +39,7 @@ public class SourceEntity {
 
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("id: ").append(id).append(" data: {");
+        result.append("id: [").append(id).append("] type: [").append(type).append("] data: {");
         String sep = "";
         if (data != null) {
             for (Map.Entry<String, String> entry : data.entrySet()) {

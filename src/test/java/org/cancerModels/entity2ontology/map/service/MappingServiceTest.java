@@ -70,8 +70,10 @@ public class MappingServiceTest {
             instance.mapEntity(sourceEntity, "", 0, config);
         });
 
-        // Then we get an IOException
-        assertEquals("Entity id cannot be null", exception.getMessage());
+        // Then we get an IllegalArgumentException
+        assertTrue(
+            exception.getMessage().contains("Entity id cannot be null"),
+            "Expected exception message to contain 'Entity id cannot be null'");
     }
 
     @Test
@@ -84,8 +86,10 @@ public class MappingServiceTest {
             instance.mapEntity(sourceEntity, "", 0, config);
         });
 
-        // Then we get an IOException
-        assertEquals("Entity type cannot be null", exception.getMessage());
+        // Then we get an IllegalArgumentException
+        assertTrue(
+            exception.getMessage().contains("Entity type cannot be null"),
+            "Expected exception message to contain 'Entity type cannot be null'");
     }
 
     @Test
@@ -99,8 +103,10 @@ public class MappingServiceTest {
             instance.mapEntity(sourceEntity, "", 0, config);
         });
 
-        // Then we get an IOException
-        assertEquals("Entity data cannot be null", exception.getMessage());
+        // Then we get an IllegalArgumentException
+        assertTrue(
+            exception.getMessage().contains("Entity data cannot be null"),
+            "Expected exception message to contain 'Entity data cannot be null'");
     }
 
     @Test
