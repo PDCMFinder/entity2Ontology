@@ -4,8 +4,9 @@
 information with attributes must be mapped accurately to a controlled vocabulary.
 
 Consider for example the use case in [cancermodels.org](https://www.cancermodels.org/), where the diagnosis
-in a cancer model needs to be linked to a relevant ontology term (like those from [NCIt](https://www.ebi.ac.uk/ols4/ontologies/ncit)), 
-but additional information, like tumour type or collection site, is also available, and could be used to find a more 
+in a cancer model needs to be linked to a relevant ontology term (like those from 
+[NCIt](https://www.ebi.ac.uk/ols4/ontologies/ncit)), but additional information, like tumour type or collection site, 
+is also available, and could be used to find a more 
 precise ontology term.
 
 As not all the attributes in the entity to map are equally relevant, `Entity2Ontology` allows you to define different 
@@ -23,6 +24,7 @@ accessed through the command line or used as a dependency in your project.
   * [Mapping Configuration file](#mapping-configuration-file)
   * [Indexing Request file](#indexing-request-file)
   * [Mapping Request file](#mapping-request-file)
+* [Installation](#installation)
 ---
 
 ## Overview
@@ -112,10 +114,6 @@ This command will produce a Lucene Index based in the information provided in th
 
 Create the index once and reuse it for multiple mappings until updates are needed.
 
-The index is created once, but can be used multiple times for mapping entities. The index
-only needs to be created again if you need to update the documents it 
-contains (for instance, if you get new ontology terms to index).
-
 ```
 Usage: Entity2Ontology index [-hV] --request=<requestFile>
 Indexes data into a Lucene index.
@@ -130,8 +128,9 @@ This option allows passing a configuration JSON file with all the parameters nee
 location (a path), and the location of the data to index. See [Indexing request file](#indexing_request_file).
 
 #### Command Usage Example
+This is an example
 ``` 
-java -jar entity2Ontology.jar index --request=myIndexRequestConfig.json
+java -cp "entity2Ontology-1.0-SNAPSHOT.jar:lib/*" org.cancerModels.entity2ontology.Entity2Ontology index --request indexingRequest.json
 ```
 ### Map command
 This is where the actual mapping happens. It takes the user input and tries to match the entities to a document in the 
@@ -164,7 +163,7 @@ entity.
 
 #### Command Usage Example
 ``` 
-java -jar entity2Ontology.jar map --request=myMappingRequestConfig.json --output output/output.json
+java -cp "entity2Ontology-1.0-SNAPSHOT.jar:lib/*" org.cancerModels.entity2ontology.Entity2Ontology map --request mappingRequest.json --output myOutput.json
 ```
 
 ---
@@ -348,8 +347,8 @@ generated JAR file.
 ### Prerequisites
 Ensure you have the following installed on your system:
 
-[Java Development Kit (JDK) 21+](https://www.oracle.com/java/technologies/downloads/#java21)
-[Apache Maven](https://maven.apache.org/install.html)
+- [Java Development Kit (JDK) 21+](https://www.oracle.com/java/technologies/downloads/#java21)
+- [Apache Maven](https://maven.apache.org/install.html)
 
 ###  Steps to Install and Build
 
