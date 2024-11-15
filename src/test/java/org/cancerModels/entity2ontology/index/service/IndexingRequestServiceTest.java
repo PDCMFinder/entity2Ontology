@@ -1,8 +1,10 @@
 package org.cancerModels.entity2ontology.index.service;
 
+import org.cancerModels.entity2ontology.common.utils.FileUtils;
 import org.cancerModels.entity2ontology.index.model.IndexingResponse;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,5 +27,7 @@ class IndexingRequestServiceTest {
         assertEquals("IndexPath1" , response.getIndexPath());
         int indexedTreatments = response.getIndexedElementsPerTarget().get("treatment");
         assertEquals(2 , indexedTreatments);
+
+        FileUtils.deleteRecursively(new File(response.getIndexPath()));
     }
 }

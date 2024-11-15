@@ -3,6 +3,7 @@ package org.cancerModels.entity2ontology.map.service;
 import org.cancerModels.entity2ontology.DiagnosisMappingInputFileEntry;
 import org.cancerModels.entity2ontology.DiagnosisMappingInputReader;
 import org.cancerModels.entity2ontology.IndexTestCreator;
+import org.cancerModels.entity2ontology.common.utils.FileUtils;
 import org.cancerModels.entity2ontology.index.service.AnalyzerProvider;
 import org.cancerModels.entity2ontology.map.model.MappingConfiguration;
 import org.cancerModels.entity2ontology.map.model.SourceEntity;
@@ -10,6 +11,7 @@ import org.cancerModels.entity2ontology.map.model.Suggestion;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -157,7 +159,7 @@ public class MappingServiceTest {
         }
 
         // Delete the index
-        //FileUtils.deleteRecursively(new File(smallDiagnosisIndexLocation));
+        FileUtils.deleteRecursively(new File(smallDiagnosisIndexLocation));
     }
 
     private void testExpectedDiagnosisMapping(DiagnosisMappingInputFileEntry entry) {

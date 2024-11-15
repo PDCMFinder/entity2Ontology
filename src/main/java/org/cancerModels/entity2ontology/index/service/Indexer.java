@@ -12,6 +12,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.cancerModels.entity2ontology.map.model.TargetEntity;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -157,6 +158,10 @@ public class Indexer {
      */
     public static boolean isValidLuceneIndex(String indexPath) {
         Path path = Paths.get(indexPath);
+        if (!Files.exists(path)) {
+            logger.error("Index not found at path: [{}] - directory is empty", indexPath);
+            return false;
+        }
         try (Directory directory = FSDirectory.open(path)) {
             DirectoryReader.open(directory).close();
             return true;
