@@ -42,8 +42,7 @@ public class IndexingRequestService {
      * and returns a {@link IndexingResponse} with the results of the process
      *
      * <p>This method reads the data sources specified in the {@code IndexingRequest} and indexes
-     * them into a Lucene index at the path defined in the request. It handles the opening and
-     * closing of the {@link IndexWriter}, ensuring that all resources are properly managed.
+     * them into a Lucene index at the path defined in the request.
      *
      * @param requestFile path to a JSON file with a {@link IndexingRequest} containing the information needed
      *                    for indexing
@@ -60,8 +59,7 @@ public class IndexingRequestService {
      * with the results of the process
      *
      * <p>This method reads the data sources specified in the {@code IndexingRequest} and indexes
-     * them into a Lucene index at the path defined in the request. It handles the opening and
-     * closing of the {@link IndexWriter}, ensuring that all resources are properly managed.
+     * them into a Lucene index at the path defined in the request.
      *
      * @param request the {@link IndexingRequest} containing the information needed for indexing
      * @return  a {@link IndexingResponse} with the results on the indexing process
