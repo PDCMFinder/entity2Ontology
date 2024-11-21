@@ -5,6 +5,11 @@ import java.util.stream.Collectors;
 
 public class GeneralUtils {
 
+    // Suppress default constructor for non-instantiability
+    private GeneralUtils() {
+        throw new AssertionError();
+    }
+
     /**
      * Safely casts an {@link Object} to a {@link List} of the specified type.
      *

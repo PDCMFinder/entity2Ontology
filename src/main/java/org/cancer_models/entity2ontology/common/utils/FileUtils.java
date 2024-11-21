@@ -10,7 +10,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Utility class to handle files.
+ */
 public class FileUtils {
+
+    // Suppress default constructor for non-instantiability
+    private FileUtils() {
+        throw new AssertionError();
+    }
 
     public static boolean isFileEmpty(File file) {
         if (!file.exists()) {

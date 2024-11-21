@@ -4,6 +4,11 @@ import java.util.Map;
 
 public class MapUtils {
 
+    // Suppress default constructor for non-instantiability
+    private MapUtils() {
+        throw new AssertionError();
+    }
+
     /**
      * Retrieves the value associated with the given key from the map.
      * Throws an IllegalArgumentException if the key is not found.

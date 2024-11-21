@@ -11,6 +11,11 @@ import java.text.SimpleDateFormat;
 
 public class JsonConverter {
 
+    // Suppress default constructor for non-instantiability
+    private JsonConverter() {
+        throw new AssertionError();
+    }
+
     private static final ObjectMapper objectMapper;
 
     static {

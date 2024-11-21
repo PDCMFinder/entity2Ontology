@@ -14,6 +14,11 @@ import java.io.IOException;
  */
 public class MappingIO {
 
+    // Suppress default constructor for non-instantiability
+    private MappingIO() {
+        throw new AssertionError();
+    }
+
     /**
      * Reads a {@link MappingRequest} from a JSON file.
      *
