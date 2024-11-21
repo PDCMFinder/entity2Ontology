@@ -47,28 +47,12 @@ public class OntologyTerm {
         String description,
         List<String> synonyms) {
 
-        String updatedLabel = label;
-
-        if ("diagnosis".equalsIgnoreCase(type)) {
-            updatedLabel = updateTermLabel(updatedLabel);
-        }
-
         this.id = id;
         this.url = url;
         this.type = type;
-        this.label = updatedLabel;
+        this.label = label;
         this.description = description;
         this.synonyms = synonyms;
     }
 
-    private String updateTermLabel(String termLabel){
-        // Changes Malignant * Neoplasm to * Cancer
-        String pattern = "(.*)Malignant(.*)Neoplasm(.*)";
-        String updatedTermLabel = termLabel;
-
-        if (termLabel.matches(pattern)) {
-            updatedTermLabel = (termLabel.replaceAll(pattern, "\t$1$2Cancer$3")).trim();
-        }
-        return updatedTermLabel;
-    }
 }
