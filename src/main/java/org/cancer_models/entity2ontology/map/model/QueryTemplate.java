@@ -41,15 +41,6 @@ public class QueryTemplate {
     }
 
     /**
-     * Gets the text of the template.
-     *
-     * @return String with the text of the template.
-     */
-    public String getText() {
-        return text;
-    }
-
-    /**
      * Extracts keys from a templated string.
      * <p>
      * The method looks for placeholders in the form of `${key}`, where `key` is any sequence of letters, and returns
@@ -59,7 +50,6 @@ public class QueryTemplate {
      */
     public List<String> extractKeys() {
         List<String> keys = new ArrayList<>();
-        // Regular expression to match placeholders in the form ${key}
         Pattern pattern = Pattern.compile(PLACEHOLDER_PATTERN);
         Matcher matcher = pattern.matcher(text);
 
