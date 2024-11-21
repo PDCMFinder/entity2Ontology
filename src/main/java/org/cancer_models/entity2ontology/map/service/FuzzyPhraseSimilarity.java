@@ -14,6 +14,11 @@ import java.util.Set;
  */
 public class FuzzyPhraseSimilarity {
 
+    // Suppress default constructor for non-instantiability
+    private FuzzyPhraseSimilarity() {
+        throw new AssertionError();
+    }
+
     // The similarity between two strings will be calculated with the Levenshtein distance algorithm.
     private static final LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
 
