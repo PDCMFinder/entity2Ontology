@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.cancerModels</groupId>
+    <groupId>org.cancer_models</groupId>
     <artifactId>entity2Ontology</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -154,7 +154,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.cancerModels.entity2ontology.Entity2Ontology</mainClass>
+                            <mainClass>org.cancer_models.entity2ontology.Entity2Ontology</mainClass>
                             <!-- Automatically include dependencies in Class-Path -->
                             <addClasspath>true</addClasspath>
                             <!-- Set the classpath layout to copy dependencies to the same directory -->

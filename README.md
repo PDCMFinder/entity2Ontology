@@ -130,7 +130,7 @@ location (a path), and the location of the data to index. See [Indexing request 
 #### Command Usage Example
 This is an example
 ``` 
-java -cp "entity2Ontology-1.0-SNAPSHOT.jar:lib/*" org.cancerModels.entity2ontology.Entity2Ontology index --request indexingRequest.json
+java -cp "entity2Ontology-1.0-SNAPSHOT.jar:lib/*" org.cancer_models.entity2ontology.Entity2Ontology index --request indexingRequest.json
 ```
 ### Map command
 This is where the actual mapping happens. It takes the user input and tries to match the entities to a document in the 
@@ -163,7 +163,7 @@ entity.
 
 #### Command Usage Example
 ``` 
-java -cp "entity2Ontology-1.0-SNAPSHOT.jar:lib/*" org.cancerModels.entity2ontology.Entity2Ontology map --request mappingRequest.json --output myOutput.json
+java -cp "entity2Ontology-1.0-SNAPSHOT.jar:lib/*" org.cancer_models.entity2ontology.Entity2Ontology map --request mappingRequest.json --output myOutput.json
 ```
 
 ---
@@ -381,7 +381,7 @@ target/entity2Ontology-1.0-SNAPSHOT.jar
 You can run the application using the java command. For example, to display help information:
 
 ```bash
-java -cp "target/entity2Ontology-1.0-SNAPSHOT.jar:target/lib/*" org.cancerModels.entity2ontology.Entity2Ontology --help
+java -cp "target/entity2Ontology-1.0-SNAPSHOT.jar:target/lib/*" org.cancer_models.entity2ontology.Entity2Ontology --help
 ```
 
 This command executes the Entity2Ontology application with the specified classpath, including the generated JAR file 
