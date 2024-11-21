@@ -87,15 +87,24 @@ public class TemplateQueryProcessor {
         List<SearchQueryItem> cleanedSearchQueryItems = new ArrayList<>();
         Map<SearchQueryItem, String[]> wordsByItem = new HashMap<>();
 
-        // Indicates in which items a word is
-        Map<String, SearchQueryItem> highestWeightItemByWords = new HashMap<>();
-
         // Get the words that compose each item
         for (SearchQueryItem searchQueryItem : searchQueryItems) {
             wordsByItem.put(searchQueryItem, searchQueryItem.getValue().toLowerCase().trim().split(" "));
         }
 
         // Find in which terms each word appears
+        Map<String, SearchQueryItem> highestWeightItemByWords = findHighestWeightItemByWords(wordsByItem);
+
+        // Rebuild the list of items but removing repeated words. This could lead to have fewer items than at the beginning
+        for (SearchQueryItem searchQueryItem : searchQueryItems) {
+            processWordsByItem(searchQueryItem, wordsByItem, highestWeightItemByWords, cleanedSearchQueryItems);
+        }
+        return cleanedSearchQueryItems;
+    }
+
+    // Finds the SearchQueryItem with the highest score where each word is present.
+    private Map<String, SearchQueryItem> findHighestWeightItemByWords(Map<SearchQueryItem, String[]> wordsByItem) {
+        Map<String, SearchQueryItem> highestWeightItemByWords = new HashMap<>();
         wordsByItem.forEach((searchQueryItem, words) -> {
             for (String word : words) {
                 if (!highestWeightItemByWords.containsKey(word)) {
@@ -109,30 +118,35 @@ public class TemplateQueryProcessor {
                 }
             }
         });
+        return highestWeightItemByWords;
+    }
 
-        // Rebuild the list of items but removing repeated words. This could lead to have fewer items than at the beginning
-        for (SearchQueryItem searchQueryItem : searchQueryItems) {
-            StringBuilder newValueBuilder = new StringBuilder();
-            // Analyze each word in the item. If it appears in more than one term, leave only the one with
-            // the greatest weight.
-            String[] words = wordsByItem.get(searchQueryItem);
+    // Rebuilds a list of {@code SearchQueryItem} by ignoring repeated words
+    private void processWordsByItem(
+        SearchQueryItem searchQueryItem,
+        Map<SearchQueryItem, String[]> wordsByItem,
+        Map<String, SearchQueryItem> highestWeightItemByWords,
+        List<SearchQueryItem> cleanedSearchQueryItems) {
 
-            for (String word : words) {
-                SearchQueryItem highestWeight = highestWeightItemByWords.get(word);
-                // Keep the word only if this term is the one with the highest weight
-                if (highestWeight == searchQueryItem) {
-                    newValueBuilder.append(" ").append(word.trim());
-                }
-            }
+        StringBuilder newValueBuilder = new StringBuilder();
+        // Analyze each word in the item. If it appears in more than one term, leave only the one with
+        // the greatest weight.
+        String[] words = wordsByItem.get(searchQueryItem);
 
-            // Keep the item only if there were words left after the cleaning
-            if (!newValueBuilder.isEmpty()) {
-                String newValue = newValueBuilder.toString().trim();
-                searchQueryItem.setValue(newValue);
-                cleanedSearchQueryItems.add(searchQueryItem);
+        for (String word : words) {
+            SearchQueryItem highestWeight = highestWeightItemByWords.get(word);
+            // Keep the word only if this term is the one with the highest weight
+            if (highestWeight == searchQueryItem) {
+                newValueBuilder.append(" ").append(word.trim());
             }
         }
-        return cleanedSearchQueryItems;
+
+        // Keep the item only if there were words left after the cleaning
+        if (!newValueBuilder.isEmpty()) {
+            String newValue = newValueBuilder.toString().trim();
+            searchQueryItem.setValue(newValue);
+            cleanedSearchQueryItems.add(searchQueryItem);
+        }
     }
 
     private static void validateInput(QueryTemplate template, SourceEntity entity, Map<String, Double> weightsMap) {
