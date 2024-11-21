@@ -32,7 +32,7 @@ public class OntologyDownloader {
      * @throws IOException if an I/O error occurs.
      */
     public Set<OntologyTerm> downloadOntologyTerms(
-        String ontologyId, String termId, String type) throws IOException, InterruptedException {
+        String ontologyId, String termId, String type) throws IOException {
         validateInput(ontologyId, termId);
         Set<OntologyTerm> terms = new HashSet<>();
         String encodedTermId = URLEncoder.encode("http://purl.obolibrary.org/obo/" + termId, StandardCharsets.UTF_8);
@@ -67,12 +67,12 @@ public class OntologyDownloader {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(String.format("The ontology %s does not exist in OLS", ontologyName));
         }
-        catch (IOException | InterruptedException e) {
+        catch (IOException e) {
             throw new IllegalArgumentException(String.format("Error verifying existence of ontology %s", ontologyName));
         }
     }
 
-    private void validateOntologyExists(String ontologyName) throws IOException, InterruptedException {
+    private void validateOntologyExists(String ontologyName) throws IOException {
         String r = FileUtils.getStringFromUrl(BASE_URL + ontologyName);
         if (r.contains("\"status\" : 500")) {
             throw new IllegalArgumentException();
@@ -130,10 +130,9 @@ public class OntologyDownloader {
 
                 JsonNode nextUrlObject = links.path("next");
                 nextUrl = nextUrlObject.get("href").asText();
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 String error = e.getClass().getCanonicalName() + ": " + e.getMessage();
                 logger.error(error);
-                Thread.currentThread().interrupt();
             }
         }
         return ontologyTerms;

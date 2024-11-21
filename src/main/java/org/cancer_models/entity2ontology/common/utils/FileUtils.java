@@ -1,5 +1,8 @@
 package org.cancer_models.entity2ontology.common.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cancer_models.entity2ontology.index.service.Indexer;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
@@ -14,6 +17,8 @@ import java.nio.charset.StandardCharsets;
  * Utility class to handle files.
  */
 public class FileUtils {
+
+    private static final Logger logger = LogManager.getLogger(FileUtils.class);
 
     // Suppress default constructor for non-instantiability
     private FileUtils() {
@@ -36,14 +41,20 @@ public class FileUtils {
         return file;
     }
 
-    public static String getStringFromUrl(String url) throws IOException, InterruptedException {
+    public static String getStringFromUrl(String url) throws IOException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(url))
             .build();
 
         HttpResponse<String> response;
-        response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        } catch (InterruptedException e) {
+            logger.error("Error while requesting: {}", url, e);
+            Thread.currentThread().interrupt();
+            throw new IOException("Request interrupted while fetching URL: " + url, e);
+        }
 
         return response.body();
     }
