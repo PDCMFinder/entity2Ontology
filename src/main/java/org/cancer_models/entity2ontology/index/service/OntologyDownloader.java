@@ -64,8 +64,11 @@ public class OntologyDownloader {
         }
         try {
             validateOntologyExists(ontologyName);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(String.format("The ontology %s does not exist in OLS", ontologyName));
+        }
+        catch (IOException | InterruptedException e) {
+            throw new IllegalArgumentException(String.format("Error verifying existence of ontology %s", ontologyName));
         }
     }
 
@@ -130,6 +133,7 @@ public class OntologyDownloader {
             } catch (IOException | InterruptedException e) {
                 String error = e.getClass().getCanonicalName() + ": " + e.getMessage();
                 logger.error(error);
+                Thread.currentThread().interrupt();
             }
         }
         return ontologyTerms;
