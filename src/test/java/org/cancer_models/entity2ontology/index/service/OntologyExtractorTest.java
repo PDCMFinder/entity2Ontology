@@ -22,7 +22,7 @@ class OntologyExtractorTest {
     OntologyExtractor instance = new OntologyExtractor();
 
     @Test
-    void shouldReturnListOfTargetEntities() throws IOException {
+    void shouldReturnListOfTargetEntities() throws IOException, InterruptedException {
         // Given we have an OntologyLocation with 3 branches (with no descendants, to simplify)
         OntologyLocation ontologyLocation = createOntologyLocation();
 
@@ -55,7 +55,7 @@ class OntologyExtractorTest {
     }
 
     @Test
-    void shouldRemoveDuplicateSynonyms() throws IOException {
+    void shouldRemoveDuplicateSynonyms() throws IOException, InterruptedException {
 
         OntologyLocation ontologyLocation = new OntologyLocation(
             "ncit",

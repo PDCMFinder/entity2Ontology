@@ -60,6 +60,8 @@ public class OntologyExtractor {
             } catch (IOException e) {
                 logger.error(e.getMessage());
                 throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
         ontologyTerms.forEach(ontologyTerm -> targetEntities.add(termToTargetEntity(ontologyTerm)));
@@ -91,7 +93,7 @@ public class OntologyExtractor {
         return new ArrayList<>(uniqueValues);
     }
 
-    Set<OntologyTerm> downloadOntologyTerms(String ontologyId, String termId, String type) throws IOException {
+    Set<OntologyTerm> downloadOntologyTerms(String ontologyId, String termId, String type) throws IOException, InterruptedException {
         return ontologyDownloader.downloadOntologyTerms(ontologyId, termId, type);
     }
 }

@@ -32,7 +32,7 @@ public class OntologyDownloader {
      * @throws IOException if an I/O error occurs.
      */
     public Set<OntologyTerm> downloadOntologyTerms(
-        String ontologyId, String termId, String type) throws IOException {
+        String ontologyId, String termId, String type) throws IOException, InterruptedException {
         validateInput(ontologyId, termId);
         Set<OntologyTerm> terms = new HashSet<>();
         String encodedTermId = URLEncoder.encode("http://purl.obolibrary.org/obo/" + termId, StandardCharsets.UTF_8);
@@ -69,7 +69,7 @@ public class OntologyDownloader {
         }
     }
 
-    private void validateOntologyExists(String ontologyName) throws IOException {
+    private void validateOntologyExists(String ontologyName) throws IOException, InterruptedException {
         String r = FileUtils.getStringFromUrl(BASE_URL + ontologyName);
         if (r.contains("\"status\" : 500")) {
             throw new IllegalArgumentException();
@@ -127,7 +127,7 @@ public class OntologyDownloader {
 
                 JsonNode nextUrlObject = links.path("next");
                 nextUrl = nextUrlObject.get("href").asText();
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 String error = e.getClass().getCanonicalName() + ": " + e.getMessage();
                 logger.error(error);
             }

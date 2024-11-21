@@ -57,7 +57,7 @@ class OntologyDownloaderTest {
     }
 
     @Test
-    void shouldGetOneTermIfBranchHasNoChildren() throws IOException {
+    void shouldGetOneTermIfBranchHasNoChildren() throws IOException, InterruptedException {
         // Given a term that represents a branch without any children (a "leaf" in the ontology tree)
         String ontologyName = "ncit";
         String termId = "NCIT_C67515";
@@ -77,7 +77,7 @@ class OntologyDownloaderTest {
     }
 
     @Test
-    void shouldGetSeveralTermsIfBranchHasChildren() throws IOException {
+    void shouldGetSeveralTermsIfBranchHasChildren() throws IOException, InterruptedException {
         // Given a term that represents a branch with children
         String ontologyName = "ncit";
         String termId = "NCIT_C158908";

@@ -28,7 +28,7 @@ public class FileUtils {
         return file.length() == 0;
     }
 
-    public static File getNonEmptyFileFromPath(String filePath) throws IOException {
+    public static File getNonEmptyFileFromPath(String filePath) {
         File file = new File(filePath);
         if (isFileEmpty(file)) {
             throw new IllegalArgumentException("File is empty: " + file.getPath());
@@ -36,18 +36,15 @@ public class FileUtils {
         return file;
     }
 
-    public static String getStringFromUrl(String url) throws IOException {
+    public static String getStringFromUrl(String url) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(url))
             .build();
 
         HttpResponse<String> response;
-        try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+
         return response.body();
     }
 
