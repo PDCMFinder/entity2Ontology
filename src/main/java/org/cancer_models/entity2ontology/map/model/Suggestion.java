@@ -3,8 +3,6 @@ package org.cancer_models.entity2ontology.map.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Collection;
-
 /**
  * Represents a suggestion for mapping a source entity to an ontology term.
  * Each suggestion includes a label, a URL, and a score indicating the match quality.
@@ -41,14 +39,5 @@ public class Suggestion {
 
     public String calculateUniqueSuggestionId(TargetEntity targetEntity) {
         return targetEntity.getTargetType() + "|" + targetEntity.getEntityType() + "|" + targetEntity.getId();
-    }
-
-    public static void printCollection(Collection<Suggestion> suggestions) {
-        for (Suggestion suggestion : suggestions) {
-            System.out.println("targetEntityId: " + suggestion.getTargetEntity().getId());
-            System.out.println(suggestion.getTargetEntity().getData());
-            System.out.println("score: " + suggestion.getScore());
-            System.out.println();
-        }
     }
 }

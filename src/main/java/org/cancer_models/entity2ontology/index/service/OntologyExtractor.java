@@ -46,24 +46,17 @@ public class OntologyExtractor {
      * @param ontologyLocation the location of the ontology, including the URL and branches of interest
      * @return a list of {@link TargetEntity} objects representing the extracted ontology data
      */
-    public List<TargetEntity> extract(OntologyLocation ontologyLocation) {
+    public List<TargetEntity> extract(OntologyLocation ontologyLocation) throws IOException {
         List<TargetEntity> targetEntities = new ArrayList<>();
         Set<OntologyTerm> ontologyTerms = new HashSet<>();
-        ontologyLocation.getBranches().forEach(branch -> {
+        for (String branch : ontologyLocation.getBranches()) {
             logger.info("Processing branch {}", branch);
-            try {
-                Set<OntologyTerm> ontologyTermsByBranch = downloadOntologyTerms(
-                    ontologyLocation.getOntoId(), branch, ontologyLocation.getName());
-                if (ontologyTermsByBranch != null) {
-                    ontologyTerms.addAll(ontologyTermsByBranch);
-                }
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            Set<OntologyTerm> ontologyTermsByBranch = downloadOntologyTerms(
+                ontologyLocation.getOntoId(), branch, ontologyLocation.getName());
+            if (ontologyTermsByBranch != null) {
+                ontologyTerms.addAll(ontologyTermsByBranch);
             }
-        });
+        }
         ontologyTerms.forEach(ontologyTerm -> targetEntities.add(termToTargetEntity(ontologyTerm)));
         return targetEntities;
     }
@@ -93,7 +86,7 @@ public class OntologyExtractor {
         return new ArrayList<>(uniqueValues);
     }
 
-    Set<OntologyTerm> downloadOntologyTerms(String ontologyId, String termId, String type) throws IOException, InterruptedException {
+    Set<OntologyTerm> downloadOntologyTerms(String ontologyId, String termId, String type) throws IOException {
         return ontologyDownloader.downloadOntologyTerms(ontologyId, termId, type);
     }
 }

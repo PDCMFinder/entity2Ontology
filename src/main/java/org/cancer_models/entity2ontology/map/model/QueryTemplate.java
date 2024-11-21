@@ -65,7 +65,7 @@ public class QueryTemplate {
 
         // Find all matches and add the key (without ${}) to the list
         while (matcher.find()) {
-            keys.add(matcher.group(1));  // group(1) captures the content inside ${}
+            keys.add(matcher.group(1));
         }
 
         return keys;

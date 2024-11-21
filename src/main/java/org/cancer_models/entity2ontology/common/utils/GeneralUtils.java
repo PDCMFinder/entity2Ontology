@@ -1,7 +1,6 @@
 package org.cancer_models.entity2ontology.common.utils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GeneralUtils {
 
@@ -25,9 +24,7 @@ public class GeneralUtils {
      */
     public static <T> List<T> castList(Object obj, Class<T> clazz) {
         if (obj instanceof List<?>) {
-            return ((List<?>) obj).stream()
-                .map(clazz::cast)
-                .collect(Collectors.toList());
+            return ((List<?>) obj).stream().map(clazz::cast).toList();
         }
         throw new ClassCastException("Object is not a List of " + clazz.getSimpleName());
     }

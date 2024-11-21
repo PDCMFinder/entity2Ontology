@@ -65,12 +65,11 @@ class MappingServiceTest {
 
     @Test
     void shouldFailIfNullEntityId() {
+        SourceEntity sourceEntity = new SourceEntity();
+
         // When we try to map an entity that is null
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-        {
-            SourceEntity sourceEntity = new SourceEntity();
-            instance.mapEntity(sourceEntity, "", 0, config);
-        });
+            instance.mapEntity(sourceEntity, "", 0, config));
 
         // Then we get an IllegalArgumentException
         assertTrue(
@@ -80,13 +79,12 @@ class MappingServiceTest {
 
     @Test
     void shouldFailIfNullEntityType() {
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("1");
+
         // When we try to map an entity that is null
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-        {
-            SourceEntity sourceEntity = new SourceEntity();
-            sourceEntity.setId("1");
-            instance.mapEntity(sourceEntity, "", 0, config);
-        });
+            instance.mapEntity(sourceEntity, "", 0, config));
 
         // Then we get an IllegalArgumentException
         assertTrue(
@@ -96,14 +94,14 @@ class MappingServiceTest {
 
     @Test
     void shouldFailIfNullEntityData() {
+
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("1");
+        sourceEntity.setType("type");
+
         // When we try to map an entity that is null
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-        {
-            SourceEntity sourceEntity = new SourceEntity();
-            sourceEntity.setId("1");
-            sourceEntity.setType("type");
-            instance.mapEntity(sourceEntity, "", 0, config);
-        });
+            instance.mapEntity(sourceEntity, "", 0, config));
 
         // Then we get an IllegalArgumentException
         assertTrue(
@@ -113,15 +111,14 @@ class MappingServiceTest {
 
     @Test
     void shouldFailIfNullIndexName() {
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("1");
+        sourceEntity.setType("type");
+        sourceEntity.setData(new HashMap<>());
+
         // When we try to map an entity without specifying the index
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-        {
-            SourceEntity sourceEntity = new SourceEntity();
-            sourceEntity.setId("1");
-            sourceEntity.setType("type");
-            sourceEntity.setData(new HashMap<>());
-            instance.mapEntity(sourceEntity, null, 0, config);
-        });
+            instance.mapEntity(sourceEntity, null, 0, config));
 
         // Then we get an IOException
         assertEquals("Index cannot be null", exception.getMessage());
@@ -129,15 +126,14 @@ class MappingServiceTest {
 
     @Test
     void shouldFailIfIndexNotExists() {
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("1");
+        sourceEntity.setType("type");
+        sourceEntity.setData(new HashMap<>());
+
         // When we try to map an entity using an invalid index
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-        {
-            SourceEntity sourceEntity = new SourceEntity();
-            sourceEntity.setId("1");
-            sourceEntity.setType("type");
-            sourceEntity.setData(new HashMap<>());
-            instance.mapEntity(sourceEntity, "unknown", 0, config);
-        });
+            instance.mapEntity(sourceEntity, "unknown", 0, config));
 
         // Then we get an IOException
         assertEquals("Index [unknown] is not a valid lucene index", exception.getMessage());

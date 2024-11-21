@@ -2,7 +2,6 @@ package org.cancer_models.entity2ontology.common.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cancer_models.entity2ontology.index.service.Indexer;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.File;

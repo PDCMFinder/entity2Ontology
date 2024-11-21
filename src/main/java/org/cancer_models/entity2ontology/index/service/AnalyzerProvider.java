@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AnalyzerProvider {
 
-  private static Analyzer analyzer;
+  private Analyzer analyzer;
 
   /**
    * Returns the analyser to be used in the application.

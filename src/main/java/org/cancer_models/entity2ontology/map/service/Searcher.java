@@ -82,7 +82,7 @@ public class Searcher {
     }
 
     public TopDocs search(Query query, String indexPath) throws IOException {
-        logger.info("Search with query: {\n{}\n}", query.toString());
+        logger.info("Search with query: {\n{}\n}", query);
         // To make sure the queries use the same analyser used to index, we rebuild the query by parsing the string version
         // or the original one
         String queryAsString = query.toString();
@@ -90,7 +90,7 @@ public class Searcher {
         try {
             reparsedQuery = queryParser.parse(queryAsString);
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
         IndexSearcher indexSearcher = getOrCreateIndexSearcher(indexPath);
         return indexSearcher.search(reparsedQuery, 10);

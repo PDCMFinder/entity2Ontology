@@ -45,7 +45,7 @@ class SuggestionsFinderTest {
 
     private static final MappingConfiguration conf = new MappingConfiguration();
 
-    private static final String indexPath = "dummyIndexPath";
+    private static final String INDEX_PATH = "dummyIndexPath";
 
     @BeforeEach
     void setup()
@@ -98,10 +98,10 @@ class SuggestionsFinderTest {
 
     @Test
     void testFindSuggestions_foundOneExactRuleMatch() throws IOException {
-        when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
+        when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(suggestionExactRule));
 
-        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, indexPath, 10, conf);
+        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, INDEX_PATH, 10, conf);
 
         assertEquals(1, suggestions.size(), "We expect 1 suggestion");
         Suggestion suggestion = suggestions.getFirst();
@@ -110,10 +110,10 @@ class SuggestionsFinderTest {
 
     @Test
     void testFindSuggestions_foundOneSimilarRuleMatch() throws IOException {
-        when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
+        when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(suggestionSimilarRule));
 
-        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, indexPath, 10, conf);
+        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, INDEX_PATH, 10, conf);
 
         assertEquals(1, suggestions.size(), "We expect 1 suggestion");
         Suggestion suggestion = suggestions.getFirst();
@@ -122,10 +122,10 @@ class SuggestionsFinderTest {
 
     @Test
     void testFindSuggestions_foundOneExactOntologyMatch() throws IOException {
-        when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
+        when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(suggestionExactOntology));
 
-        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, indexPath, 10, conf);
+        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, INDEX_PATH, 10, conf);
 
         assertEquals(1, suggestions.size(), "We expect 1 suggestion");
         Suggestion suggestion = suggestions.getFirst();
@@ -134,10 +134,10 @@ class SuggestionsFinderTest {
 
     @Test
     void testFindSuggestions_foundOneSimilarOntologyMatch() throws IOException {
-        when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
+        when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(suggestionSimilarOntology));
 
-        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, indexPath, 10, conf);
+        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, INDEX_PATH, 10, conf);
 
         assertEquals(1, suggestions.size(), "We expect 1 suggestion");
         Suggestion suggestion = suggestions.getFirst();
@@ -146,11 +146,11 @@ class SuggestionsFinderTest {
 
     @Test
     void testFindSuggestions_foundOneSuggestionEachStep() throws IOException {
-        when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
+        when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(
                 suggestionExactRule, suggestionSimilarRule, suggestionExactOntology, suggestionSimilarOntology));
 
-        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, indexPath, 10, conf);
+        List<Suggestion> suggestions = instance.findSuggestions(sourceEntity, INDEX_PATH, 10, conf);
 
         assertEquals(4, suggestions.size(), "We expect 4 suggestions");
         assertTrue(isSortedDescending(suggestions), "The suggestions should be sorted (desc) by `score`");

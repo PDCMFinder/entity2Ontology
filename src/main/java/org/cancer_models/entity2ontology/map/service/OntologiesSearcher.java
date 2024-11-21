@@ -125,42 +125,6 @@ public class OntologiesSearcher {
     }
 
     /**
-     * Searches for ontology suggestions using a given query template, matching the entity values, and calculates the scores.
-     *
-     * @param template   The query template to use for the search.
-     * @param entity     The source entity providing values for the query.
-     * @param weightsMap The weights for each field in the query.
-     * @param indexPath  The path to the Lucene index to search in.
-     * @return A list of ontology suggestions with calculated scores.
-     * @throws IOException If an error occurs while searching or processing the Lucene query.
-     */
-    private List<Suggestion> processTemplate(
-        QueryTemplate template, SourceEntity entity, Map<String, Double> weightsMap, String indexPath) throws IOException {
-
-        List<Suggestion> suggestions;
-        List<SearchQueryItem> searchQueryItems;
-
-        try {
-            searchQueryItems = templateQueryProcessor.extractSearchQueryItems(
-                template, entity, weightsMap);
-        } catch (IllegalArgumentException exception) {
-            logger.error("Error processing template [{}]: ", template, exception);
-            throw new IllegalArgumentException(exception.getMessage());
-        }
-
-        Query query = queryBuilder.buildExactMatchOntologiesQuery(searchQueryItems);
-
-        suggestions = queryProcessor.executeQuery(query, indexPath);
-        // Calculate the score for each suggestion
-        for (Suggestion suggestion : suggestions) {
-            double score = scoreCalculator.calculateScoreInOntologySuggestion(searchQueryItems, suggestion);
-            suggestion.setScore(score);
-        }
-
-        return suggestions;
-    }
-
-    /**
      * Searches for ontology suggestions using a given list of search terms, and calculates the scores.
      *
      * @param searchQueryItems List of {@link SearchQueryItem} to use in the query.
@@ -206,6 +170,5 @@ public class OntologiesSearcher {
         }
         return searchQueryItems;
     }
-
 
 }

@@ -144,13 +144,11 @@ public class ScoreCalculator {
         highestScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, label, fuzzinessThreshold);
 
         // Only look for similarity in synonyms if there is need to
-        if (highestScore < 1.0) {
-            if (!synonyms.isEmpty()) {
-                for (String synonym : synonyms) {
-                    double synonymScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, synonym, fuzzinessThreshold);
-                    if (synonymScore > highestScore) {
-                        highestScore = synonymScore;
-                    }
+        if (highestScore < 1.0 && !synonyms.isEmpty()) {
+            for (String synonym : synonyms) {
+                double synonymScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, synonym, fuzzinessThreshold);
+                if (synonymScore > highestScore) {
+                    highestScore = synonymScore;
                 }
             }
         }

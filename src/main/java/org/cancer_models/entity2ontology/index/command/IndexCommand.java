@@ -1,5 +1,7 @@
 package org.cancer_models.entity2ontology.index.command;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cancer_models.entity2ontology.index.service.IndexingRequestService;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -31,6 +33,7 @@ public class IndexCommand implements Runnable {
 
     private final IndexingRequestService indexingRequestService = new IndexingRequestService();
 
+    private static final Logger logger = LogManager.getLogger(IndexCommand.class);
     /**
      * The JSON file containing the indexing request.
      */
@@ -44,7 +47,7 @@ public class IndexCommand implements Runnable {
             // Read the mapping request
             indexingRequestService.processRequest(requestFile);
         } catch (IOException | IllegalArgumentException e) {
-            System.err.println("Failed to perform indexing: " + e.getMessage());
+            logger.error("Failed to perform indexing: {}", e.getMessage());
             System.exit(1);
         }
     }

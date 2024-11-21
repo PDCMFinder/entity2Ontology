@@ -79,7 +79,7 @@ public class OntologyDownloader {
         }
     }
 
-    private String getDescendantsUrl(JsonNode jsonNode) throws IOException {
+    private String getDescendantsUrl(JsonNode jsonNode) {
         String url = null;
         JsonNode links = jsonNode.path("_links");
         if (links.has("hierarchicalDescendants")) {
@@ -99,7 +99,10 @@ public class OntologyDownloader {
 
         String lastUrl = null;
 
-        while (true) {
+        // Flag to indicate if already finished going through all the paginated results
+        boolean finished = false;
+
+        while (!finished) {
             try {
 
                 String jsonResponse = FileUtils.getStringFromUrl(nextUrl);
@@ -120,11 +123,15 @@ public class OntologyDownloader {
                     }
                     // If no last, there are no more pages so we can stop
                     else {
-                        break;
+                        finished = true;
                     }
                 }
 
                 if (nextUrl.equals(lastUrl)) {
+                    finished = true;
+                }
+
+                if (finished) {
                     break;
                 }
 

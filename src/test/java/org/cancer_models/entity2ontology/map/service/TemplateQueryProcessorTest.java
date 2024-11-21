@@ -92,40 +92,6 @@ class TemplateQueryProcessorTest {
     }
 
     @Test
-    void testExtractSearchQueryItems_overlappingDataTemplate2() {
-        QueryTemplate template = new QueryTemplate("${TumorType} ${OriginTissue} ${SampleDiagnosis}");
-        Map<String, Double> weightsMap = new HashMap<>();
-        weightsMap.put("TumorType", 0.5);
-        weightsMap.put("SampleDiagnosis", 1.5);
-        weightsMap.put("OriginTissue", 0.5);
-
-        // Initialize entity with attributes that contain overlapping information (like OriginTissue=lung and
-        // the diagnosis also containing the word "lung")
-        Map<String, String> data = new HashMap<>();
-        data.put("TumorType", "Recurrent");
-        data.put("SampleDiagnosis", "Lung Carcinoma");
-        data.put("OriginTissue", "Lung");
-
-        mockEntity = new SourceEntity();
-        mockEntity.setData(data);
-
-        List<SearchQueryItem> result = templateQueryProcessor.extractSearchQueryItems(template, mockEntity, weightsMap);
-
-        assertNotNull(result);
-        assertEquals(2, result.size());
-
-        // Verify each SearchQueryItem's properties
-        assertEquals("TumorType", result.get(0).getField());
-        assertEquals("recurrent", result.get(0).getValue());
-        assertEquals(0.5, result.get(0).getWeight());
-
-        assertEquals("SampleDiagnosis", result.get(1).getField());
-        assertEquals("lung carcinoma", result.get(1).getValue());
-        assertEquals(1.5, result.get(1).getWeight());
-
-    }
-
-    @Test
     void testExtractSearchQueryItems_templateNull() {
         QueryTemplate template = null;
         Map<String, Double> weightsMap = new HashMap<>();
