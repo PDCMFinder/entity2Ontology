@@ -2,11 +2,14 @@ package org.cancer_models.entity2ontology.index.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cancer_models.entity2ontology.common.utils.FileUtils;
+import org.cancer_models.entity2ontology.common.utils.JsonConverter;
 import org.cancer_models.entity2ontology.index.model.IndexingRequest;
 import org.cancer_models.entity2ontology.index.model.IndexingResponse;
 import org.cancer_models.entity2ontology.index.model.OntologyLocation;
 import org.cancer_models.entity2ontology.index.model.RuleLocation;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -50,7 +53,7 @@ public class IndexingRequestService {
      * @throws IOException if there is an error reading the data sources or writing to the index
      */
     public IndexingResponse processRequest(String requestFile) throws IOException {
-        IndexingRequest request = IndexingRequestReader.readIndexingRequest(requestFile);
+        IndexingRequest request = readIndexingRequest(requestFile);
         return processRequest(request);
     }
 
@@ -117,5 +120,17 @@ public class IndexingRequestService {
      */
     private int processOntologyLocation(OntologyLocation ontologyLocation, String indexPath) throws IOException {
         return indexingService.indexOntologies(ontologyLocation, indexPath);
+    }
+
+    /**
+     * Reads a {@link IndexingRequest} from a JSON file.
+     *
+     * @param jsonFilePath the JSON file path
+     * @return the {@link IndexingRequest}
+     * @throws IOException if an error occurs while reading the file
+     */
+    public static IndexingRequest readIndexingRequest(String jsonFilePath) throws IOException {
+        File jsonFile = FileUtils.getNonEmptyFileFromPath(jsonFilePath);
+        return JsonConverter.fromJsonFile(jsonFile, IndexingRequest.class);
     }
 }
