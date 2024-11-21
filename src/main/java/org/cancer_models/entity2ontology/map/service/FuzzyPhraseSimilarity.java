@@ -12,7 +12,7 @@ import java.util.Set;
  * Using Jaccard similarity index as the metric. Useful for instances like "lung cancer" and "cancer in lung",
  * which should be scored as almost identical
  */
-public class FuzzyPhraseSimilarity {
+class FuzzyPhraseSimilarity {
 
     // Suppress default constructor for non-instantiability
     private FuzzyPhraseSimilarity() {

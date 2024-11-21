@@ -7,7 +7,7 @@ import picocli.CommandLine;
 
 // A custom factory to allow Picocli to use Spring for creating command instances
 @Component
-public class SpringCommandFactory implements CommandLine.IFactory {
+class SpringCommandFactory implements CommandLine.IFactory {
     private final ApplicationContext context;
 
     @Autowired

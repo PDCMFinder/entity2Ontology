@@ -5,5 +5,5 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan("org.cancer_models.entity2ontology")
-public class AppConfig {
+class AppConfig {
 }
