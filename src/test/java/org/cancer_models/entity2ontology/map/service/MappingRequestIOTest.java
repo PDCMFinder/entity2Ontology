@@ -8,12 +8,12 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class MappingRequestIOTest {
+class MappingRequestIOTest {
 
     private static final String DATA_DIR = "src/test/resources/mappingRequestReader/";
 
     @Test
-    public void shouldCreateMappingRequestWhenFileHasCorrectData() throws IOException {
+    void shouldCreateMappingRequestWhenFileHasCorrectData() throws IOException {
         // Given a file that has right data
         String fileToRead = DATA_DIR + "mappingRequest.json";
 
@@ -36,7 +36,7 @@ public class MappingRequestIOTest {
     }
 
     @Test
-    public void shouldFailWhenFileDoesNotExist() {
+    void shouldFailWhenFileDoesNotExist() {
         // Given a file that doesn't exist
         String fileToRead = DATA_DIR + "NonExisting.json";
 
@@ -50,7 +50,7 @@ public class MappingRequestIOTest {
     }
 
     @Test
-    public void shouldFailWhenFileIsEmpty() {
+    void shouldFailWhenFileIsEmpty() {
         // Given a file that is empty
         String fileToRead = DATA_DIR + "emptyFile.json";
 

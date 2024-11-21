@@ -56,12 +56,12 @@ class OntologiesSearcherTest {
     }
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         instance = new OntologiesSearcher(queryBuilder, templateQueryProcessor, queryProcessor, scoreCalculator);
     }
 
     @Test
-    public void testFindExactMatchingOntologies_exactMatchLabel() throws IOException {
+    void testFindExactMatchingOntologies_exactMatchLabel() throws IOException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -89,7 +89,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    public void testFindExactMatchingOntologies_exactMatchSynonym() throws IOException {
+    void testFindExactMatchingOntologies_exactMatchSynonym() throws IOException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_2");
@@ -118,7 +118,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    public void testFindExactMatchingOntologies_noMatch() throws IOException {
+    void testFindExactMatchingOntologies_noMatch() throws IOException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -142,7 +142,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    public void testFindSimilarMatchingOntologies_similarMatchLabel() throws IOException {
+    void testFindSimilarMatchingOntologies_similarMatchLabel() throws IOException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -171,7 +171,7 @@ class OntologiesSearcherTest {
 
 
     @Test
-    public void testFindSimilarMatchingOntologies_similarMatchSynonym() throws IOException {
+    void testFindSimilarMatchingOntologies_similarMatchSynonym() throws IOException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -199,7 +199,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    public void testFindSimilarMatchingOntologies_noMatch() throws IOException {
+    void testFindSimilarMatchingOntologies_noMatch() throws IOException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");

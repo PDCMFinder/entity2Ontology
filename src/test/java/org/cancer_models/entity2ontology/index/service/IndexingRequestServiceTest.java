@@ -22,7 +22,7 @@ class IndexingRequestServiceTest {
     private final IndexingRequestService instance = new IndexingRequestService();
 
     @Test
-    public void shouldProcessIndexingRequestByFile() throws IOException {
+    void shouldProcessIndexingRequestByFile() throws IOException {
         // Given a file that has right data
         String fileToRead = DATA_DIR + "indexingRequestTreatment.json";
 
@@ -38,7 +38,7 @@ class IndexingRequestServiceTest {
     }
 
     @Test
-    public void shouldReturnIndexingRequestWhenFileHasCorrectData() throws IOException {
+    void shouldReturnIndexingRequestWhenFileHasCorrectData() throws IOException {
         // Given a file that has right data
         String fileToRead = DATA_DIR + "indexingRequest.json";
 
@@ -99,7 +99,7 @@ class IndexingRequestServiceTest {
     }
 
     @Test
-    public void shouldFailWhenFileIsEmpty() {
+    void shouldFailWhenFileIsEmpty() {
         // Given a file that is empty
         String fileToRead = DATA_DIR + "emptyFile.json";
 

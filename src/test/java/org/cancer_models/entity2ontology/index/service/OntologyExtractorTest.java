@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
-public class OntologyExtractorTest {
+class OntologyExtractorTest {
 
     @Spy
     OntologyExtractor instance = new OntologyExtractor();
@@ -55,7 +55,7 @@ public class OntologyExtractorTest {
     }
 
     @Test
-    public void shouldRemoveDuplicateSynonyms() throws IOException {
+    void shouldRemoveDuplicateSynonyms() throws IOException {
 
         OntologyLocation ontologyLocation = new OntologyLocation(
             "ncit",

@@ -56,7 +56,7 @@ class RulesSearcherTest {
     }
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         instance = new RulesSearcher(queryBuilder, queryProcessor, scoreCalculator);
     }
 

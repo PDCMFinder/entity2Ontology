@@ -9,7 +9,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class OntologyDownloaderTest {
+class OntologyDownloaderTest {
 
     @Test
     void shouldFailWhenNullOntologyName() {

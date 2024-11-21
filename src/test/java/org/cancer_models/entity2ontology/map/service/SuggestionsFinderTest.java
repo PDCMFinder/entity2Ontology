@@ -48,7 +48,7 @@ class SuggestionsFinderTest {
     private static final String indexPath = "dummyIndexPath";
 
     @BeforeEach
-    public void setup()
+    void setup()
     {
         instance = new SuggestionsFinder(rulesSearcher, ontologiesSearcher);
         initSourceEntity();
@@ -97,7 +97,7 @@ class SuggestionsFinderTest {
     }
 
     @Test
-    public void testFindSuggestions_foundOneExactRuleMatch() throws IOException {
+    void testFindSuggestions_foundOneExactRuleMatch() throws IOException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
             .thenReturn(List.of(suggestionExactRule));
 
@@ -109,7 +109,7 @@ class SuggestionsFinderTest {
     }
 
     @Test
-    public void testFindSuggestions_foundOneSimilarRuleMatch() throws IOException {
+    void testFindSuggestions_foundOneSimilarRuleMatch() throws IOException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
             .thenReturn(List.of(suggestionSimilarRule));
 
@@ -121,7 +121,7 @@ class SuggestionsFinderTest {
     }
 
     @Test
-    public void testFindSuggestions_foundOneExactOntologyMatch() throws IOException {
+    void testFindSuggestions_foundOneExactOntologyMatch() throws IOException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
             .thenReturn(List.of(suggestionExactOntology));
 
@@ -133,7 +133,7 @@ class SuggestionsFinderTest {
     }
 
     @Test
-    public void testFindSuggestions_foundOneSimilarOntologyMatch() throws IOException {
+    void testFindSuggestions_foundOneSimilarOntologyMatch() throws IOException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
             .thenReturn(List.of(suggestionSimilarOntology));
 
@@ -145,7 +145,7 @@ class SuggestionsFinderTest {
     }
 
     @Test
-    public void testFindSuggestions_foundOneSuggestionEachStep() throws IOException {
+    void testFindSuggestions_foundOneSuggestionEachStep() throws IOException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, indexPath, conf))
             .thenReturn(List.of(
                 suggestionExactRule, suggestionSimilarRule, suggestionExactOntology, suggestionSimilarOntology));

@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MappingServiceTest {
+class MappingServiceTest {
 
     private static final String DATA_DIR = "src/test/resources/mappings/";
 
@@ -52,7 +52,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    public void shouldFailIfNullEntity() {
+    void shouldFailIfNullEntity() {
         // When we try to map an entity that is null
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
         {
@@ -64,7 +64,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    public void shouldFailIfNullEntityId() {
+    void shouldFailIfNullEntityId() {
         // When we try to map an entity that is null
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
         {
@@ -79,7 +79,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    public void shouldFailIfNullEntityType() {
+    void shouldFailIfNullEntityType() {
         // When we try to map an entity that is null
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
         {
@@ -95,7 +95,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    public void shouldFailIfNullEntityData() {
+    void shouldFailIfNullEntityData() {
         // When we try to map an entity that is null
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
         {
@@ -112,7 +112,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    public void shouldFailIfNullIndexName() {
+    void shouldFailIfNullIndexName() {
         // When we try to map an entity without specifying the index
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
         {
@@ -128,7 +128,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    public void shouldFailIfIndexNotExists() {
+    void shouldFailIfIndexNotExists() {
         // When we try to map an entity using an invalid index
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
         {
@@ -144,7 +144,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    public void shouldGeExpectedMappingsForDiagnosisSet() throws IOException {
+    void shouldGeExpectedMappingsForDiagnosisSet() throws IOException {
         // Given we have an index with diagnosis at src/test/output/small_diagnosis_index
         String smallDiagnosisIndexLocation = IndexTestCreator.createIndex(
             "input_data_small_diagnosis_index/data.json");
