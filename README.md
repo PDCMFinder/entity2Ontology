@@ -1,5 +1,7 @@
 # Entity2Ontology - Mapping entities to Ontology terms
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=PDCMFinder_entity2Ontology&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=PDCMFinder_entity2Ontology)
+
 `Entity2Ontology` is a Java tool that maps entities to specific ontology terms, useful for cases where non-textual 
 information with attributes must be mapped accurately to a controlled vocabulary.
 
