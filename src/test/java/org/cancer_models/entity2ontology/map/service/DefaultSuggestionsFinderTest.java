@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class SuggestionsFinderTest {
+class DefaultSuggestionsFinderTest {
 
     @Mock
     private RulesSearcher rulesSearcher;
@@ -27,7 +27,7 @@ class SuggestionsFinderTest {
     @Mock
     private OntologiesSearcher ontologiesSearcher;
 
-    private SuggestionsFinder instance;
+    private DefaultSuggestionsFinder instance;
 
     private SourceEntity sourceEntity;
 
@@ -50,7 +50,7 @@ class SuggestionsFinderTest {
     @BeforeEach
     void setup()
     {
-        instance = new SuggestionsFinder(rulesSearcher, ontologiesSearcher);
+        instance = new DefaultSuggestionsFinder(rulesSearcher, ontologiesSearcher);
         initSourceEntity();
         initSuggestions();
     }

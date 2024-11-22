@@ -43,7 +43,7 @@ class MappingServiceTest {
     private final OntologiesSearcher ontologiesSearcher =
         new OntologiesSearcher(queryBuilder, templateQueryProcessor, queryProcessor, scoreCalculator);
 
-    private final SuggestionsFinder suggestionsFinder = new SuggestionsFinder(rulesSearcher, ontologiesSearcher);
+    private final SuggestionsFinder suggestionsFinder = new DefaultSuggestionsFinder(rulesSearcher, ontologiesSearcher);
 
     private final MappingService instance = new MappingService(suggestionsFinder);
 
