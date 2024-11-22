@@ -197,6 +197,33 @@
             </plugin>
 
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>run-delombok</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>-cp</argument>
+                        <argument>${project.basedir}/libs/lombok-1.18.36.jar</argument>
+                        <argument>lombok.launch.Main</argument>
+                        <argument>delombok</argument>
+                        <argument>-d</argument>
+                        <argument>${project.build.directory}/generated-sources/delombok</argument>
+                        <argument>${project.basedir}/src/main/java</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.5.0</version>
@@ -205,9 +232,11 @@
                     <doclint>none</doclint> <!-- Optional: Suppresses warnings -->
                     <encoding>UTF-8</encoding> <!-- Ensures correct character encoding -->
                     <show>public</show> <!-- Include public members only-->
+                    <sourcepath>${project.basedir}/target/generated-sources/delombok</sourcepath>
                 </configuration>
                 <executions>
                     <execution>
+                        <phase>package</phase>
                         <goals>
                             <goal>javadoc</goal>
                         </goals>
