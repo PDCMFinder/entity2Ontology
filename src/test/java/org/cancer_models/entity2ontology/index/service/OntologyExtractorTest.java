@@ -2,7 +2,7 @@ package org.cancer_models.entity2ontology.index.service;
 
 import org.cancer_models.entity2ontology.common.model.OntologyTerm;
 import org.cancer_models.entity2ontology.index.model.OntologyLocation;
-import org.cancer_models.entity2ontology.map.model.TargetEntity;
+import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;

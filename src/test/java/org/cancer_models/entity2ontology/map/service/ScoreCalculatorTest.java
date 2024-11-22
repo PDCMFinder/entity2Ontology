@@ -2,7 +2,7 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
-import org.cancer_models.entity2ontology.map.model.TargetEntity;
+import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

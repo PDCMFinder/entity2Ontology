@@ -9,7 +9,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.cancer_models.entity2ontology.common.utils.GeneralUtils;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
-import org.cancer_models.entity2ontology.map.model.TargetEntity;
+import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

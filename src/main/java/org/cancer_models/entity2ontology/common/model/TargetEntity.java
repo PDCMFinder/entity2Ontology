@@ -1,4 +1,4 @@
-package org.cancer_models.entity2ontology.map.model;
+package org.cancer_models.entity2ontology.common.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,32 +17,32 @@ import java.util.Map;
 public class TargetEntity {
 
     /**
-     * Unique identifier of the entity
+     * Unique identifier of the entity.
      */
     private String id;
 
     /**
-     * Type of the entity. (Treatment or diagnosis, for instance)
+     * Type of the entity. (Treatment or diagnosis, for instance).
      */
     private String entityType;
 
     /**
-     * Rule or Ontology
+     * Rule or Ontology.
      */
     private String targetType;
 
     /**
-     * The data of the entity {@code <field, value>}
+     * The data of the entity {@code <field, value>}.
      */
     private Map<String, Object> data;
 
     /**
-     * Label of the ontology term this entity was mapped to or represents
+     * Label of the ontology term this entity was mapped to or represents.
      */
     private String label;
 
     /**
-     * Url of the ontology term this entity was mapped to or represents
+     * Url of the ontology term this entity was mapped to or represents.
      */
     private String url;
 

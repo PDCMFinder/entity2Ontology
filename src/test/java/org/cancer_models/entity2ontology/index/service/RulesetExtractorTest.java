@@ -1,7 +1,7 @@
 package org.cancer_models.entity2ontology.index.service;
 
 import org.cancer_models.entity2ontology.index.model.RuleLocation;
-import org.cancer_models.entity2ontology.map.model.TargetEntity;
+import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

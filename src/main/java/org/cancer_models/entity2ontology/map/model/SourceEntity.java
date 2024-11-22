@@ -9,7 +9,7 @@ import java.util.Map;
  * Represents a source entity in the mapping process.
  * <p>
  * This class is used to encapsulate the details of a source entity that needs to be mapped to a target entity.
- * It contains a id and the a map with the pairs field-value (the data)
+ * It contains a id and the a map with the pairs field-value (the data).
  * </p>
  */
 @Setter
@@ -18,17 +18,17 @@ import java.util.Map;
 public class SourceEntity {
 
     /**
-     * Unique identifier of the entity
+     * Unique identifier of the entity.
      */
     private String id;
 
     /**
-     * Type of the entity. It impacts on how the search will be processed
+     * Type of the entity. It impacts on how the search will be processed.
      */
     private String type;
 
     /**
-     * The data of the entity {@code <field, value>}
+     * The data of the entity {@code <field, value>}.
      */
     private Map<String, String> data;
 

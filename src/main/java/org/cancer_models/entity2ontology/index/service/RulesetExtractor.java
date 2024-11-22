@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cancer_models.entity2ontology.common.utils.FileUtils;
 import org.cancer_models.entity2ontology.index.model.RuleLocation;
-import org.cancer_models.entity2ontology.map.model.TargetEntity;
+import org.cancer_models.entity2ontology.common.model.TargetEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.util.*;
  * </pre>
  *
  * @see RuleLocation
- * @see org.cancer_models.entity2ontology.map.model.TargetEntity
+ * @see TargetEntity
  */
 class RulesetExtractor {
 

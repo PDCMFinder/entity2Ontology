@@ -1,7 +1,7 @@
 package org.cancer_models.entity2ontology;
 
 import lombok.Data;
-import org.cancer_models.entity2ontology.map.model.TargetEntity;
+import org.cancer_models.entity2ontology.common.model.TargetEntity;
 
 import java.util.List;
 @Data

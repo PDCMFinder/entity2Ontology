@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cancer_models.entity2ontology.common.model.OntologyTerm;
 import org.cancer_models.entity2ontology.index.model.OntologyLocation;
-import org.cancer_models.entity2ontology.map.model.TargetEntity;
+import org.cancer_models.entity2ontology.common.model.TargetEntity;
 
 import java.io.IOException;
 import java.util.*;
