@@ -9,7 +9,7 @@ import java.util.Map;
  * Represents an entity we want to map to.
  * <p>
  * This class is used to encapsulate the details of a target entity. It represents a rule or an ontology
- * that will be compared to the source entity to see if it's a good match
+ * that will be compared to the source entity to see if it's a good match.
  * </p>
  */
 @Data
@@ -32,7 +32,7 @@ public class TargetEntity {
     private String targetType;
 
     /**
-     * The data of the entity <field, value>
+     * The data of the entity {@code <field, value>}
      */
     private Map<String, Object> data;
 

@@ -28,7 +28,7 @@ public class SourceEntity {
     private String type;
 
     /**
-     * The data of the entity <field, value>
+     * The data of the entity {@code <field, value>}
      */
     private Map<String, String> data;
 
