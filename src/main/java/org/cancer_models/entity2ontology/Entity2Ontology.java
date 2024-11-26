@@ -8,6 +8,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import picocli.CommandLine;
 
+/**
+ * Main class for the project, providing a command-line interface for mapping entities to ontology terms.
+ */
 @Component
 @CommandLine.Command(
     name = "Entity2Ontology",
@@ -16,13 +19,25 @@ import picocli.CommandLine;
     subcommands = {MapCommand.class, IndexCommand.class})
 public class Entity2Ontology {
 
+    /**
+     * The application context, used to manage the application's dependencies.
+     */
     private final ApplicationContext context;
 
-    @Autowired
+    /**
+     * Constructor for the Entity2Ontology class, injecting the application context.
+     *
+     * @param context the application context
+     */
     public Entity2Ontology(ApplicationContext context) {
         this.context = context;
     }
 
+    /**
+     * The main entry point for the application, responsible for executing the command-line interface.
+     *
+     * @param args the command-line arguments
+     */
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
         Entity2Ontology app = context.getBean(Entity2Ontology.class);
