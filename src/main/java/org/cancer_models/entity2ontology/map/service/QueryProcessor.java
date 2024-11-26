@@ -60,20 +60,19 @@ public class QueryProcessor {
             TargetEntity targetEntity = docToEntity(doc);
             Suggestion suggestion = new Suggestion(targetEntity);
             suggestion.setRawScore(scoreDoc.score);
-            suggestion.setTermLabel(targetEntity.getLabel());
-            suggestion.setTermUrl(targetEntity.getUrl());
+            suggestion.setTermLabel(targetEntity.label());
+            suggestion.setTermUrl(targetEntity.url());
             suggestions.add(suggestion);
         }
         return suggestions;
     }
 
     private TargetEntity docToEntity(Document document) {
-        TargetEntity targetEntity = new TargetEntity();
-        targetEntity.setId(document.get("id"));
-        targetEntity.setEntityType(document.get("entityType"));
-        targetEntity.setTargetType(document.get("targetType"));
-        targetEntity.setLabel(document.get("label"));
-        targetEntity.setUrl(document.get("url"));
+        String id = document.get("id");
+        String entityType = document.get("entityType");
+        String targetType = document.get("targetType");
+        String label = document.get("label");
+        String url = document.get("url");
         // Now we can add the data
         Map<String, Object> data = new HashMap<>();
         for (IndexableField field : document.getFields()) {
@@ -96,7 +95,6 @@ public class QueryProcessor {
                 }
             }
         }
-        targetEntity.setData(data);
-        return targetEntity;
+        return new TargetEntity(id, entityType, targetType, data, label, url);
     }
 }

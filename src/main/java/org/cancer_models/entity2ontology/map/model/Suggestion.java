@@ -51,6 +51,6 @@ public class Suggestion {
     private double rawScore;
 
     private String calculateUniqueSuggestionId(TargetEntity targetEntity) {
-        return targetEntity.getTargetType() + "|" + targetEntity.getEntityType() + "|" + targetEntity.getId();
+        return targetEntity.targetType() + "|" + targetEntity.entityType() + "|" + targetEntity.id();
     }
 }

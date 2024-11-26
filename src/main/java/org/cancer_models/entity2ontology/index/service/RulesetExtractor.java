@@ -61,7 +61,7 @@ class RulesetExtractor {
 
         if (rootNode.isArray()) {
             for (JsonNode ruleNode : rootNode) {
-                TargetEntity targetEntity = new TargetEntity();
+
                 String id = getText(ruleNode, "id", fieldsConversion);
                 String entityType = getText(ruleNode, "entityType", fieldsConversion);
                 JsonNode dataNode = getObject(ruleNode, "data", fieldsConversion);
@@ -75,12 +75,7 @@ class RulesetExtractor {
                     Map.Entry<String, JsonNode> field = fields.next();
                     data.put(field.getKey(), field.getValue().textValue());
                 }
-                targetEntity.setId(id);
-                targetEntity.setEntityType(entityType);
-                targetEntity.setTargetType("rule");
-                targetEntity.setData(data);
-                targetEntity.setUrl(url);
-                targetEntity.setLabel(label);
+                TargetEntity targetEntity = new TargetEntity(id, entityType, "rule", data, label, url);
                 targetEntities.add(targetEntity);
             }
         } else {

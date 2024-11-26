@@ -1,7 +1,6 @@
 package org.cancer_models.entity2ontology.common.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.Map;
 
@@ -11,39 +10,16 @@ import java.util.Map;
  * This class is used to encapsulate the details of a target entity. It represents a rule or an ontology
  * that will be compared to the source entity to see if it's a good match.
  * </p>
+ *
+ * @param id         Unique identifier of the entity.
+ * @param entityType Type of the entity. (Treatment or diagnosis, for instance).
+ * @param targetType Rule or Ontology.
+ * @param data       The data of the entity {@code <field, value>}.
+ * @param label      Label of the ontology term this entity was mapped to or represents.
+ * @param url        Url of the ontology term this entity was mapped to or represents.
  */
-@Data
-@NoArgsConstructor
-public class TargetEntity {
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 
-    /**
-     * Unique identifier of the entity.
-     */
-    private String id;
-
-    /**
-     * Type of the entity. (Treatment or diagnosis, for instance).
-     */
-    private String entityType;
-
-    /**
-     * Rule or Ontology.
-     */
-    private String targetType;
-
-    /**
-     * The data of the entity {@code <field, value>}.
-     */
-    private Map<String, Object> data;
-
-    /**
-     * Label of the ontology term this entity was mapped to or represents.
-     */
-    private String label;
-
-    /**
-     * Url of the ontology term this entity was mapped to or represents.
-     */
-    private String url;
-
+public record TargetEntity(
+    String id, String entityType, String targetType, Map<String, Object> data, String label, String url) {
 }

@@ -97,7 +97,7 @@ class OntologiesSearcherTest {
         Suggestion suggestion = suggestions.getFirst();
 
         assertEquals(1, suggestions.size());
-        assertEquals("ontology_1", suggestion.getTargetEntity().getId());
+        assertEquals("ontology_1", suggestion.getTargetEntity().id());
         assertEquals(100.0, suggestion.getScore());
     }
 
@@ -125,7 +125,7 @@ class OntologiesSearcherTest {
         Suggestion suggestion = suggestions.getFirst();
 
         assertEquals(1, suggestions.size());
-        assertEquals("ontology_2", suggestion.getTargetEntity().getId());
+        assertEquals("ontology_2", suggestion.getTargetEntity().id());
         assertEquals(1, suggestions.size());
         assertEquals(100.0, suggestions.get(0).getScore());
     }
@@ -178,7 +178,7 @@ class OntologiesSearcherTest {
         Suggestion suggestion = suggestions.getFirst();
 
         assertEquals(1, suggestions.size());
-        assertEquals("ontology_1", suggestion.getTargetEntity().getId());
+        assertEquals("ontology_1", suggestion.getTargetEntity().id());
         assertTrue(suggestion.getScore() <= 60.0);
     }
 
@@ -206,7 +206,7 @@ class OntologiesSearcherTest {
         Suggestion suggestion = suggestions.getFirst();
 
         assertEquals(1, suggestions.size());
-        assertEquals("ontology_2", suggestion.getTargetEntity().getId());
+        assertEquals("ontology_2", suggestion.getTargetEntity().id());
         assertTrue(suggestion.getScore() <= 60.0);
     }
 

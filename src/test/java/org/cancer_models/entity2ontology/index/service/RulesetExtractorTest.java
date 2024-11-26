@@ -35,25 +35,25 @@ class RulesetExtractorTest {
 
         assertEquals(
             "000af81b6bc1715523ea537847899c3c7a1f589d1404b302cfeddce2a997eaec",
-            entity1.getId());
-        assertEquals("treatment", entity1.getEntityType());
+            entity1.id());
+        assertEquals("treatment", entity1.entityType());
         Map<String, Object> data1 = new HashMap<>();
         data1.put("DataSource", "chop");
         data1.put("TreatmentName", "cisplatin");
-        assertEquals(data1, entity1.getData());
-        assertEquals("Cisplatin", entity1.getLabel());
-        assertEquals("http://purl.obolibrary.org/obo/NCIT_C376", entity1.getUrl());
+        assertEquals(data1, entity1.data());
+        assertEquals("Cisplatin", entity1.label());
+        assertEquals("http://purl.obolibrary.org/obo/NCIT_C376", entity1.url());
 
         assertEquals(
             "0055a7ad3bb5270aa9a6e53a95d5b730a11d0709830c13b69594a046c9a00ec5",
-            entity2.getId());
-        assertEquals("treatment", entity2.getEntityType());
+            entity2.id());
+        assertEquals("treatment", entity2.entityType());
         Map<String, Object> data2 = new HashMap<>();
         data2.put("DataSource", "pdmr");
         data2.put("TreatmentName", "dutasteride");
-        assertEquals(data2, entity2.getData());
-        assertEquals("Dutasteride", entity2.getLabel());
-        assertEquals("http://purl.obolibrary.org/obo/NCIT_C47503", entity2.getUrl());
+        assertEquals(data2, entity2.data());
+        assertEquals("Dutasteride", entity2.label());
+        assertEquals("http://purl.obolibrary.org/obo/NCIT_C47503", entity2.url());
     }
 
     @Test

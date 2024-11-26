@@ -46,7 +46,7 @@ public class ScoreCalculator {
 
         for (Map.Entry<String, Double> entry : fieldsWeights.entrySet()) {
             String fieldValueSourceEntity = sourceEntity.getData().get(entry.getKey());
-            String fieldValueSuggestion = suggestion.getTargetEntity().getData().get(entry.getKey()).toString();
+            String fieldValueSuggestion = suggestion.getTargetEntity().data().get(entry.getKey()).toString();
             double scorePerField = calculateScorePerField(
                 fieldValueSourceEntity, fieldValueSuggestion, entry.getValue(), totalWeight);
             score += scorePerField;
@@ -123,14 +123,14 @@ public class ScoreCalculator {
 
         // Get the label from the data map
         String label = MapUtils.getValueOrThrow(
-            suggestion.getTargetEntity().getData(), "label", "suggestion data").toString();
+            suggestion.getTargetEntity().data(), "label", "suggestion data").toString();
 
         // Synonyms as list
         List<String> synonyms = new ArrayList<>();
 
         // Get synonyms as object
         Object synonymsObj = MapUtils.getValueOrThrow(
-            suggestion.getTargetEntity().getData(), "synonyms", "suggestion data");
+            suggestion.getTargetEntity().data(), "synonyms", "suggestion data");
 
         if (synonymsObj != null) {
             if (synonymsObj instanceof List) {

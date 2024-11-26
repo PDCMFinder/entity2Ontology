@@ -26,12 +26,13 @@ class ScoreCalculatorTest {
         sourceEntityData.put("TumorType", "primary");
         sourceEntity.setData(sourceEntityData);
 
-        TargetEntity targetEntity = new TargetEntity();
         Map<String, Object> targetEntityEntityData = new HashMap<>();
         targetEntityEntityData.put("SampleDiagnosis", "fusion negative rhabdomyosarcoma");
         targetEntityEntityData.put("OriginTissue", "orbit");
         targetEntityEntityData.put("TumorType", "primary");
-        targetEntity.setData(targetEntityEntityData);
+
+        TargetEntity targetEntity = new TargetEntity(
+            "key_1", "diagnosis", "rule", targetEntityEntityData, null, null);
         Suggestion suggestion = new Suggestion(targetEntity);
 
         Map<String, Double> fieldsWeights = new HashMap<>();
@@ -56,12 +57,13 @@ class ScoreCalculatorTest {
         sourceEntityData.put("TumorType", "primary");
         sourceEntity.setData(sourceEntityData);
 
-        TargetEntity targetEntity = new TargetEntity();
         Map<String, Object> targetEntityEntityData = new HashMap<>();
         targetEntityEntityData.put("SampleDiagnosis", "fusion negative rhabdomyosarcoma");
         targetEntityEntityData.put("OriginTissue", "orbit");
         targetEntityEntityData.put("TumorType", "primary");
-        targetEntity.setData(targetEntityEntityData);
+
+        TargetEntity targetEntity = new TargetEntity(
+            "key_1", "diagnosis", "rule", targetEntityEntityData, null, null);
         Suggestion suggestion = new Suggestion(targetEntity);
 
         Map<String, Double> fieldsWeights = new HashMap<>();

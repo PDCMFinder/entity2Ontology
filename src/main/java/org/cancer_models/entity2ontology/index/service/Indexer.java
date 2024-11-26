@@ -102,24 +102,24 @@ public class Indexer {
      */
     private Document entityToDocument(TargetEntity entity) {
         Document document = new Document();
-        document.add(new StringField("id", entity.getId(), Field.Store.YES));
-        document.add(new StringField("entityType", entity.getEntityType(), Field.Store.YES));
-        document.add(new StringField("targetType", entity.getTargetType(), Field.Store.YES));
-        document.add(new TextField("label", entity.getLabel(), Field.Store.YES));
-        document.add(new StringField("url", entity.getUrl(), Field.Store.YES));
+        document.add(new StringField("id", entity.id(), Field.Store.YES));
+        document.add(new StringField("entityType", entity.entityType(), Field.Store.YES));
+        document.add(new StringField("targetType", entity.targetType(), Field.Store.YES));
+        document.add(new TextField("label", entity.label(), Field.Store.YES));
+        document.add(new StringField("url", entity.url(), Field.Store.YES));
 
         // Add the data
 
-        entity.getData().forEach((k, v) ->  {
+        entity.data().forEach((k, v) ->  {
             // If the value is a list, then we store it as individual items, all sharing the same field.
             // For example "synonyms": "s1", "synonyms": "s2"
             if (v instanceof List<?>) {
                 for (var e : (List<?>) v) {
-                    document.add(new TextField(entity.getTargetType() + "." + k, e.toString(), Field.Store.YES));
+                    document.add(new TextField(entity.targetType() + "." + k, e.toString(), Field.Store.YES));
                 }
             } else {
                 document.add(
-                    new TextField(entity.getTargetType() + "." + k, v.toString(), Field.Store.YES));
+                    new TextField(entity.targetType() + "." + k, v.toString(), Field.Store.YES));
             }
 
         });

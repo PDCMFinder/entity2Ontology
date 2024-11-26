@@ -67,31 +67,24 @@ class DefaultSuggestionsFinderTest {
     }
 
     private void initSuggestions() {
-        TargetEntity targetEntity1 = new TargetEntity();
-        targetEntity1.setId("key_1");
-        targetEntity1.setTargetType("rule");
-        targetEntity1.setData(new HashMap<>());
+
+        TargetEntity targetEntity1 = new TargetEntity(
+            "key_1", "diagnosis", "rule", new HashMap<>(), null, null);
         suggestionExactRule = new Suggestion(targetEntity1);
         suggestionExactRule.setScore(100.0);
 
-        TargetEntity targetEntity2 = new TargetEntity();
-        targetEntity2.setId("key_2");
-        targetEntity2.setTargetType("rule");
-        targetEntity2.setData(new HashMap<>());
+        TargetEntity targetEntity2 = new TargetEntity(
+            "key_2", "diagnosis", "rule", new HashMap<>(), null, null);
         suggestionSimilarRule = new Suggestion(targetEntity2);
         suggestionSimilarRule.setScore(90.0);
 
-        TargetEntity targetEntity3 = new TargetEntity();
-        targetEntity3.setId("key_3");
-        targetEntity3.setTargetType("ontology");
-        targetEntity3.setData(new HashMap<>());
+        TargetEntity targetEntity3 = new TargetEntity(
+            "key_3", "diagnosis", "ontology", new HashMap<>(), null, null);
         suggestionExactOntology = new Suggestion(targetEntity3);
         suggestionExactOntology.setScore(100.0);
 
-        TargetEntity targetEntity4 = new TargetEntity();
-        targetEntity4.setId("key_4");
-        targetEntity4.setTargetType("ontology");
-        targetEntity4.setData(new HashMap<>());
+        TargetEntity targetEntity4 = new TargetEntity(
+            "key_4", "diagnosis", "ontology", new HashMap<>(), null, null);
         suggestionSimilarOntology = new Suggestion(targetEntity4);
         suggestionSimilarOntology.setScore(80.0);
     }
@@ -105,7 +98,7 @@ class DefaultSuggestionsFinderTest {
 
         assertEquals(1, suggestions.size(), "We expect 1 suggestion");
         Suggestion suggestion = suggestions.getFirst();
-        assertEquals("key_1", suggestion.getTargetEntity().getId(), "Unexpected suggestion");
+        assertEquals("key_1", suggestion.getTargetEntity().id(), "Unexpected suggestion");
     }
 
     @Test
@@ -117,7 +110,7 @@ class DefaultSuggestionsFinderTest {
 
         assertEquals(1, suggestions.size(), "We expect 1 suggestion");
         Suggestion suggestion = suggestions.getFirst();
-        assertEquals("key_2", suggestion.getTargetEntity().getId(), "Unexpected suggestion");
+        assertEquals("key_2", suggestion.getTargetEntity().id(), "Unexpected suggestion");
     }
 
     @Test
@@ -129,7 +122,7 @@ class DefaultSuggestionsFinderTest {
 
         assertEquals(1, suggestions.size(), "We expect 1 suggestion");
         Suggestion suggestion = suggestions.getFirst();
-        assertEquals("key_3", suggestion.getTargetEntity().getId(), "Unexpected suggestion");
+        assertEquals("key_3", suggestion.getTargetEntity().id(), "Unexpected suggestion");
     }
 
     @Test
@@ -141,7 +134,7 @@ class DefaultSuggestionsFinderTest {
 
         assertEquals(1, suggestions.size(), "We expect 1 suggestion");
         Suggestion suggestion = suggestions.getFirst();
-        assertEquals("key_4", suggestion.getTargetEntity().getId(), "Unexpected suggestion");
+        assertEquals("key_4", suggestion.getTargetEntity().id(), "Unexpected suggestion");
     }
 
     @Test

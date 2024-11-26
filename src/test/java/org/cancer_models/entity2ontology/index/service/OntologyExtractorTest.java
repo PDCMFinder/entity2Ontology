@@ -39,18 +39,18 @@ class OntologyExtractorTest {
         assertEquals(3, targetEntities.size());
         TargetEntity te1 = find(targetEntities, "NCIT_C9305");
         assertNotNull(te1);
-        assertEquals("Malignant Neoplasm", te1.getLabel());
-        assertEquals("http://purl.obolibrary.org/obo/NCIT_C9305", te1.getUrl());
+        assertEquals("Malignant Neoplasm", te1.label());
+        assertEquals("http://purl.obolibrary.org/obo/NCIT_C9305", te1.url());
 
         TargetEntity te2 = find(targetEntities, "NCIT_C3262");
         assertNotNull(te2);
-        assertEquals("Neoplasm", te2.getLabel());
-        assertEquals("http://purl.obolibrary.org/obo/NCIT_C3262", te2.getUrl());
+        assertEquals("Neoplasm", te2.label());
+        assertEquals("http://purl.obolibrary.org/obo/NCIT_C3262", te2.url());
 
         TargetEntity te3 = find(targetEntities, "NCIT_C35814");
         assertNotNull(te3);
-        assertEquals("Hematopoietic and Lymphatic System Disorder", te3.getLabel());
-        assertEquals("http://purl.obolibrary.org/obo/NCIT_C35814", te3.getUrl());
+        assertEquals("Hematopoietic and Lymphatic System Disorder", te3.label());
+        assertEquals("http://purl.obolibrary.org/obo/NCIT_C35814", te3.url());
 
     }
 
@@ -80,13 +80,13 @@ class OntologyExtractorTest {
         List<TargetEntity> targetEntities = instance.extract(ontologyLocation);
 
         //The synonyms don't contain repeated values
-        List<String> synonyms = (List<String>) targetEntities.get(0).getData().get("synonyms");
+        List<String> synonyms = (List<String>) targetEntities.get(0).data().get("synonyms");
         assertEquals(Arrays.asList("co2", "carbonic acid gas"), synonyms);
     }
 
     private TargetEntity find(List<TargetEntity> targetEntities, String id) {
         for (TargetEntity targetEntity : targetEntities) {
-            if (targetEntity.getId().equals(id)) {
+            if (targetEntity.id().equals(id)) {
                 return targetEntity;
             }
         }

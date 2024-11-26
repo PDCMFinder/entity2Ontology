@@ -62,27 +62,23 @@ public class OntologyExtractor {
     }
 
     private TargetEntity termToTargetEntity(OntologyTerm ontologyTerm) {
-        TargetEntity targetEntity = new TargetEntity();
-        targetEntity.setId(ontologyTerm.getId());
-        targetEntity.setEntityType(ontologyTerm.getType());
-        targetEntity.setTargetType("ontology");
-        targetEntity.setLabel(ontologyTerm.getLabel());
-        targetEntity.setUrl(ontologyTerm.getUrl());
+
         Map<String, Object> data = new HashMap<>();
-        data.put("label", ontologyTerm.getLabel());
-        data.put("description", ontologyTerm.getDescription());
+        data.put("label", ontologyTerm.label());
+        data.put("description", ontologyTerm.description());
         data.put("synonyms", formatSynonyms(ontologyTerm));
-        targetEntity.setData(data);
-        return targetEntity;
+
+        return new TargetEntity(
+            ontologyTerm.id(), ontologyTerm.type(), "ontology", data, ontologyTerm.label(), ontologyTerm.url());
     }
 
     private List<String> formatSynonyms(OntologyTerm ontologyTerm) {
         Set<String> uniqueValues = new HashSet<>();
-        ontologyTerm.getSynonyms().forEach(e -> {
+        ontologyTerm.synonyms().forEach(e -> {
             uniqueValues.add(e.toLowerCase());
         });
         // We don't need the synonyms to contain the value that the label already has
-        uniqueValues.remove(ontologyTerm.getLabel().toLowerCase());
+        uniqueValues.remove(ontologyTerm.label().toLowerCase());
         return new ArrayList<>(uniqueValues);
     }
 

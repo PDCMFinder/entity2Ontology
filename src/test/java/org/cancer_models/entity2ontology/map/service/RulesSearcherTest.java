@@ -80,7 +80,7 @@ class RulesSearcherTest {
         Suggestion suggestion = suggestions.getFirst();
 
         assertEquals(1, suggestions.size());
-        assertEquals("rule_1", suggestion.getTargetEntity().getId());
+        assertEquals("rule_1", suggestion.getTargetEntity().id());
         assertEquals(100.0, suggestion.getScore());
     }
 
@@ -124,7 +124,7 @@ class RulesSearcherTest {
         Suggestion suggestion = suggestions.getFirst();
 
         assertEquals(1, suggestions.size());
-        assertEquals("rule_1", suggestion.getTargetEntity().getId());
+        assertEquals("rule_1", suggestion.getTargetEntity().id());
         assertTrue(suggestion.getScore() <= 90, "The score should be less than 90");
     }
 

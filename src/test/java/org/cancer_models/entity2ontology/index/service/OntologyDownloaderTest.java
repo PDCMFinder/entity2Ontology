@@ -69,11 +69,11 @@ class OntologyDownloaderTest {
         // Then we get the expected ontology term
         assertEquals(1, ontologyTermSet.size());
         OntologyTerm ontologyTerm = ontologyTermSet.iterator().next();
-        assertEquals("NCIT_C67515", ontologyTerm.getId());
-        assertEquals("PEBA Regimen", ontologyTerm.getLabel());
-        assertNotNull(ontologyTerm.getDescription());
-        assertNotNull(ontologyTerm.getSynonyms());
-        assertFalse(ontologyTerm.getSynonyms().isEmpty(), "Synonyms should not be empty");
+        assertEquals("NCIT_C67515", ontologyTerm.id());
+        assertEquals("PEBA Regimen", ontologyTerm.label());
+        assertNotNull(ontologyTerm.description());
+        assertNotNull(ontologyTerm.synonyms());
+        assertFalse(ontologyTerm.synonyms().isEmpty(), "Synonyms should not be empty");
     }
 
     @Test
