@@ -203,7 +203,7 @@
                 <executions>
                     <execution>
                         <id>run-delombok</id>
-                        <phase>generate-sources</phase>
+                        <phase>site</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -236,7 +236,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>site</phase>
                         <goals>
                             <goal>javadoc</goal>
                         </goals>
