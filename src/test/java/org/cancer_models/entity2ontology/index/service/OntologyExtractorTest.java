@@ -22,7 +22,7 @@ class OntologyExtractorTest {
     OntologyExtractor instance = new OntologyExtractor();
 
     @Test
-    void shouldReturnListOfTargetEntities() throws IOException, InterruptedException {
+    void shouldReturnListOfTargetEntities() throws IOException {
         // Given we have an OntologyLocation with 3 branches (with no descendants, to simplify)
         OntologyLocation ontologyLocation = createOntologyLocation();
 
