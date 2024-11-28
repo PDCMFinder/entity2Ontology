@@ -14,7 +14,7 @@ import java.util.Map;
  * A component responsible for searching rules using Lucene queries.
  */
 @Component
-public class RulesSearcher {
+class RulesSearcher {
 
     /**
      * Builds Lucene queries for exact and similar match searches.

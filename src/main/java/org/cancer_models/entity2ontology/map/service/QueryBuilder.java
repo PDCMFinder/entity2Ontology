@@ -20,7 +20,7 @@ import java.util.List;
  * </p>
  */
 @Component
-public class QueryBuilder {
+class QueryBuilder {
 
     // Rule exclusive fields in a document have this prefix.
     private static final String RULE_PREFIX = "rule.";

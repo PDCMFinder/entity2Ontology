@@ -10,6 +10,7 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,6 +45,7 @@ import java.util.Map;
  * @see TargetEntity
  * @see org.apache.lucene.index.IndexWriter
  */
+@Component
 public class Indexer {
 
     private final Map<String, IndexWriter> indexes = new HashMap<>();

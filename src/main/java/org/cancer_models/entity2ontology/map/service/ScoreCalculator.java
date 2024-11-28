@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * The similarity between both is calculated using a string similarity algorithm.
  */
 @Component
-public class ScoreCalculator {
+class ScoreCalculator {
 
     // The similarity between two strings will be calculated with the Levenshtein distance algorithm.
     private final LevenshteinDistance levenshteinDistance = new LevenshteinDistance();

@@ -31,7 +31,7 @@ import java.io.IOException;
 @Component
 public class IndexCommand implements Runnable {
 
-    private final IndexingRequestService indexingRequestService = new IndexingRequestService();
+    private final IndexingRequestService indexingRequestService;
 
     private static final Logger logger = LogManager.getLogger(IndexCommand.class);
     /**
@@ -39,6 +39,10 @@ public class IndexCommand implements Runnable {
      */
     @CommandLine.Option(names = "--request", required = true, description = "Indexing request JSON file.")
     private String requestFile;
+
+    public IndexCommand(IndexingRequestService indexingRequestService) {
+        this.indexingRequestService = indexingRequestService;
+    }
 
     @Override
     public void run() {

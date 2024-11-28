@@ -19,7 +19,11 @@ class IndexingRequestServiceTest {
 
     private static final String DATA_DIR = "src/test/resources/indexingRequest/";
 
-    private final IndexingRequestService instance = new IndexingRequestService();
+    private final RulesetExtractor rulesetExtractor = new DefaultRulesetExtractor();
+    private final OntologyExtractor ontologyExtractor = new DefaultOntologyExtractor();
+    private final Indexer indexer = new Indexer();
+    private final IndexingService indexingService = new IndexingService(rulesetExtractor, ontologyExtractor, indexer);
+    private final IndexingRequestService instance = new IndexingRequestService(indexingService);
 
     @Test
     void shouldProcessIndexingRequestByFile() throws IOException {
@@ -30,11 +34,11 @@ class IndexingRequestServiceTest {
         IndexingResponse response = instance.processRequest(fileToRead);
 
         // Then we get the expected data
-        assertEquals("IndexPath1" , response.getIndexPath());
-        int indexedTreatments = response.getIndexedElementsPerTarget().get("treatment");
+        assertEquals("IndexPath1" , response.indexPath());
+        int indexedTreatments = response.indexedElementsPerTarget().get("treatment");
         assertEquals(2 , indexedTreatments);
 
-        FileUtils.deleteRecursively(new File(response.getIndexPath()));
+        FileUtils.deleteRecursively(new File(response.indexPath()));
     }
 
     @Test
@@ -48,42 +52,42 @@ class IndexingRequestServiceTest {
         // Then we get the expected data
 
         assertNotNull(indexingRequest);
-        assertEquals("IndexPath1", indexingRequest.getIndexPath());
+        assertEquals("IndexPath1", indexingRequest.indexPath());
 
         // Validate rule locations
 
-        List<RuleLocation> ruleLocations = indexingRequest.getRuleLocations();
+        List<RuleLocation> ruleLocations = indexingRequest.ruleLocations();
 
         assertNotNull(ruleLocations, "Expected to have rule locations");
         assertEquals(3, ruleLocations.size(), "unexpected number of rule locations");
 
         RuleLocation ruleLocation1 = ruleLocations.get(0);
-        assertEquals("/path/file/treatments.json", ruleLocation1.getFilePath());
-        assertEquals("treatment", ruleLocation1.getName());
-        assertFalse(ruleLocation1.isIgnore());
+        assertEquals("/path/file/treatments.json", ruleLocation1.filePath());
+        assertEquals("treatment", ruleLocation1.name());
+        assertFalse(ruleLocation1.ignore());
 
         RuleLocation ruleLocation2 = ruleLocations.get(1);
-        assertEquals("/path/file/diagnosis.json", ruleLocation2.getFilePath());
-        assertEquals("diagnosis", ruleLocation2.getName());
-        assertFalse(ruleLocation2.isIgnore());
+        assertEquals("/path/file/diagnosis.json", ruleLocation2.filePath());
+        assertEquals("diagnosis", ruleLocation2.name());
+        assertFalse(ruleLocation2.ignore());
 
         RuleLocation ruleLocation3 = ruleLocations.get(2);
-        assertEquals("/path/file/to_be_ignored.json", ruleLocation3.getFilePath());
-        assertEquals("to_be_ignored", ruleLocation3.getName());
-        assertTrue(ruleLocation3.isIgnore());
+        assertEquals("/path/file/to_be_ignored.json", ruleLocation3.filePath());
+        assertEquals("to_be_ignored", ruleLocation3.name());
+        assertTrue(ruleLocation3.ignore());
 
         // Validate ontology locations
 
-        List<OntologyLocation> ontologyLocations = indexingRequest.getOntologyLocations();
+        List<OntologyLocation> ontologyLocations = indexingRequest.ontologyLocations();
 
         assertNotNull(ontologyLocations, "Expected to have ontology locations");
         assertEquals(1, ontologyLocations.size(), "unexpected number of ontology locations");
 
         OntologyLocation ontLocation1 = ontologyLocations.get(0);
-        assertEquals("ncit", ontLocation1.getOntoId());
-        assertEquals("ncit ontology diagnosis", ontLocation1.getName());
-        assertEquals(Arrays.asList("NCIT_C9305", "NCIT_C3262"), ontLocation1.getBranches());
-        assertFalse(ontLocation1.isIgnore());
+        assertEquals("ncit", ontLocation1.ontoId());
+        assertEquals("ncit ontology diagnosis", ontLocation1.name());
+        assertEquals(Arrays.asList("NCIT_C9305", "NCIT_C3262"), ontLocation1.branches());
+        assertFalse(ontLocation1.ignore());
     }
 
     @Test

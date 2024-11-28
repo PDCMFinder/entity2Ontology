@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * Class responsible for downloading ontology terms from the OLS API.
  */
-public class OntologyDownloader {
+class OntologyDownloader {
     private static final String BASE_URL = "https://www.ebi.ac.uk/ols4/api/ontologies/";
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger logger = LogManager.getLogger(OntologyDownloader.class);

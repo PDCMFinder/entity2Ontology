@@ -19,7 +19,7 @@ import java.util.*;
  * A component responsible for executing Lucene queries and returning a list of {@link Suggestion}.
  */
 @Component
-public class QueryProcessor {
+class QueryProcessor {
 
     private final Searcher searcher;
 

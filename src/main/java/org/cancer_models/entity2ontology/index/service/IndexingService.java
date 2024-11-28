@@ -5,12 +5,13 @@ import org.apache.logging.log4j.Logger;
 import org.cancer_models.entity2ontology.index.model.OntologyLocation;
 import org.cancer_models.entity2ontology.index.model.RuleLocation;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Service class responsible for indexing rules and ontologies
+ * Service class responsible for indexing rules and ontologies.
  *
  * <p>This class provides methods to handle the indexing process based on various input data, such as rule sets,
  * and creates a Lucene index at the specified path.
@@ -19,15 +20,22 @@ import java.util.List;
  * @see RuleLocation
  * @see org.apache.lucene.index.IndexWriter
  */
+@Component
 public class IndexingService {
 
     private static final Logger logger = LogManager.getLogger(IndexingService.class);
 
-    private static final RulesetExtractor rulesetExtractor = new RulesetExtractor();
+    private final RulesetExtractor rulesetExtractor;
 
-    private static final OntologyExtractor ontologyExtractor = new OntologyExtractor();
+    private final OntologyExtractor ontologyExtractor;
 
-    private static final Indexer indexer = new Indexer();
+    private final Indexer indexer;
+
+    public IndexingService(RulesetExtractor rulesetExtractor, OntologyExtractor ontologyExtractor, Indexer indexer) {
+        this.rulesetExtractor = rulesetExtractor;
+        this.ontologyExtractor = ontologyExtractor;
+        this.indexer = indexer;
+    }
 
     /**
      * Indexes the given rule set target into a Lucene index at the specified path.
@@ -55,11 +63,11 @@ public class IndexingService {
      * @throws IOException if there is an error reading the rule set or writing to the index
      */
     public int indexRules(RuleLocation ruleLocation, String indexPath) throws IOException {
-        logger.info("Processing rule location: {} ({})", ruleLocation.getFilePath(), ruleLocation.getName());
+        logger.info("Processing rule location: {} ({})", ruleLocation.filePath(), ruleLocation.name());
         logger.info("Rules will be indexed at {}", indexPath);
         List<TargetEntity> targetEntities = rulesetExtractor.extract(ruleLocation);
-        logger.info("Deleting all rules documents with type '{}'", ruleLocation.getName());
-        indexer.deleteAllByEntityType(ruleLocation.getName(), indexPath);
+        logger.info("Deleting all rules documents with type '{}'", ruleLocation.name());
+        indexer.deleteAllByEntityType(ruleLocation.name(), indexPath);
         indexer.indexEntities(targetEntities, indexPath);
         return targetEntities.size();
     }
@@ -91,11 +99,11 @@ public class IndexingService {
      * @throws IOException if there is an error processing the ontologies or writing to the index
      */
     public int indexOntologies(OntologyLocation ontologyLocation, String indexPath) throws IOException {
-        logger.info("Processing ontology location: {}", ontologyLocation.getName());
+        logger.info("Processing ontology location: {}", ontologyLocation.name());
         logger.info("Ontologies will be indexed at {}", indexPath);
         List<TargetEntity> targetEntities = ontologyExtractor.extract(ontologyLocation);
-        logger.info("Deleting all ontologies documents with type '{}'", ontologyLocation.getName());
-        indexer.deleteAllByEntityType(ontologyLocation.getName(), indexPath);
+        logger.info("Deleting all ontologies documents with type '{}'", ontologyLocation.name());
+        indexer.deleteAllByEntityType(ontologyLocation.name(), indexPath);
         indexer.indexEntities(targetEntities, indexPath);
         return targetEntities.size();
     }

@@ -2,7 +2,6 @@ package org.cancer_models.entity2ontology;
 
 import org.cancer_models.entity2ontology.index.command.IndexCommand;
 import org.cancer_models.entity2ontology.map.command.MapCommand;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

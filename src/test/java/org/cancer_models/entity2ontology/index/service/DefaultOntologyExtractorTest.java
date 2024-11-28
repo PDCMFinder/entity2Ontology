@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
-class OntologyExtractorTest {
+class DefaultOntologyExtractorTest {
 
     @Spy
-    OntologyExtractor instance = new OntologyExtractor();
+    DefaultOntologyExtractor instance = new DefaultOntologyExtractor();
 
     @Test
     void shouldReturnListOfTargetEntities() throws IOException {
@@ -94,18 +94,14 @@ class OntologyExtractorTest {
     }
 
     private OntologyLocation createOntologyLocation() {
-        OntologyLocation ontologyLocation = new OntologyLocation();
-        ontologyLocation.setOntoId("ncit");
-        ontologyLocation.setName("ncit ontology diagnosis");
 
         List<String> diagnosis = new ArrayList<>();
         diagnosis.add("NCIT_C9305");
         diagnosis.add("NCIT_C3262");
         diagnosis.add("NCIT_C35814");
 
-        ontologyLocation.setBranches(diagnosis);
-
-        return ontologyLocation;
+        return new OntologyLocation(
+            "ncit", "ncit ontology diagnosis", diagnosis, false);
     }
 
     private Set<OntologyTerm> createMockedTermsBranch1() {

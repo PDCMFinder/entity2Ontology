@@ -14,7 +14,7 @@ import java.util.*;
  * how to build queries, with scoring calculated to find the best matching ontologies.
  */
 @Component
-public class OntologiesSearcher {
+class OntologiesSearcher {
 
     private static final Logger logger = LogManager.getLogger(OntologiesSearcher.class);
     private final QueryBuilder queryBuilder;

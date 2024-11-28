@@ -8,6 +8,7 @@ import org.cancer_models.entity2ontology.index.model.IndexingRequest;
 import org.cancer_models.entity2ontology.index.model.IndexingResponse;
 import org.cancer_models.entity2ontology.index.model.OntologyLocation;
 import org.cancer_models.entity2ontology.index.model.RuleLocation;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,10 +36,15 @@ import java.util.Map;
  * @see org.cancer_models.entity2ontology.index.model.IndexingRequest
  * @see org.apache.lucene.index.IndexWriter
  */
+@Component
 public class IndexingRequestService {
 
     private static final Logger logger = LogManager.getLogger(IndexingRequestService.class);
-    private final IndexingService indexingService = new IndexingService();
+    private final IndexingService indexingService;
+
+    public IndexingRequestService(IndexingService indexingService) {
+        this.indexingService = indexingService;
+    }
 
     /**
      * Reads a {@link IndexingRequest} from the specified JSON file, performs the indexing process,
@@ -70,36 +76,36 @@ public class IndexingRequestService {
      */
     public IndexingResponse processRequest(IndexingRequest request) throws IOException {
         logger.info("Processing request: {}", request);
-        IndexingResponse response = new IndexingResponse();
+
         // Set the time the mapping process starts
-        response.setStart(LocalDateTime.now());
-        response.setIndexPath(request.getIndexPath());
+        LocalDateTime start = LocalDateTime.now();
 
         Map<String, Integer> indexedElementsPerLocation = new HashMap<>();
 
         // Process the rules defined in the rule locations, if any (and excluding the ones that need to be ignored)
-        if (request.getRuleLocations() != null) {
-            for (RuleLocation ruleLocation : request.getRuleLocations()) {
-                if (!ruleLocation.isIgnore()) {
-                    int count = processRuleLocation(ruleLocation, request.getIndexPath());
-                    indexedElementsPerLocation.put(ruleLocation.getName(), count);
+        if (request.ruleLocations() != null) {
+            for (RuleLocation ruleLocation : request.ruleLocations()) {
+                if (!ruleLocation.ignore()) {
+                    int count = processRuleLocation(ruleLocation, request.indexPath());
+                    indexedElementsPerLocation.put(ruleLocation.name(), count);
                 }
             }
         }
 
         // Process the ontologies defined in the ontology locations, if any (and excluding the ones that need to be ignored)
-        if (request.getOntologyLocations() != null) {
-            for (OntologyLocation ontologyLocation : request.getOntologyLocations()) {
-                if (!ontologyLocation.isIgnore()) {
-                    int count = processOntologyLocation(ontologyLocation, request.getIndexPath());
-                    indexedElementsPerLocation.put(ontologyLocation.getName(), count);
+        if (request.ontologyLocations() != null) {
+            for (OntologyLocation ontologyLocation : request.ontologyLocations()) {
+                if (!ontologyLocation.ignore()) {
+                    int count = processOntologyLocation(ontologyLocation, request.indexPath());
+                    indexedElementsPerLocation.put(ontologyLocation.name(), count);
                 }
             }
         }
 
-        response.setIndexedElementsPerTarget(indexedElementsPerLocation);
-        response.setEnd(LocalDateTime.now());
-        return response;
+        LocalDateTime end = LocalDateTime.now();
+        return new IndexingResponse(
+            start, end, request.indexPath(), indexedElementsPerLocation
+        );
     }
 
     /**
