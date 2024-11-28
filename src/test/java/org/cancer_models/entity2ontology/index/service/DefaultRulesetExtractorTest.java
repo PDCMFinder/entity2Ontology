@@ -253,7 +253,6 @@ class DefaultRulesetExtractorTest {
 
     // Creates a valid RuleLocation to use in the tests
     private RuleLocation buildRuleLocation() {
-        Map<String, String> fieldsConversion = buildFieldsConversion();
         return new RuleLocation(
             TEST_FOLDER + "/correct_treatment_mappings.json",
             "name",
@@ -263,12 +262,12 @@ class DefaultRulesetExtractorTest {
     }
 
     private Map<String, String> buildFieldsConversion() {
-        Map<String, String> fieldsConversion = new HashMap<>();
-        fieldsConversion.put("id", "mappingKey");
-        fieldsConversion.put("entityType", "entityType");
-        fieldsConversion.put("data", "mappingValues");
-        fieldsConversion.put("label", "mappedTermLabel");
-        fieldsConversion.put("url", "mappedTermUrl");
-        return fieldsConversion;
+        Map<String, String> data = new HashMap<>();
+        data.put("id", "mappingKey");
+        data.put("entityType", "entityType");
+        data.put("data", "mappingValues");
+        data.put("label", "mappedTermLabel");
+        data.put("url", "mappedTermUrl");
+        return data;
     }
 }

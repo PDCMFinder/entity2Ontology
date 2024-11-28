@@ -55,7 +55,7 @@ class DefaultOntologyExtractorTest {
     }
 
     @Test
-    void shouldRemoveDuplicateSynonyms() throws IOException, InterruptedException {
+    void shouldRemoveDuplicateSynonyms() throws IOException {
 
         OntologyLocation ontologyLocation = new OntologyLocation(
             "ncit",
