@@ -4,12 +4,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.cancer_models</groupId>
-    <artifactId>entity2Ontology</artifactId>
+    <groupId>io.github.pdcmfinder</groupId>
+    <artifactId>entity-to-ontology</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Entity2Ontology</name>
+    <description>A Java tool that maps entities to specific ontology terms, useful for cases where non-textual
+        information with attributes must be mapped accurately to a controlled vocabulary.</description>
+    <url>https://www.cancermodels.org/</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Mauricio Martinez Jimenez</name>
+            <email>mmartinez@ebi.ac.uk</email>
+            <organization>European Bioinformatic Institute</organization>
+            <organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/PDCMFinder/entity2Ontology/tree/main</url>
+    </scm>
 
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
