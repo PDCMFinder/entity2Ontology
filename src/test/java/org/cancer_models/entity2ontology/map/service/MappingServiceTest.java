@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MappingServiceTest {
+public class MappingServiceTest {
 
     private static final String DATA_DIR = "src/test/resources/mappings/";
 

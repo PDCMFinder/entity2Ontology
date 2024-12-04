@@ -238,7 +238,6 @@ class DefaultRulesetExtractorTest {
             false,
             fieldsConversion
         );
-//        ruleLocation.setFilePath(TEST_FOLDER + rulesetFileName);
 
         // When we try to extract the ruleset
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
