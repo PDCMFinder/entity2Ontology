@@ -31,8 +31,8 @@ public class MappingRequest {
 
     public MappingRequest(
         @JsonProperty("maxNumSuggestions") int maxSuggestions,
-        String indexPath,
-        String mappingConfigurationFile,
+        @JsonProperty("indexPath") String indexPath,
+        @JsonProperty("mappingConfigurationFile") String mappingConfigurationFile,
         @JsonProperty("entities") List<SourceEntity> entities) {
         this.maxSuggestions = maxSuggestions;
         this.indexPath = indexPath;
