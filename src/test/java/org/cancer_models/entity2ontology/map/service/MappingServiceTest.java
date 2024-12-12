@@ -196,9 +196,10 @@ public class MappingServiceTest {
         Suggestion bestSuggestion = null;
         try {
             List<Suggestion> suggestions = instance.mapEntity(sourceEntity, indexName, numSuggestions, config);
-            bestSuggestion = suggestions.get(0);
+            bestSuggestion = suggestions.getFirst();
         } catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
+            System.err.println("Exception: " + e.getMessage());
+            throw new RuntimeException(e);
         }
         return bestSuggestion;
     }

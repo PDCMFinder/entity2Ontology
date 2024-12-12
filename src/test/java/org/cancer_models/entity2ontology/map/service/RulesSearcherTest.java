@@ -146,4 +146,5 @@ class RulesSearcherTest {
 
         assertTrue(suggestions.isEmpty(), "The suggestion list should be empty");
     }
+
 }
