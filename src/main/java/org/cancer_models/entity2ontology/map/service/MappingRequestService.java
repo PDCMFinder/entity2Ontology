@@ -106,17 +106,18 @@ public class MappingRequestService {
     }
 
     private MappingConfiguration readMappingConfiguration(String filePath) throws IOException {
+        if (filePath == null) {
+            throw new IllegalArgumentException("Mapping configuration file path cannot be null");
+        }
+
         MappingConfiguration config = MappingIO.readMappingConfiguration(filePath);
-        // Basic validations
+
         if (config == null) {
-            String error = String.format("Mapping configuration file %s cannot be null", filePath);
+            String error = String.format("Mapping configuration at path %s is empty or could not be read", filePath);
             throw new IllegalArgumentException(error);
         }
-        if (config.getConfigurations().isEmpty()) {
-            String error = String.format("Mapping configuration file %s has an empty `configurations` property", filePath);
-            throw new IllegalArgumentException(error);
-        }
-        return MappingIO.readMappingConfiguration(filePath);
+
+        return config;
     }
 
     /**

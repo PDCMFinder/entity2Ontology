@@ -2,6 +2,7 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cancer_models.entity2ontology.exceptions.MalformedMappingConfiguration;
 import org.cancer_models.entity2ontology.index.service.Indexer;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Service class responsible for performing entity mappings.
@@ -42,6 +44,7 @@ public class MappingService {
 
         validateSourceEntity(entity);
         validateIndex(indexPath);
+        validateMappingConfiguration(config);
 
         return suggestionsFinder.findSuggestions(entity, indexPath, maxNumSuggestions, config);
     }
@@ -69,4 +72,56 @@ public class MappingService {
             throw new IllegalArgumentException(String.format("Index [%s] is not a valid lucene index", indexPath));
         }
     }
+
+    private void validateMappingConfiguration(MappingConfiguration config) {
+        Objects.requireNonNull(config);
+        String errorMessage;
+        List<MappingConfiguration. ConfigurationPerType> configsPerType = config.getConfigurations();
+
+        if (configsPerType == null) {
+            errorMessage = "Property `configurations` cannot be null";
+            throw new MalformedMappingConfiguration(errorMessage);
+        }
+        if (configsPerType.isEmpty()) {
+            errorMessage = "Property `configurations` cannot be empty";
+            throw new MalformedMappingConfiguration(errorMessage);
+        }
+        for (MappingConfiguration.ConfigurationPerType confPerType : configsPerType) {
+            validateConfigurationPerType(confPerType);
+        }
+    }
+
+    private void validateConfigurationPerType(MappingConfiguration.ConfigurationPerType confPerType) {
+        String errorMessage;
+
+        if (confPerType.getEntityType() == null) {
+            errorMessage = "Property `configurations.entityType` cannot be null";
+            throw new MalformedMappingConfiguration(errorMessage);
+        }
+        List<MappingConfiguration.FieldConfiguration> fields = confPerType.getFields();
+        if (fields == null) {
+            errorMessage = "Property `configurations.fields` cannot be null";
+            throw new MalformedMappingConfiguration(errorMessage);
+        }
+        if (fields.isEmpty()) {
+            errorMessage = "Property `configurations.fields` cannot be empty";
+            throw new MalformedMappingConfiguration(errorMessage);
+        }
+        for (MappingConfiguration.FieldConfiguration field : fields) {
+            if (field.getName() == null) {
+                errorMessage = "Property `configurations.fields.name` cannot be null";
+                throw new MalformedMappingConfiguration(errorMessage);
+            }
+            // Weight not checked as it is a double, so it will never be null
+        }
+        if (confPerType.getOntologyTemplates() == null) {
+            errorMessage = "Property `configurations.ontologyTemplates` cannot be null";
+            throw new MalformedMappingConfiguration(errorMessage);
+        }
+        if (confPerType.getOntologyTemplates().isEmpty()) {
+            errorMessage = "Property `configurations.ontologyTemplates` cannot be empty";
+            throw new MalformedMappingConfiguration(errorMessage);
+        }
+    }
+
 }
