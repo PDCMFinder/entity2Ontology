@@ -49,15 +49,12 @@ public class Searcher {
     // used multiple times
     private final Map<String, IndexSearcher> readers = new HashMap<>();
 
-    // This should be the same used to create the index
-    private final AnalyzerProvider analyzerProvider;
-
     private final QueryParser queryParser;
 
     private static final Logger logger = LogManager.getLogger(Searcher.class);
 
     public Searcher(AnalyzerProvider analyzerProvider) {
-        this.analyzerProvider = analyzerProvider;
+        // This should be the same used to create the index
         queryParser = new QueryParser("", analyzerProvider.getAnalyzer());
     }
 
