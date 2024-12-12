@@ -73,28 +73,43 @@ class QueryProcessor {
         String targetType = document.get("targetType");
         String label = document.get("label");
         String url = document.get("url");
-        // Now we can add the data
+        Map<String, Object> data = extractDataMap(document);
+        return new TargetEntity(id, entityType, targetType, data, label, url);
+    }
+
+    // Builds a map with the data stored in the document. An attribute is part of the data section if
+    // its name has the format <entityType>.name. For example:
+    // - rule.SampleDiagnosis
+    private Map<String, Object> extractDataMap(Document document) {
+        // Map with the data. The value is an object because in some scenarios it's not a primitive but a
+        // collection, like the case of ontology.synonyms, which are expected to appear several times
+        // as independent fields in the document, but must be transformed into a single entry:
+        // <"synonyms", list of synonyms">
         Map<String, Object> data = new HashMap<>();
         for (IndexableField field : document.getFields()) {
-            if (field.name().contains(".")) {
-                String fieldValue = field.stringValue();
-                int idx = field.name().lastIndexOf(".");
-                String attributeName = field.name().substring(idx + 1);
-                // If there is already a value for the attribute, then we are dealing with a list.
-                // This happens for instance with synonyms, which are several values
-                if (data.containsKey(attributeName)) {
-                    Object currValue = data.get(attributeName);
-                    if (currValue instanceof List) {
-                        List<String> currList = GeneralUtils.castList(currValue, String.class);
-                        currList.add(currValue.toString());
-                    } else {
-                        data.put(attributeName, Arrays.asList(currValue.toString(), fieldValue));
-                    }
+
+            if (!field.name().contains(".")) {
+                continue;
+            }
+
+            String fieldValue = field.stringValue();
+            int idx = field.name().lastIndexOf(".");
+            String attributeName = field.name().substring(idx + 1);
+            // If there is already a value for the attribute, then we are dealing with a list.
+            // This happens for instance with synonyms, which are several values
+            if (data.containsKey(attributeName)) {
+                Object currValue = data.get(attributeName);
+                if (currValue instanceof List) {
+                    List<String> currList = new ArrayList<>( GeneralUtils.castList(currValue, String.class));
+                    currList.add(currValue.toString());
+                    data.put(attributeName, currList);
                 } else {
-                    data.put(attributeName, fieldValue);
+                    data.put(attributeName, Arrays.asList(currValue.toString(), fieldValue));
                 }
+            } else {
+                data.put(attributeName, fieldValue);
             }
         }
-        return new TargetEntity(id, entityType, targetType, data, label, url);
+        return data;
     }
 }
