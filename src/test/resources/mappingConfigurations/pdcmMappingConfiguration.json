@@ -31,6 +31,9 @@
           "name": "TreatmentName",
           "weight": 1
         }
+      ],
+      "ontologyTemplates": [
+        "${TreatmentName}"
       ]
     }
   ]
