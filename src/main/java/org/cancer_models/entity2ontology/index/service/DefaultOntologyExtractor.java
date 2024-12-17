@@ -3,6 +3,7 @@ package org.cancer_models.entity2ontology.index.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cancer_models.entity2ontology.common.model.OntologyTerm;
+import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
 import org.cancer_models.entity2ontology.index.model.OntologyLocation;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.springframework.stereotype.Component;
@@ -65,13 +66,14 @@ class DefaultOntologyExtractor implements OntologyExtractor {
 
     private TargetEntity termToTargetEntity(OntologyTerm ontologyTerm) {
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("label", ontologyTerm.label());
-        data.put("description", ontologyTerm.description());
-        data.put("synonyms", formatSynonyms(ontologyTerm));
+        TargetEntityDataFields dataFields = new TargetEntityDataFields();
+        dataFields.addStringField("label", ontologyTerm.label());
+        dataFields.addStringField("description",  ontologyTerm.description());
+        dataFields.addListField("synonyms", formatSynonyms(ontologyTerm));
+
 
         return new TargetEntity(
-            ontologyTerm.id(), ontologyTerm.type(), "ontology", data, ontologyTerm.label(), ontologyTerm.url());
+            ontologyTerm.id(), ontologyTerm.type(), "ontology", dataFields, ontologyTerm.label(), ontologyTerm.url());
     }
 
     private List<String> formatSynonyms(OntologyTerm ontologyTerm) {

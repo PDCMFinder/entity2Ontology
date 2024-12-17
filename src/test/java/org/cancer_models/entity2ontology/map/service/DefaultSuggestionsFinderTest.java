@@ -1,5 +1,6 @@
 package org.cancer_models.entity2ontology.map.service;
 
+import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
@@ -69,22 +70,22 @@ class DefaultSuggestionsFinderTest {
     private void initSuggestions() {
 
         TargetEntity targetEntity1 = new TargetEntity(
-            "key_1", "diagnosis", "rule", new HashMap<>(), null, null);
+            "key_1", "diagnosis", "rule", new TargetEntityDataFields(), null, null);
         suggestionExactRule = new Suggestion(targetEntity1);
         suggestionExactRule.setScore(100.0);
 
         TargetEntity targetEntity2 = new TargetEntity(
-            "key_2", "diagnosis", "rule", new HashMap<>(), null, null);
+            "key_2", "diagnosis", "rule", new TargetEntityDataFields(), null, null);
         suggestionSimilarRule = new Suggestion(targetEntity2);
         suggestionSimilarRule.setScore(90.0);
 
         TargetEntity targetEntity3 = new TargetEntity(
-            "key_3", "diagnosis", "ontology", new HashMap<>(), null, null);
+            "key_3", "diagnosis", "ontology", new TargetEntityDataFields(), null, null);
         suggestionExactOntology = new Suggestion(targetEntity3);
         suggestionExactOntology.setScore(100.0);
 
         TargetEntity targetEntity4 = new TargetEntity(
-            "key_4", "diagnosis", "ontology", new HashMap<>(), null, null);
+            "key_4", "diagnosis", "ontology", new TargetEntityDataFields(), null, null);
         suggestionSimilarOntology = new Suggestion(targetEntity4);
         suggestionSimilarOntology.setScore(80.0);
     }

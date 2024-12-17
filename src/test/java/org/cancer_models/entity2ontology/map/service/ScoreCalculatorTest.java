@@ -1,5 +1,6 @@
 package org.cancer_models.entity2ontology.map.service;
 
+import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
@@ -26,13 +27,13 @@ class ScoreCalculatorTest {
         sourceEntityData.put("TumorType", "primary");
         sourceEntity.setData(sourceEntityData);
 
-        Map<String, Object> targetEntityEntityData = new HashMap<>();
-        targetEntityEntityData.put("SampleDiagnosis", "fusion negative rhabdomyosarcoma");
-        targetEntityEntityData.put("OriginTissue", "orbit");
-        targetEntityEntityData.put("TumorType", "primary");
+        TargetEntityDataFields dataFields = new TargetEntityDataFields();
+        dataFields.addStringField("SampleDiagnosis", "fusion negative rhabdomyosarcoma");
+        dataFields.addStringField("OriginTissue", "orbit");
+        dataFields.addStringField("TumorType", "primary");
 
         TargetEntity targetEntity = new TargetEntity(
-            "key_1", "diagnosis", "rule", targetEntityEntityData, null, null);
+            "key_1", "diagnosis", "rule", dataFields, null, null);
         Suggestion suggestion = new Suggestion(targetEntity);
 
         Map<String, Double> fieldsWeights = new HashMap<>();
@@ -57,13 +58,13 @@ class ScoreCalculatorTest {
         sourceEntityData.put("TumorType", "primary");
         sourceEntity.setData(sourceEntityData);
 
-        Map<String, Object> targetEntityEntityData = new HashMap<>();
-        targetEntityEntityData.put("SampleDiagnosis", "fusion negative rhabdomyosarcoma");
-        targetEntityEntityData.put("OriginTissue", "orbit");
-        targetEntityEntityData.put("TumorType", "primary");
+        TargetEntityDataFields dataFields = new TargetEntityDataFields();
+        dataFields.addStringField("SampleDiagnosis", "fusion negative rhabdomyosarcoma");
+        dataFields.addStringField("OriginTissue", "orbit");
+        dataFields.addStringField("TumorType", "primary");
 
         TargetEntity targetEntity = new TargetEntity(
-            "key_1", "diagnosis", "rule", targetEntityEntityData, null, null);
+            "key_1", "diagnosis", "rule", dataFields, null, null);
         Suggestion suggestion = new Suggestion(targetEntity);
 
         Map<String, Double> fieldsWeights = new HashMap<>();

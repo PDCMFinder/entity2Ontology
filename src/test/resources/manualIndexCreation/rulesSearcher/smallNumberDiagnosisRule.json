@@ -6,11 +6,13 @@
       "id": "rule_1",
       "entityType": "diagnosis",
       "targetType": "rule",
-      "data": {
-        "OriginTissue" : "orbit",
-        "TumorType" : "primary",
-        "SampleDiagnosis" : "fusion negative rhabdomyosarcoma",
-        "DataSource" : "gccri"
+      "dataFields": {
+        "stringFields": {
+          "OriginTissue" : "orbit",
+          "TumorType" : "primary",
+          "SampleDiagnosis" : "fusion negative rhabdomyosarcoma",
+          "DataSource" : "gccri"
+        }
       },
       "label": "Fusion-Negative Alveolar Rhabdomyosarcoma",
       "url": "http://purl.obolibrary.org/obo/NCIT_C123732"

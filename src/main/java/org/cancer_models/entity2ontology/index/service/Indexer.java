@@ -3,12 +3,10 @@ package org.cancer_models.entity2ontology.index.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.cancer_models.entity2ontology.common.mappers.TargetEntityDocumentMapper;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.springframework.stereotype.Component;
 
@@ -59,7 +57,7 @@ public class Indexer {
      * thrown if the directory contains data.
      * @param indexPath The path where the index will be created.
      * @return The Lucene {@link IndexWriter}
-     * @throws IOException
+     * @throws IOException if there is an error creating the index
      */
     private IndexWriter createWriter(String indexPath) throws IOException {
         logger.info("Creating index at {}", indexPath);
@@ -88,45 +86,13 @@ public class Indexer {
         IndexWriter writer = getIndexWriter(indexPath);
         List<Document> documents = new ArrayList<>();
         for (TargetEntity entity : entities) {
-            Document document = entityToDocument(entity);
+            Document document = TargetEntityDocumentMapper.targetEntityToDocument(entity);
             documents.add(document);
         }
         logger.info("Start writing {} documents", documents.size());
         writer.addDocuments(documents);
         writer.commit();
         logger.info("Finished writing documents. Index closed.");
-    }
-
-    /**
-     * Converts a {@code TargetEntity} into a Lucene {@code Document}.
-     *
-     * @param entity the {@code TargetEntity} to be indexed
-     */
-    private Document entityToDocument(TargetEntity entity) {
-        Document document = new Document();
-        document.add(new StringField("id", entity.id(), Field.Store.YES));
-        document.add(new StringField("entityType", entity.entityType(), Field.Store.YES));
-        document.add(new StringField("targetType", entity.targetType(), Field.Store.YES));
-        document.add(new TextField("label", entity.label(), Field.Store.YES));
-        document.add(new StringField("url", entity.url(), Field.Store.YES));
-
-        // Add the data
-
-        entity.data().forEach((k, v) ->  {
-            // If the value is a list, then we store it as individual items, all sharing the same field.
-            // For example "synonyms": "s1", "synonyms": "s2"
-            if (v instanceof List<?>) {
-                for (var e : (List<?>) v) {
-                    document.add(new TextField(entity.targetType() + "." + k, e.toString(), Field.Store.YES));
-                }
-            } else {
-                document.add(
-                    new TextField(entity.targetType() + "." + k, v.toString(), Field.Store.YES));
-            }
-
-        });
-
-        return document;
     }
 
     /**

@@ -41,7 +41,7 @@ class DefaultRulesetExtractorTest {
         Map<String, Object> data1 = new HashMap<>();
         data1.put("DataSource", "chop");
         data1.put("TreatmentName", "cisplatin");
-        assertEquals(data1, entity1.data());
+        assertEquals(data1, entity1.dataFields().getStringFields());
         assertEquals("Cisplatin", entity1.label());
         assertEquals("http://purl.obolibrary.org/obo/NCIT_C376", entity1.url());
 
@@ -52,7 +52,7 @@ class DefaultRulesetExtractorTest {
         Map<String, Object> data2 = new HashMap<>();
         data2.put("DataSource", "pdmr");
         data2.put("TreatmentName", "dutasteride");
-        assertEquals(data2, entity2.data());
+        assertEquals(data2, entity2.dataFields().getStringFields());
         assertEquals("Dutasteride", entity2.label());
         assertEquals("http://purl.obolibrary.org/obo/NCIT_C47503", entity2.url());
     }

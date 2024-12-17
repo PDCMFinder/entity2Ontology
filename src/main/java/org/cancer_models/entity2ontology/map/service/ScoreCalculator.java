@@ -1,6 +1,7 @@
 package org.cancer_models.entity2ontology.map.service;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
 import org.cancer_models.entity2ontology.common.utils.GeneralUtils;
 import org.cancer_models.entity2ontology.common.utils.MapUtils;
 import org.cancer_models.entity2ontology.map.model.SearchQueryItem;
@@ -46,7 +47,7 @@ class ScoreCalculator {
 
         for (Map.Entry<String, Double> entry : fieldsWeights.entrySet()) {
             String fieldValueSourceEntity = sourceEntity.getData().get(entry.getKey());
-            String fieldValueSuggestion = suggestion.getTargetEntity().data().get(entry.getKey()).toString();
+            String fieldValueSuggestion = suggestion.getTargetEntity().dataFields().getStringField(entry.getKey());
             double scorePerField = calculateScorePerField(
                 fieldValueSourceEntity, fieldValueSuggestion, entry.getValue(), totalWeight);
             score += scorePerField;
@@ -121,27 +122,25 @@ class ScoreCalculator {
 
         double highestScore = 0;
 
-        // Get the label from the data map
-        String label = MapUtils.getValueOrThrow(
-            suggestion.getTargetEntity().data(), "label", "suggestion data").toString();
+        TargetEntityDataFields dataFields = suggestion.getTargetEntity().dataFields();
+
+        String suggestionLabel;
+
+        // Get the label from the data
+        if (dataFields.hasStringField("label")) {
+            suggestionLabel = dataFields.getStringField("label");
+        } else {
+            throw new IllegalArgumentException("`label` field not found in the suggestion");
+        }
 
         // Synonyms as list
         List<String> synonyms = new ArrayList<>();
-
-        // Get synonyms as object
-        Object synonymsObj = MapUtils.getValueOrThrow(
-            suggestion.getTargetEntity().data(), "synonyms", "suggestion data");
-
-        if (synonymsObj != null) {
-            if (synonymsObj instanceof List) {
-                synonyms = GeneralUtils.castList(synonymsObj, String.class);
-            } else if (synonymsObj instanceof String) {
-                synonyms = List.of(synonymsObj.toString());
-            }
+        if (dataFields.hasListField("synonyms")) {
+            synonyms = dataFields.getListField("synonyms");
         }
 
         // First let's calculate the similarity between `phrase` and the ontology label
-        highestScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, label, fuzzinessThreshold);
+        highestScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, suggestionLabel, fuzzinessThreshold);
 
         // Only look for similarity in synonyms if there is need to
         if (highestScore < 1.0 && !synonyms.isEmpty()) {

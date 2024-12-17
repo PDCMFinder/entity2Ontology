@@ -6,13 +6,18 @@
       "id": "ontology_1",
       "entityType": "diagnosis",
       "targetType": "ontology",
-      "data": {
-        "label" : "Fusion Negative Alveolar Rhabdomyosarcoma",
-        "description" : "An alveolar rhabdomyosarcoma characterized by the absence of ...",
-        "synonyms": [
-          "Fusion Gene Negative Alveolar Rhabdomyosarcoma"
-        ]
+      "dataFields": {
+        "stringFields": {
+          "label" : "Fusion Negative Alveolar Rhabdomyosarcoma",
+          "description" : "An alveolar rhabdomyosarcoma characterized by the absence of ..."
+        },
+        "listFields": {
+          "synonyms": [
+            "Fusion Gene Negative Alveolar Rhabdomyosarcoma"
+          ]
+        }
       },
+
       "label": "Fusion Negative Alveolar Rhabdomyosarcoma",
       "url": "http://purl.obolibrary.org/obo/NCIT_XYZ"
     },
@@ -20,13 +25,18 @@
       "id": "ontology_2",
       "entityType": "diagnosis",
       "targetType": "ontology",
-      "data": {
-        "label" : "label1",
-        "description" : "A benign bone-forming neoplasm arising from the skull",
-        "synonyms": [
-          "synonym1", "Skull Osteoma"
-        ]
+      "dataFields": {
+        "stringFields": {
+          "label" : "label1",
+          "description" : "A benign bone-forming neoplasm arising from the skull"
+        },
+        "listFields": {
+          "synonyms": [
+            "synonym1", "Skull Osteoma"
+          ]
+        }
       },
+
       "label": "Skull Osteoma",
       "url": "http://purl.obolibrary.org/obo/NCIT_C129569"
     }

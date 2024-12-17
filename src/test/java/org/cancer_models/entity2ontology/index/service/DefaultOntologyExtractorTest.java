@@ -80,7 +80,7 @@ class DefaultOntologyExtractorTest {
         List<TargetEntity> targetEntities = instance.extract(ontologyLocation);
 
         //The synonyms don't contain repeated values
-        List<String> synonyms = (List<String>) targetEntities.get(0).data().get("synonyms");
+        List<String> synonyms = targetEntities.getFirst().dataFields().getListField("synonyms");
         assertEquals(Arrays.asList("co2", "carbonic acid gas"), synonyms);
     }
 

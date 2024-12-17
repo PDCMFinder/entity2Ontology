@@ -1,13 +1,12 @@
 package org.cancer_models.entity2ontology.map.service;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.cancer_models.entity2ontology.common.utils.GeneralUtils;
+import org.cancer_models.entity2ontology.common.mappers.TargetEntityDocumentMapper;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.springframework.stereotype.Component;
@@ -23,6 +22,7 @@ class QueryProcessor {
 
     private final Searcher searcher;
 
+
     public QueryProcessor(Searcher searcher) {
         this.searcher = searcher;
     }
@@ -36,9 +36,8 @@ class QueryProcessor {
      * @throws IOException If an error occurs while searching the index.
      */
     public List<Suggestion> executeQuery(Query query, String indexPath) throws IOException {
-        if (query == null) {
-            throw new IllegalArgumentException("query cannot be null");
-        }
+        Objects.requireNonNull(query, "query cannot be null");
+        Objects.requireNonNull(indexPath, "indexPath cannot be null");
         TopDocs topDocs = searcher.search(query, indexPath);
         return processQueryResponse(topDocs, searcher.getIndexSearcher(indexPath));
     }
@@ -57,7 +56,7 @@ class QueryProcessor {
         StoredFields storedFields = searcher.storedFields();
         for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
             Document doc = storedFields.document(scoreDoc.doc);
-            TargetEntity targetEntity = docToEntity(doc);
+            TargetEntity targetEntity = TargetEntityDocumentMapper.documentToTargetEntity(doc);
             Suggestion suggestion = new Suggestion(targetEntity);
             suggestion.setRawScore(scoreDoc.score);
             suggestion.setTermLabel(targetEntity.label());
@@ -65,51 +64,5 @@ class QueryProcessor {
             suggestions.add(suggestion);
         }
         return suggestions;
-    }
-
-    private TargetEntity docToEntity(Document document) {
-        String id = document.get("id");
-        String entityType = document.get("entityType");
-        String targetType = document.get("targetType");
-        String label = document.get("label");
-        String url = document.get("url");
-        Map<String, Object> data = extractDataMap(document);
-        return new TargetEntity(id, entityType, targetType, data, label, url);
-    }
-
-    // Builds a map with the data stored in the document. An attribute is part of the data section if
-    // its name has the format <entityType>.name. For example:
-    // - rule.SampleDiagnosis
-    private Map<String, Object> extractDataMap(Document document) {
-        // Map with the data. The value is an object because in some scenarios it's not a primitive but a
-        // collection, like the case of ontology.synonyms, which are expected to appear several times
-        // as independent fields in the document, but must be transformed into a single entry:
-        // <"synonyms", list of synonyms">
-        Map<String, Object> data = new HashMap<>();
-        for (IndexableField field : document.getFields()) {
-
-            if (!field.name().contains(".")) {
-                continue;
-            }
-
-            String fieldValue = field.stringValue();
-            int idx = field.name().lastIndexOf(".");
-            String attributeName = field.name().substring(idx + 1);
-            // If there is already a value for the attribute, then we are dealing with a list.
-            // This happens for instance with synonyms, which are several values
-            if (data.containsKey(attributeName)) {
-                Object currValue = data.get(attributeName);
-                if (currValue instanceof List) {
-                    List<String> currList = new ArrayList<>( GeneralUtils.castList(currValue, String.class));
-                    currList.add(currValue.toString());
-                    data.put(attributeName, currList);
-                } else {
-                    data.put(attributeName, Arrays.asList(currValue.toString(), fieldValue));
-                }
-            } else {
-                data.put(attributeName, fieldValue);
-            }
-        }
-        return data;
     }
 }
