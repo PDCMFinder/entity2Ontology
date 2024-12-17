@@ -1,9 +1,8 @@
 package org.cancer_models.entity2ontology.map.service;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.cancer_models.entity2ontology.common.model.OntologyEntityDataFieldName;
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
-import org.cancer_models.entity2ontology.common.utils.GeneralUtils;
-import org.cancer_models.entity2ontology.common.utils.MapUtils;
 import org.cancer_models.entity2ontology.map.model.SearchQueryItem;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
@@ -127,16 +126,16 @@ class ScoreCalculator {
         String suggestionLabel;
 
         // Get the label from the data
-        if (dataFields.hasStringField("label")) {
-            suggestionLabel = dataFields.getStringField("label");
+        if (dataFields.hasStringField(OntologyEntityDataFieldName.LABEL.getValue())) {
+            suggestionLabel = dataFields.getStringField(OntologyEntityDataFieldName.LABEL.getValue());
         } else {
             throw new IllegalArgumentException("`label` field not found in the suggestion");
         }
 
         // Synonyms as list
         List<String> synonyms = new ArrayList<>();
-        if (dataFields.hasListField("synonyms")) {
-            synonyms = dataFields.getListField("synonyms");
+        if (dataFields.hasListField(OntologyEntityDataFieldName.SYNONYMS.getValue())) {
+            synonyms = dataFields.getListField(OntologyEntityDataFieldName.SYNONYMS.getValue());
         }
 
         // First let's calculate the similarity between `phrase` and the ontology label

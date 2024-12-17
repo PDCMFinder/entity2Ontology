@@ -7,6 +7,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexableField;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
+import org.cancer_models.entity2ontology.common.model.TargetEntityFieldName;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -21,11 +22,13 @@ public class TargetEntityDocumentMapper {
 
     public static Document targetEntityToDocument(TargetEntity targetEntity) {
         Document document = new Document();
-        document.add(new StringField("id", targetEntity.id(), Field.Store.YES));
-        document.add(new StringField("entityType", targetEntity.entityType(), Field.Store.YES));
-        document.add(new StringField("targetType", targetEntity.targetType(), Field.Store.YES));
-        document.add(new TextField("label", targetEntity.label(), Field.Store.YES));
-        document.add(new StringField("url", targetEntity.url(), Field.Store.YES));
+        document.add(
+            new StringField(TargetEntityFieldName.ID.getValue(), targetEntity.id(), Field.Store.YES));
+        document.add(
+            new StringField(TargetEntityFieldName.ENTITY_TYPE.getValue(), targetEntity.entityType(), Field.Store.YES));
+        document.add(new StringField(TargetEntityFieldName.TARGET_TYPE.getValue(), targetEntity.targetType(), Field.Store.YES));
+        document.add(new TextField(TargetEntityFieldName.LABEL.getValue(), targetEntity.label(), Field.Store.YES));
+        document.add(new StringField(TargetEntityFieldName.URL.getValue(), targetEntity.url(), Field.Store.YES));
 
         // Add string data fields if any
         Map<String, String> stringFields = targetEntity.dataFields().getStringFields();
@@ -51,11 +54,11 @@ public class TargetEntityDocumentMapper {
     }
 
     public static TargetEntity documentToTargetEntity(Document document) {
-        String id = document.get("id");
-        String entityType = document.get("entityType");
-        String targetType = document.get("targetType");
-        String label = document.get("label");
-        String url = document.get("url");
+        String id = document.get(TargetEntityFieldName.ID.getValue());
+        String entityType = document.get(TargetEntityFieldName.ENTITY_TYPE.getValue());
+        String targetType = document.get(TargetEntityFieldName.TARGET_TYPE.getValue());
+        String label = document.get(TargetEntityFieldName.LABEL.getValue());
+        String url = document.get(TargetEntityFieldName.URL.getValue());
         TargetEntityDataFields dataFields = extractDataMap(document);
         return new TargetEntity(id, entityType, targetType, dataFields, label, url);
     }

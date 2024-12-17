@@ -3,6 +3,7 @@ package org.cancer_models.entity2ontology.index.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
+import org.cancer_models.entity2ontology.common.model.TargetEntityType;
 import org.cancer_models.entity2ontology.common.utils.FileUtils;
 import org.cancer_models.entity2ontology.index.model.RuleLocation;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
@@ -78,7 +79,8 @@ class DefaultRulesetExtractor implements RulesetExtractor {
                     Map.Entry<String, JsonNode> field = fields.next();
                     dataFields.addStringField(field.getKey(), field.getValue().textValue());
                 }
-                TargetEntity targetEntity = new TargetEntity(id, entityType, "rule", dataFields, label, url);
+                TargetEntity targetEntity = new TargetEntity(
+                    id, entityType, TargetEntityType.RULE.getValue(), dataFields, label, url);
                 targetEntities.add(targetEntity);
             }
         } else {

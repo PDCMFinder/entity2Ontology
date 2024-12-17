@@ -3,6 +3,8 @@ package org.cancer_models.entity2ontology.map.service;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
+import org.cancer_models.entity2ontology.common.model.OntologyEntityDataFieldName;
+import org.cancer_models.entity2ontology.common.model.TargetEntityType;
 import org.cancer_models.entity2ontology.common.utils.MapUtils;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SearchQueryItem;
@@ -25,16 +27,10 @@ import java.util.List;
 class QueryBuilder {
 
     // Rule exclusive fields in a document have this prefix.
-    private static final String RULE_PREFIX = "rule.";
+    private static final String RULE_PREFIX = TargetEntityType.RULE.getValue() + ".";
 
     // Rule exclusive fields in a document have this prefix.
-    private static final String ONTOLOGY_PREFIX = "ontology.";
-
-    // Name of the label field in indexed documents
-    private static final String LABEL_FIELD = "label";
-
-    // Name of the synonyms field in indexed documents
-    private static final String SYNONYMS_FIELD = "synonyms";
+    private static final String ONTOLOGY_PREFIX =TargetEntityType.ONTOLOGY.getValue() + ".";
 
     /**
      * Builds a Lucene {@link Query} for an exact match in already existing rules.
@@ -126,8 +122,8 @@ class QueryBuilder {
             value = QueryParser.escape(value);
             float weight = (float) searchQueryItem.getWeight();
 
-            String labelFieldName = ONTOLOGY_PREFIX + LABEL_FIELD;
-            String synonymsFieldName = ONTOLOGY_PREFIX + SYNONYMS_FIELD;
+            String labelFieldName = ONTOLOGY_PREFIX + OntologyEntityDataFieldName.LABEL.getValue();
+            String synonymsFieldName = ONTOLOGY_PREFIX + OntologyEntityDataFieldName.SYNONYMS.getValue();
 
             PhraseQuery labelPhraseQuery = new PhraseQuery(labelFieldName, value);
             Query boostedLabelPhraseQuery = new BoostQuery(labelPhraseQuery, weight);
@@ -166,8 +162,8 @@ class QueryBuilder {
 
         int maxEdits = 1;
 
-        String labelFieldName = ONTOLOGY_PREFIX + LABEL_FIELD;
-        String synonymsFieldName = ONTOLOGY_PREFIX + SYNONYMS_FIELD;
+        String labelFieldName = ONTOLOGY_PREFIX + OntologyEntityDataFieldName.LABEL.getValue();
+        String synonymsFieldName = ONTOLOGY_PREFIX + OntologyEntityDataFieldName.SYNONYMS.getValue();
 
         for (SearchQueryItem searchQueryItem : searchQueryItems) {
 
