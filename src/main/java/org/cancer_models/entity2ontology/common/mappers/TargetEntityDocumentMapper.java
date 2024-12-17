@@ -18,6 +18,11 @@ import java.util.*;
 @Component
 public class TargetEntityDocumentMapper {
 
+    // Suppress default constructor for non-instantiability
+    private TargetEntityDocumentMapper() {
+        throw new AssertionError();
+    }
+
     private static final List<String> MULTIVALUED_ATTRIBUTES = List.of("synonyms");
 
     public static Document targetEntityToDocument(TargetEntity targetEntity) {

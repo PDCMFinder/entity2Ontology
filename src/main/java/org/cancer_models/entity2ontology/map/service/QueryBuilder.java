@@ -1,7 +1,7 @@
 package org.cancer_models.entity2ontology.map.service;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.search.*;
 import org.cancer_models.entity2ontology.common.model.OntologyEntityDataFieldName;
 import org.cancer_models.entity2ontology.common.model.TargetEntityType;
@@ -11,7 +11,6 @@ import org.cancer_models.entity2ontology.map.model.SearchQueryItem;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -119,7 +118,7 @@ class QueryBuilder {
         for (SearchQueryItem searchQueryItem : searchQueryItems) {
 
             String value = searchQueryItem.getValue();
-            value = QueryParser.escape(value);
+            value = QueryParserBase.escape(value);
             float weight = (float) searchQueryItem.getWeight();
 
             String labelFieldName = ONTOLOGY_PREFIX + OntologyEntityDataFieldName.LABEL.getValue();
@@ -168,7 +167,7 @@ class QueryBuilder {
         for (SearchQueryItem searchQueryItem : searchQueryItems) {
 
             String value = searchQueryItem.getValue();
-            value = QueryParser.escape(value);
+            value = QueryParserBase.escape(value);
             float weight = (float) searchQueryItem.getWeight();
 
             // The presence of the term in the label is optional
@@ -188,7 +187,7 @@ class QueryBuilder {
     }
 
     private Query buildPhraseQuery(String field, String phrase, int maxEdits, BooleanClause.Occur occur) {
-        phrase = QueryParser.escape(phrase);
+        phrase = QueryParserBase.escape(phrase);
         String[] words = phrase.split(" ");
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
         for (String word : words) {
