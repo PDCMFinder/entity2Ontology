@@ -56,6 +56,7 @@ public class JsonConverter {
     public static <T> void toJsonFile(T object, String jsonFilePath) throws IOException
     {
         File file = new File(jsonFilePath);
+        file.getParentFile().mkdirs(); // Create parent directories if they don't exist
         objectMapper.writeValue(file, object);
     }
 }
