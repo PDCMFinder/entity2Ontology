@@ -35,8 +35,8 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>22</maven.compiler.source>
-        <maven.compiler.target>22</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -228,44 +228,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>22</source>
-                    <target>22</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.5.0</version>
-                <configuration>
-                    <source>22</source>
-                    <doclint>none</doclint> <!-- Optional: Suppresses warnings -->
-                    <encoding>UTF-8</encoding> <!-- Ensures correct character encoding -->
-                    <show>public</show> <!-- Include public members only-->
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -274,7 +239,7 @@
                 <version>0.6.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <publishingServerId>central</publishingServerId>
+                    <publishingServerId>ossrh</publishingServerId>
                 </configuration>
             </plugin>
 
@@ -282,11 +247,48 @@
     </build>
 
     <profiles>
-        <!-- Specific profile for releasing to a public repository. Usage: `mvn deploy -P release`-->
+        <!-- Specific profile for releasing to a public repository. Usage: `echo $GPG_PASSPHRASE`-->
         <profile>
             <id>release</id>
             <build>
                 <plugins>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <configuration>
+                            <source>21</source>
+                            <doclint>none</doclint> <!-- Optional: Suppresses warnings -->
+                            <encoding>UTF-8</encoding> <!-- Ensures correct character encoding -->
+                            <show>public</show> <!-- Include public members only-->
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -294,7 +296,7 @@
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
-                                <phase>deploy</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
@@ -303,6 +305,7 @@
                                         <arg>--pinentry-mode</arg>
                                         <arg>loopback</arg>
                                     </gpgArguments>
+                                    <passphrase>${gpg.passphrase}</passphrase>
                                 </configuration>
                             </execution>
                         </executions>

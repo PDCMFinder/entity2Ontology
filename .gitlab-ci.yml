@@ -1,0 +1,43 @@
+image: maven:3-amazoncorretto-21
+
+variables:
+
+  MAVEN_SETTINGS_FILE: ".maven-settings.xml"
+
+  MAVEN_CLI_OPTS: "-B -ntp" # Batch mode, no transfer progress
+
+before_script:
+  - echo "Generating Maven settings.xml..."
+  - echo "<settings>
+    <servers>
+    <server>
+    <id>${MAVEN_SERVER_ID}</id>
+    <username>${MAVEN_USERNAME}</username>
+    <password>${MAVEN_PASSWORD}</password>
+    </server>
+    </servers>
+    </settings>" > $MAVEN_SETTINGS_FILE
+
+stages:
+  - build-dev
+  - test-dev
+
+build-dev:
+  stage: build-dev
+  script:
+    - mvn $MAVEN_CLI_OPTS clean install
+
+  only:
+    refs:
+      - develop
+
+test-dev:
+  stage: test-dev
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+  allow_failure: false
+
+  only:
+    refs:
+      - develop
+
