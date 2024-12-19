@@ -11,6 +11,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Utility class to handle files.
@@ -33,6 +36,7 @@ public class FileUtils {
     }
 
     public static File getNonEmptyFileFromPath(String filePath) {
+        Path path = Paths.get(filePath);
         File file = new File(filePath);
         if (isFileEmpty(file)) {
             throw new IllegalArgumentException("File is empty: " + file.getPath());
