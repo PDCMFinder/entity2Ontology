@@ -135,14 +135,14 @@ public class TargetEntityDataFields {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         String sep = "";
-        Map<String, String> data = new HashMap<>();
-        for (String key : stringFields.keySet()) {
-            sb.append(key).append(": ").append(stringFields.get(key)).append(sep);
+
+        for (Map.Entry<String, String> entry : stringFields.entrySet() ){
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(sep);
             sep = ", ";
         }
         sep = "";
-        for (String key : listFields.keySet()) {
-            sb.append(key).append(": ").append(listFields.get(key)).append(sep);
+        for (Map.Entry<String, List<String>> entry : listFields.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(sep);
             sep = ", ";
         }
         sb.append("}");

@@ -34,7 +34,7 @@ class QueryProcessorTest {
     void givenNullIndexPath_whenExecuteQuery_thenFails() {
         // Given a null indexPath is used
         Query dummyQuery = new TermQuery(new Term(""));
-        // When we try to process the query;
+        // When we try to process the query
         NullPointerException exception = assertThrows(NullPointerException.class, () ->
         {
             queryProcessor.executeQuery(dummyQuery, null);
