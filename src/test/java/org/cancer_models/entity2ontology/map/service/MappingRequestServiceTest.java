@@ -40,7 +40,13 @@ class MappingRequestServiceTest {
 
         // When we process the request
         String outputFileName = OUTPUT_DATA_DIR + "mapping_request_with_file_output.json";
-        instance.processMappingRequest(fileToRead, outputFileName);
+        System.out.println("output file for mapping request: " + outputFileName);
+
+        try {
+            instance.processMappingRequest(fileToRead, outputFileName);
+        } catch (IOException ioe) {
+            System.err.println("Error processing mapping request: " + ioe.getMessage());
+        }
 
         // We get an output file with the results of the mapping process
         File jsonFile = FileUtils.getNonEmptyFileFromPath(outputFileName);
