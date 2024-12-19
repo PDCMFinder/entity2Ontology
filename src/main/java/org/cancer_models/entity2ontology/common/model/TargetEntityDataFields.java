@@ -130,4 +130,22 @@ public class TargetEntityDataFields {
     public Map<String, List<String>> getListFields() {
         return Map.copyOf(listFields);
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        String sep = "";
+        Map<String, String> data = new HashMap<>();
+        for (String key : stringFields.keySet()) {
+            sb.append(key).append(": ").append(stringFields.get(key)).append(sep);
+            sep = ", ";
+        }
+        sep = "";
+        for (String key : listFields.keySet()) {
+            sb.append(key).append(": ").append(listFields.get(key)).append(sep);
+            sep = ", ";
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 }

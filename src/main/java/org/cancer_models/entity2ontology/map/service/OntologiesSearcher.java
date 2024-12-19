@@ -86,6 +86,7 @@ class OntologiesSearcher {
     private List<Suggestion> findMatchingOntologies(
         SourceEntity entity, String indexPath, MappingConfiguration config, boolean exactMatch) throws IOException {
 
+        List<Suggestion> suggestions;
         // The same suggestion can have different scores if compared against different templates so this structure
         // keeps the best score per suggestion.
         Map<Suggestion, Double> highestScores = new HashMap<>();
@@ -121,7 +122,9 @@ class OntologiesSearcher {
         }
         // Update the scores with the highest values
         highestScores.keySet().forEach(suggestion -> suggestion.setScore(highestScores.get(suggestion)));
-        return new ArrayList<>(highestScores.keySet());
+        suggestions = new ArrayList<>(highestScores.keySet());
+        suggestions = SuggestionsSorter.sortSuggestionsByScoreDesc(suggestions);
+        return suggestions;
     }
 
     /**
@@ -152,6 +155,9 @@ class OntologiesSearcher {
             double score = scoreCalculator.calculateScoreInOntologySuggestion(searchQueryItems, suggestion);
             suggestion.setScore(score);
         }
+
+//        // Sort the suggestions before returning
+//        suggestions = SuggestionsSorter.sortSuggestionsByScoreDesc(suggestions);
 
         return suggestions;
     }

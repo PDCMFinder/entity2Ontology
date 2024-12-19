@@ -31,6 +31,12 @@ class QueryBuilder {
     // Rule exclusive fields in a document have this prefix.
     private static final String ONTOLOGY_PREFIX =TargetEntityType.ONTOLOGY.getValue() + ".";
 
+    // Factor to control how much important a label match is respect to a synonym match
+    private static final int LABEL_MULTIPLIER = 20;
+
+    // Factor to represent importance of synonym match. As it is 1, it is a neutral value, but kept for consistency
+    private static final int SYNONYM_MULTIPLIER = 1;
+
     /**
      * Builds a Lucene {@link Query} for an exact match in already existing rules.
      *
@@ -125,11 +131,11 @@ class QueryBuilder {
             String synonymsFieldName = ONTOLOGY_PREFIX + OntologyEntityDataFieldName.SYNONYMS.getValue();
 
             PhraseQuery labelPhraseQuery = new PhraseQuery(labelFieldName, value);
-            Query boostedLabelPhraseQuery = new BoostQuery(labelPhraseQuery, weight);
+            Query boostedLabelPhraseQuery = new BoostQuery(labelPhraseQuery, weight * LABEL_MULTIPLIER);
             labelQueryBuilder.add(boostedLabelPhraseQuery, BooleanClause.Occur.MUST);
 
             PhraseQuery synonymsPhraseQuery = new PhraseQuery(synonymsFieldName, value);
-            Query boostedSynonymPhraseQuery = new BoostQuery(synonymsPhraseQuery, weight);
+            Query boostedSynonymPhraseQuery = new BoostQuery(synonymsPhraseQuery, weight * SYNONYM_MULTIPLIER);
             synonymsQueryBuilder.add(boostedSynonymPhraseQuery, BooleanClause.Occur.MUST);
         }
         booleanQueryBuilder.add(labelQueryBuilder.build(), BooleanClause.Occur.SHOULD);

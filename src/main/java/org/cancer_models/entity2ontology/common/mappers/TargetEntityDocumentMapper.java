@@ -8,14 +8,12 @@ import org.apache.lucene.index.IndexableField;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
 import org.cancer_models.entity2ontology.common.model.TargetEntityFieldName;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 /**
  * A class to map {@code TargetEntity}  to {@code Document} and vice versa.
  */
-@Component
 public class TargetEntityDocumentMapper {
 
     // Suppress default constructor for non-instantiability

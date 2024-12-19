@@ -51,6 +51,9 @@ public class Searcher {
 
     private final QueryParser queryParser;
 
+    // Number of results to retrieve from the search
+    private static final int NUM_RESULTS = 50;
+
     private static final Logger logger = LogManager.getLogger(Searcher.class);
 
     public Searcher(AnalyzerProvider analyzerProvider) {
@@ -90,6 +93,6 @@ public class Searcher {
             throw new IllegalArgumentException(e);
         }
         IndexSearcher indexSearcher = getOrCreateIndexSearcher(indexPath);
-        return indexSearcher.search(reparsedQuery, 10);
+        return indexSearcher.search(reparsedQuery, NUM_RESULTS);
     }
 }

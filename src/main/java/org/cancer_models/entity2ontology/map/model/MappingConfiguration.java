@@ -1,8 +1,6 @@
 package org.cancer_models.entity2ontology.map.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +12,8 @@ import java.util.Map;
  * queries.
  */
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MappingConfiguration {
 
     /**
@@ -24,7 +24,7 @@ public class MappingConfiguration {
     /**
      * List of {@code ConfigurationPerType} describing the configuration per entity type.
      */
-    private final List<ConfigurationPerType> configurations = new ArrayList<>();
+    private List<ConfigurationPerType> configurations = new ArrayList<>();
 
     public Map<String, Double> getFieldsWeightsByEntityType(String entityType) {
         Map<String, Double> weights = new HashMap<>();
@@ -40,6 +40,8 @@ public class MappingConfiguration {
      * (for example diagnosis, treatment) and the list of fields and weights belonging to that section
      */
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ConfigurationPerType {
         /**
          * Entity type to be configured.
@@ -81,6 +83,8 @@ public class MappingConfiguration {
      * contains the weight, which determines how important the field is respect of other fields in a query.
      */
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class FieldConfiguration {
         /**
          * Name of the field.

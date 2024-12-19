@@ -1,8 +1,6 @@
 package org.cancer_models.entity2ontology.map.service;
 
-import org.cancer_models.entity2ontology.DiagnosisMappingInputFileEntry;
-import org.cancer_models.entity2ontology.DiagnosisMappingInputReader;
-import org.cancer_models.entity2ontology.IndexTestCreator;
+import org.cancer_models.entity2ontology.*;
 import org.cancer_models.entity2ontology.common.utils.FileUtils;
 import org.cancer_models.entity2ontology.index.service.AnalyzerProvider;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
@@ -44,6 +42,8 @@ public class MappingServiceTest {
         new OntologiesSearcher(queryBuilder, templateQueryProcessor, queryProcessor, scoreCalculator);
 
     private final SuggestionsFinder suggestionsFinder = new DefaultSuggestionsFinder(rulesSearcher, ontologiesSearcher);
+
+    private static final int NUM_SUGGESTIONS = 10;
 
     private final MappingService instance = new MappingService(suggestionsFinder);
 
@@ -174,7 +174,58 @@ public class MappingServiceTest {
         String label = "";
         double score = 0;
 
-        Suggestion bestSuggestion = getTopSuggestion(sourceEntity, indexName, 1);
+        Suggestion bestSuggestion = getTopSuggestion(sourceEntity, indexName, NUM_SUGGESTIONS);
+        label = bestSuggestion.getTermLabel();
+        score = bestSuggestion.getScore();
+
+        try {
+            // Gets the expected mapping
+            assertEquals(entry.getExpectedLabel(), label);
+            assertTrue(
+                score >= entry.getMinimumScore(),
+                String.format(
+                    "Obtained score %s expected to be equal or greater than %s", score, entry.getMinimumScore()));
+        } catch (AssertionFailedError e) {
+            System.err.println("Assertion failed for entry: " + entry.getEntryId());
+            throw e;
+        }
+    }
+
+    @Test
+    void shouldGeExpectedMappingsForTreatmentsSet() throws IOException {
+        // Given we have an index with diagnosis at src/test/output/small_diagnosis_index
+        String smallDiagnosisIndexLocation = IndexTestCreator.createIndex(
+            "input_data_small_treatments_index/data.json");
+
+        // And we read a tsv file which contains a list of diagnosis to map and the expected results
+        List<TreatmentMappingInputFileEntry> entries =
+            TreatmentMappingInputReader.parseTSV(DATA_DIR + "set_1/treatments.tsv");
+
+        // When we map each one of them, Then we expect to get the Expected Label and the Minimum Score stated in the file
+        for (TreatmentMappingInputFileEntry entry : entries) {
+            System.out.println(entry);
+            testExpectedTreatmentMapping(entry);
+        }
+
+        // Delete the index
+        FileUtils.deleteRecursively(new File(smallDiagnosisIndexLocation));
+    }
+
+    private void testExpectedTreatmentMapping(TreatmentMappingInputFileEntry entry) {
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("id_" + entry.getEntryId());
+        sourceEntity.setType("treatment");
+        Map<String, String> data = new HashMap<>();
+        data.put("TreatmentName", entry.getTreatmentName());
+        sourceEntity.setData(data);
+
+        // `Index Path` in the file only contains the directory name. Adding here the path where the index was created
+        String indexName = "src/test/output/" + entry.getIndexPath();
+
+        String label = "";
+        double score = 0;
+
+        Suggestion bestSuggestion = getTopSuggestion(sourceEntity, indexName, NUM_SUGGESTIONS);
         label = bestSuggestion.getTermLabel();
         score = bestSuggestion.getScore();
 

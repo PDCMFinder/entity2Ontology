@@ -14,6 +14,9 @@ import java.util.Set;
  */
 class FuzzyPhraseSimilarity {
 
+    // Regexp to be used to split phrases by spaces or "/" symbol ("/" is frequently found in the labels of ontologies)
+    private static final String WORDS_SEPARATOR_REGEXP = "[\\s/]+";
+
     // Suppress default constructor for non-instantiability
     private FuzzyPhraseSimilarity() {
         throw new AssertionError();
@@ -28,8 +31,8 @@ class FuzzyPhraseSimilarity {
     // Method to calculate fuzzy Jaccard similarity
     public static double fuzzyJaccardSimilarity(String phrase1, String phrase2, double fuzzinessThreshold) {
         // Convert the phrases to sets of words, filtering out stop words
-        Set<String> set1 = new HashSet<>(filterStopWords(phrase1.toLowerCase().split("\\s+")));
-        Set<String> set2 = new HashSet<>(filterStopWords(phrase2.toLowerCase().split("\\s+")));
+        Set<String> set1 = new HashSet<>(filterStopWords(phrase1.toLowerCase().split(WORDS_SEPARATOR_REGEXP)));
+        Set<String> set2 = new HashSet<>(filterStopWords(phrase2.toLowerCase().split(WORDS_SEPARATOR_REGEXP)));
 
         // Calculate fuzzy intersection and adjust the second set accordingly
         int intersectionSize = fuzzyIntersection(set1, set2, fuzzinessThreshold);

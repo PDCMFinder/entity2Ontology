@@ -21,7 +21,8 @@
         "${TumorType} ${SampleDiagnosis} in the ${OriginTissue}",
         "${TumorType} ${OriginTissue} ${SampleDiagnosis}",
         "${TumorType} ${SampleDiagnosis}",
-        "${OriginTissue} ${SampleDiagnosis}"
+        "${OriginTissue} ${SampleDiagnosis}",
+        "${SampleDiagnosis}"
       ]
     },
     {

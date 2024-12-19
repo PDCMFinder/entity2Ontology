@@ -96,6 +96,9 @@ class RulesSearcher {
             suggestion.setScore(score);
         });
 
+        // Sort the suggestions before returning
+        suggestions = SuggestionsSorter.sortSuggestionsByScoreDesc(suggestions);
+
         return suggestions;
     }
 }

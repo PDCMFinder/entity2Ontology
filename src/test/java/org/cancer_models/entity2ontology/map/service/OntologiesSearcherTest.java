@@ -10,9 +10,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +17,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
 
-@ExtendWith(MockitoExtension.class)
 class OntologiesSearcherTest {
 
     // File with the configuration for the search
@@ -33,14 +28,9 @@ class OntologiesSearcherTest {
     private static final String INDEX_DATA_DIR = "ontologiesSearcher/";
 
     // Name of the JSON file with the index to use in these tests
-    private static final String INDEX_DATA_FILE = "smallNumberDiagnosisOntology.json";
+    private static final String INDEX_DATA_FILE = "smallOntologiesIndex.json";
 
-    // MappingConfiguration spy
-    @Spy
-    private static MappingConfiguration mappingConfigurationSpy;
-
-    @Spy
-    private static MappingConfiguration.ConfigurationPerType configurationPerTypeSpy;
+    private static MappingConfiguration mappingConfiguration;
 
     // Location of the Lucene Index
     private static String indexLocation;
@@ -58,8 +48,7 @@ class OntologiesSearcherTest {
     static void init() throws IOException {
         // Create the index and keep the name to delete it at the end
         indexLocation = IndexTestCreator.createIndex(INDEX_DATA_DIR + INDEX_DATA_FILE);
-        mappingConfigurationSpy = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
-        configurationPerTypeSpy = mappingConfigurationSpy.getConfigurationByEntityType("diagnosis");
+        mappingConfiguration = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
     }
 
     @AfterAll
@@ -85,14 +74,8 @@ class OntologiesSearcherTest {
         data.put("TumorType", "primary");
         sourceEntity.setData(data);
 
-        // Override templates to use a simple single one
-        List<String> templates = List.of("${SampleDiagnosis}");
-
-        doReturn(templates).when(configurationPerTypeSpy).getOntologyTemplates();
-        doReturn(configurationPerTypeSpy).when(mappingConfigurationSpy).getConfigurationByEntityType("diagnosis");
-
         List<Suggestion> suggestions = instance.findExactMatchingOntologies(
-            sourceEntity, indexLocation, mappingConfigurationSpy);
+            sourceEntity, indexLocation, mappingConfiguration);
 
         Suggestion suggestion = suggestions.getFirst();
 
@@ -113,14 +96,8 @@ class OntologiesSearcherTest {
         data.put("TumorType", "primary");
         sourceEntity.setData(data);
 
-        // Override templates to use a simple single one
-        List<String> templates = List.of("${SampleDiagnosis}");
-
-        doReturn(templates).when(configurationPerTypeSpy).getOntologyTemplates();
-        doReturn(configurationPerTypeSpy).when(mappingConfigurationSpy).getConfigurationByEntityType("diagnosis");
-
         List<Suggestion> suggestions = instance.findExactMatchingOntologies(
-            sourceEntity, indexLocation, mappingConfigurationSpy);
+            sourceEntity, indexLocation, mappingConfiguration);
 
         Suggestion suggestion = suggestions.getFirst();
 
@@ -142,14 +119,8 @@ class OntologiesSearcherTest {
         data.put("TumorType", "noMatch");
         sourceEntity.setData(data);
 
-        // Override templates to use a simple single one
-        List<String> templates = List.of("${SampleDiagnosis}");
-
-        doReturn(templates).when(configurationPerTypeSpy).getOntologyTemplates();
-        doReturn(configurationPerTypeSpy).when(mappingConfigurationSpy).getConfigurationByEntityType("diagnosis");
-
         List<Suggestion> suggestions = instance.findExactMatchingOntologies(
-            sourceEntity, indexLocation, mappingConfigurationSpy);
+            sourceEntity, indexLocation, mappingConfiguration);
 
         assertTrue(suggestions.isEmpty(), "The suggestion list should be empty");
     }
@@ -166,20 +137,33 @@ class OntologiesSearcherTest {
         data.put("TumorType", "primary");
         sourceEntity.setData(data);
 
-        // Override templates to use a simple single one
-        List<String> templates = List.of("${SampleDiagnosis}");
-
-        doReturn(templates).when(configurationPerTypeSpy).getOntologyTemplates();
-        doReturn(configurationPerTypeSpy).when(mappingConfigurationSpy).getConfigurationByEntityType("diagnosis");
-
         List<Suggestion> suggestions = instance.findSimilarMatchingOntologies(
-            sourceEntity, indexLocation, mappingConfigurationSpy);
+            sourceEntity, indexLocation, mappingConfiguration);
 
         Suggestion suggestion = suggestions.getFirst();
 
         assertEquals(1, suggestions.size());
         assertEquals("ontology_1", suggestion.getTargetEntity().id());
         assertTrue(suggestion.getScore() <= 60.0);
+    }
+
+    @Test
+    void testFindSimilarMatchingOntologies_similarMatchLabelWithSlash() throws IOException {
+
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("key_1");
+        sourceEntity.setType("treatment");
+        Map<String, String> data = new HashMap<>();
+        data.put("TreatmentName", "Temozolomide");
+        sourceEntity.setData(data);
+
+        List<Suggestion> suggestions = instance.findSimilarMatchingOntologies(
+            sourceEntity, indexLocation, mappingConfiguration);
+
+        Suggestion suggestion = suggestions.getFirst();
+
+        assertEquals(3, suggestions.size());
+        assertTrue(suggestion.getScore() > 0.0);
     }
 
     @Test
@@ -194,20 +178,15 @@ class OntologiesSearcherTest {
         data.put("TumorType", "primary");
         sourceEntity.setData(data);
 
-        // Override templates to use a simple single one
-        List<String> templates = List.of("${SampleDiagnosis}");
-
-        doReturn(templates).when(configurationPerTypeSpy).getOntologyTemplates();
-        doReturn(configurationPerTypeSpy).when(mappingConfigurationSpy).getConfigurationByEntityType("diagnosis");
-
         List<Suggestion> suggestions = instance.findSimilarMatchingOntologies(
-            sourceEntity, indexLocation, mappingConfigurationSpy);
+            sourceEntity, indexLocation, mappingConfiguration);
 
         Suggestion suggestion = suggestions.getFirst();
 
         assertEquals(1, suggestions.size());
         assertEquals("ontology_2", suggestion.getTargetEntity().id());
-        assertTrue(suggestion.getScore() <= 60.0);
+        System.out.println(suggestion.getScore());
+        assertTrue(suggestion.getScore() <= 70.0);
     }
 
     @Test
@@ -222,14 +201,8 @@ class OntologiesSearcherTest {
         data.put("TumorType", "noMatch");
         sourceEntity.setData(data);
 
-        // Override templates to use a simple single one
-        List<String> templates = List.of("${SampleDiagnosis}");
-
-        doReturn(templates).when(configurationPerTypeSpy).getOntologyTemplates();
-        doReturn(configurationPerTypeSpy).when(mappingConfigurationSpy).getConfigurationByEntityType("diagnosis");
-
         List<Suggestion> suggestions = instance.findSimilarMatchingOntologies(
-            sourceEntity, indexLocation, mappingConfigurationSpy);
+            sourceEntity, indexLocation, mappingConfiguration);
 
         assertTrue(suggestions.isEmpty(), "The suggestion list should be empty");
     }

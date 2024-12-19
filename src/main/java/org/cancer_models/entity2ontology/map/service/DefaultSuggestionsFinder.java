@@ -77,7 +77,7 @@ class DefaultSuggestionsFinder implements SuggestionsFinder {
                 maxNumSuggestions);
         }
         // Suggestions need to be sorted (descending order) by 'score'
-        return sortSuggestionsByScoreDesc(suggestions);
+        return SuggestionsSorter.sortSuggestionsByScoreDesc(suggestions);
 
     }
 
@@ -104,11 +104,5 @@ class DefaultSuggestionsFinder implements SuggestionsFinder {
             }
         }
         return done;
-    }
-
-    private List<Suggestion> sortSuggestionsByScoreDesc(List<Suggestion> suggestions) {
-        return suggestions.stream()
-            .sorted(Comparator.comparingDouble(Suggestion::getScore).reversed())
-            .collect(Collectors.toList());
     }
 }
