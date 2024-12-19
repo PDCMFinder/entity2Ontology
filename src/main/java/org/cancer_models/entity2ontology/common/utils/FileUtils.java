@@ -37,9 +37,6 @@ public class FileUtils {
 
     public static File getNonEmptyFileFromPath(String filePath) {
         Path path = Paths.get(filePath);
-        if (!Files.isReadable(path)) {
-            throw new IllegalArgumentException("Could not read file: " + filePath);
-        }
         File file = new File(filePath);
         if (isFileEmpty(file)) {
             throw new IllegalArgumentException("File is empty: " + file.getPath());
