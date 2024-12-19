@@ -14,7 +14,7 @@ precise ontology term.
 As not all the attributes in the entity to map are equally relevant, `Entity2Ontology` allows you to define different 
 weights for attributes, enabling you to control the mapping process with precision.
 
-The application is written in Java 22, as a Maven project. The jar file, *entity2Ontology-[version].jar*, can be 
+The application is written in Java 21, as a Maven project. The jar file, *entity2Ontology-[version].jar*, can be 
 accessed through the command line or used as a dependency in your project.
 
 ---
@@ -89,7 +89,7 @@ For instance, this is the structure of 2 different entities, `diagnosis` and `tr
 ---
 
 ## Technologies
-* Java 22
+* Java 21
 * JUnit 5
 * Apache Lucene 9.11.1
 ---
