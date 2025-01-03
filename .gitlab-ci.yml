@@ -2,6 +2,10 @@ image: maven:3-amazoncorretto-21
 
 variables:
 
+  # For EBI you need to override the definition of CI_REGISTRY to remove the port number
+  CI_REGISTRY: dockerhub.ebi.ac.uk
+  CI_REGISTRY_IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH
+
   MAVEN_SETTINGS_FILE: ".maven-settings.xml"
 
   MAVEN_CLI_OPTS: "-B -ntp" # Batch mode, no transfer progress
@@ -20,23 +24,12 @@ before_script:
 
 stages:
   - build-dev
-  - test-dev
 
 build-dev:
   stage: build-dev
   script:
-    - mvn $MAVEN_CLI_OPTS clean install
-
-  only:
-    refs:
-      - develop
-
-test-dev:
-  stage: test-dev
-  script:
-    - mvn $MAVEN_CLI_OPTS test
-  allow_failure: false
-
+    - mvn $MAVEN_CLI_OPTS clean install jib:build -Djib.to.image=docker.io/"$DOCKER_HUB_USER"/$DOCKER_HUB_REPO:dev -Djib.to.auth.username="$DOCKER_HUB_USER" -Djib.to.auth.password="$DOCKER_HUB_TOKEN" -Djib.to.tags=dev
+    - mvn jib:build -Djib.to.auth.username=${CI_REGISTRY_USER} -Djib.to.auth.password=${CI_REGISTRY_PASSWORD} -Djib.to.image=${CI_REGISTRY_IMAGE}:dev -Djib.to.tags=dev
   only:
     refs:
       - develop
