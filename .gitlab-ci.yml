@@ -95,8 +95,8 @@ publish-maven:
   script:
     - echo "Publishing Maven artifact..."
     - gpg --version
-    - echo "$GPG_PRIVATE_KEY" | gpg --import
-    - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase "$GPG_PASSPHRASE"
+    - gpg --batch --passphrase-fd 0 --import
+    - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 --import
     - mvn $MAVEN_CLI_OPTS clean deploy -P release
   only:
     - /^release\/.*$/
