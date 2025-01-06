@@ -10,6 +10,10 @@ variables:
 
   MAVEN_CLI_OPTS: "-B -ntp" # Batch mode, no transfer progress
 
+  IMAGE_NAME: "docker.io/$DOCKER_HUB_USER/$DOCKER_HUB_REPO"
+
+  CI_IMAGE_TAG_DEV: "dev"
+
 before_script:
   - echo "Generating Maven settings.xml..."
   - echo "<settings>
@@ -23,14 +27,66 @@ before_script:
     </settings>" > $MAVEN_SETTINGS_FILE
 
 stages:
-  - build-dev
+  - build
+  - publish-docker
+  - publish-maven
 
-build-dev:
-  stage: build-dev
+build-maven:
+  stage: build
   script:
-    - mvn $MAVEN_CLI_OPTS clean install jib:build -Djib.to.image=docker.io/"$DOCKER_HUB_USER"/$DOCKER_HUB_REPO:dev -Djib.to.auth.username="$DOCKER_HUB_USER" -Djib.to.auth.password="$DOCKER_HUB_TOKEN" -Djib.to.tags=dev
-    - mvn jib:build -Djib.to.auth.username=${CI_REGISTRY_USER} -Djib.to.auth.password=${CI_REGISTRY_PASSWORD} -Djib.to.image=${CI_REGISTRY_IMAGE}:dev -Djib.to.tags=dev
+    - echo "Building Maven project..."
+    - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
+      mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml | sed 's/-SNAPSHOT//');
+      fi
+    - mvn $MAVEN_CLI_OPTS clean install
+  artifacts:
+    paths:
+      - target/
   only:
     refs:
       - develop
+      - main
+      - /^release\/.*$/
+
+publish-docker-dev:
+  stage: publish-docker
+  script:
+    - echo "Building and pushing dev Docker image with Jib..."
+    - |
+      mvn jib:build \
+        -Djib.to.image=$IMAGE_NAME:$CI_IMAGE_TAG_DEV \
+        -Djib.to.auth.username=$DOCKER_HUB_USER \
+        -Djib.to.auth.password=$DOCKER_HUB_TOKEN \
+        -Djib.to.tags=$CI_IMAGE_TAG_DEV
+  dependencies:
+    - build-maven  # Ensure Docker image build depends on Maven build
+  only:
+    refs:
+      - develop
+
+publish-docker-prod:
+  stage: publish-docker
+  script:
+    - echo "Building and pushing prod Docker image with Jib..."
+    - echo "Extracting version from pom.xml..."
+    - VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+    - |
+      mvn jib:build \
+        -Djib.to.image=$IMAGE_NAME:$CI_IMAGE_TAG_DEV \
+        -Djib.to.auth.username=$DOCKER_HUB_USER \
+        -Djib.to.auth.password=$DOCKER_HUB_TOKEN \
+        -Djib.to.tags=$CI_IMAGE_TAG_DEV
+  dependencies:
+    - build-maven  # Ensure Docker image build depends on Maven build
+  only:
+    refs:
+      - /^release\/.*$/
+
+publish-maven:
+  stage: publish-maven
+  script:
+    - echo "Publishing Maven artifact..."
+    - mvn $MAVEN_CLI_OPTS clean deploy -P release
+  only:
+    - /^release\/.*$/
 
