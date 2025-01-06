@@ -95,9 +95,10 @@ publish-maven:
   script:
     - echo "Publishing Maven artifact..."
     - gpg --version
-    - echo "$GPG_PRIVATE_KEY" | gpg --import
-    - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0
-    - mvn $MAVEN_CLI_OPTS clean deploy -P release
+#    - echo "$GPG_PRIVATE_KEY" | gpg --import
+#    - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0
+    -  gpg  --pinentry-mode loopback --passphrase="$GPG_PASSPHRASE" --import <( echo "$GPG_PRIVATE_KEY" )
+    - mvn $MAVEN_CLI_OPTS clean deploy -P release -Dgpg.arg='--pinetry-mode loopback'
   only:
     - /^release\/.*$/
 
