@@ -24,6 +24,7 @@ before_script:
 
 stages:
   - build-dev
+  - build-prod
 
 build-dev:
   stage: build-dev
@@ -33,4 +34,16 @@ build-dev:
   only:
     refs:
       - develop
+
+build-prod:
+  stage: build-prod
+  script:
+    - echo "Extracting version from pom.xml..."
+    - VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+    - echo "Building prod image with version $VERSION..."
+    - mvn $MAVEN_CLI_OPTS clean install jib:build -Djib.to.image=docker.io/"$DOCKER_HUB_USER"/$DOCKER_HUB_REPO:$VERSION -Djib.to.auth.username="$DOCKER_HUB_USER" -Djib.to.auth.password="$DOCKER_HUB_TOKEN" -Djib.to.tags=$VERSION
+    - mvn jib:build -Djib.to.auth.username=${CI_REGISTRY_USER} -Djib.to.auth.password=${CI_REGISTRY_PASSWORD} -Djib.to.image=${CI_REGISTRY_IMAGE}:$VERSION -Djib.to.tags=$VERSION
+#  only:
+#    refs:
+#      - main
 
