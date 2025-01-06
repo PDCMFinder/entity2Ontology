@@ -94,10 +94,12 @@ publish-maven:
   stage: publish-maven
   script:
     - echo "Publishing Maven artifact..."
+    - apt-get update
+    - apt-get install -y gnupg2
     - gpg --version
     - echo "$GPG_PRIVATE_KEY" | gpg --import
     - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback
-    - mvn $MAVEN_CLI_OPTS clean deploy -P release
+    - mvn $MAVEN_CLI_OPTS clean deploy -P release -Dgpg.arg='--pinetry-mode loopback'
   only:
     - /^release\/.*$/
 
