@@ -94,7 +94,8 @@ publish-maven:
   stage: publish-maven
   script:
     - echo "Publishing Maven artifact..."
-    - sudo yum install -y gnupg2
+    - yum list gnupg2
+    - yum install -y gnupg2
     - gpg --version
     - echo "$GPG_PRIVATE_KEY" | gpg --import
     - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback
