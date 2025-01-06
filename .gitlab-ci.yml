@@ -52,11 +52,12 @@ publish-docker-dev:
   stage: publish-docker
   script:
     - echo "Building and pushing dev Docker image with Jib..."
-    - mvn jib:build \
-      -Djib.to.image=$IMAGE_NAME:$CI_IMAGE_TAG_DEV \
-      -Djib.to.auth.username=$DOCKER_HUB_USER \
-      -Djib.to.auth.password=$DOCKER_HUB_TOKEN \
-      -Djib.to.tags=$CI_IMAGE_TAG_DEV
+    - |
+      mvn jib:build \
+        -Djib.to.image=$IMAGE_NAME:$CI_IMAGE_TAG_DEV \
+        -Djib.to.auth.username=$DOCKER_HUB_USER \
+        -Djib.to.auth.password=$DOCKER_HUB_TOKEN \
+        -Djib.to.tags=$CI_IMAGE_TAG_DEV
   dependencies:
     - build-maven  # Ensure Docker image build depends on Maven build
   only:
@@ -69,11 +70,12 @@ publish-docker-prod:
     - echo "Building and pushing prod Docker image with Jib..."
     - echo "Extracting version from pom.xml..."
     - VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
-    - mvn jib:build \
-      -Djib.to.image=$IMAGE_NAME:$CI_IMAGE_TAG_DEV \
-      -Djib.to.auth.username=$DOCKER_HUB_USER \
-      -Djib.to.auth.password=$DOCKER_HUB_TOKEN \
-      -Djib.to.tags=$CI_IMAGE_TAG_DEV
+    - |
+      mvn jib:build \
+        -Djib.to.image=$IMAGE_NAME:$CI_IMAGE_TAG_DEV \
+        -Djib.to.auth.username=$DOCKER_HUB_USER \
+        -Djib.to.auth.password=$DOCKER_HUB_TOKEN \
+        -Djib.to.tags=$CI_IMAGE_TAG_DEV
   dependencies:
     - build-maven  # Ensure Docker image build depends on Maven build
   only:
