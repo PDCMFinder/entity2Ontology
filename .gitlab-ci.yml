@@ -24,6 +24,14 @@ before_script:
     <password>${MAVEN_PASSWORD}</password>
     </server>
     </servers>
+    <profiles> 
+    <profile> 
+    <id>${MAVEN_SERVER_ID}</id> 
+    <activation> 
+    <activeByDefault>true</activeByDefault> </activation> 
+    <properties> <gpg.executable>gpg2</gpg.executable> <gpg.passphrase>$GPG_PASSPHRASE</gpg.passphrase></properties>
+    </profile> 
+    </profiles>
     </settings>" > $MAVEN_SETTINGS_FILE
 
 stages:
@@ -86,6 +94,7 @@ publish-maven:
   stage: publish-maven
   script:
     - echo "Publishing Maven artifact..."
+    - gpg --version
     - echo "$GPG_PRIVATE_KEY" | gpg --import
     - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback
     - mvn $MAVEN_CLI_OPTS clean deploy -P release
