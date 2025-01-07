@@ -44,7 +44,7 @@ build-maven:
   script:
     - echo "Building Maven project..."
     - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
-      mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml | sed 's/-SNAPSHOT//');
+      mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=$(grep -m1 '<version>' pom.xml | sed -e 's/<[^>]*>//g' | xargs)" pom.xml | sed 's/-SNAPSHOT//');
       fi
     - mvn $MAVEN_CLI_OPTS clean install
   artifacts:
@@ -77,7 +77,7 @@ publish-docker-prod:
   script:
     - echo "Building and pushing prod Docker image with Jib..."
     - echo "Extracting version from pom.xml..."
-    - VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+    - VERSION=$(grep -m1 '<version>' pom.xml | sed -e 's/<[^>]*>//g' | xargs)
     - |
       mvn jib:build \
         -Djib.to.image=$IMAGE_NAME:$CI_IMAGE_TAG_DEV \
