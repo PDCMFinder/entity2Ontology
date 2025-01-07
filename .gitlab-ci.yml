@@ -1,4 +1,4 @@
-image: maven:3-amazoncorretto-21
+image: pdxfinder/maven-amazoncorretto-21-ci
 
 variables:
 
@@ -25,6 +25,7 @@ before_script:
     </server>
     </servers>
     </settings>" > $MAVEN_SETTINGS_FILE
+  - cat $MAVEN_SETTINGS_FILE
 
 stages:
   - build
@@ -36,7 +37,8 @@ build-maven:
   script:
     - echo "Building Maven project..."
     - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
-      mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml | sed 's/-SNAPSHOT//');
+      VERSION=$(grep -m1 '<version>' pom.xml | sed -e 's/<[^>]*>//g' | sed 's/-SNAPSHOT//' | xargs);
+      mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=$VERSION;
       fi
     - mvn $MAVEN_CLI_OPTS clean install
   artifacts:
@@ -69,7 +71,7 @@ publish-docker-prod:
   script:
     - echo "Building and pushing prod Docker image with Jib..."
     - echo "Extracting version from pom.xml..."
-    - VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+    - VERSION=$(grep -m1 '<version>' pom.xml | sed -e 's/<[^>]*>//g' | xargs)
     - |
       mvn jib:build \
         -Djib.to.image=$IMAGE_NAME:$CI_IMAGE_TAG_DEV \
@@ -86,9 +88,11 @@ publish-maven:
   stage: publish-maven
   script:
     - echo "Publishing Maven artifact..."
-    - echo "$GPG_PRIVATE_KEY" | gpg --import
-    - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback
-    - mvn $MAVEN_CLI_OPTS clean deploy -P release
+    - gpg --version
+    - echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
+    - mvn $MAVEN_CLI_OPTS clean deploy -P release -Dgpg.passphrase="$GPG_PASSPHRASE" --settings $MAVEN_SETTINGS_FILE
   only:
     - /^release\/.*$/
+  variables:
+    GPG_TTY: $(tty)
 
