@@ -1,4 +1,4 @@
-image: maven:3-amazoncorretto-21
+image: pdxfinder/maven-amazoncorretto-21-ci
 
 variables:
 
@@ -94,14 +94,6 @@ publish-maven:
   stage: publish-maven
   script:
     - echo "Publishing Maven artifact..."
-    - yum groupinstall -y "Development Tools"
-    - yum install -y wget tar bzip2
-    - wget https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.3.8.tar.bz2
-    - tar -xjf gnupg-2.3.8.tar.bz2
-    - cd gnupg-2.3.8
-    - ./configure
-    - make
-    - make install
     - gpg --version
     - echo "$GPG_PRIVATE_KEY" | gpg --import
     - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback
