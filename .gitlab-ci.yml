@@ -25,6 +25,7 @@ before_script:
     </server>
     </servers>
     </settings>" > $MAVEN_SETTINGS_FILE
+  - cat $MAVEN_SETTINGS_FILE
 
 stages:
   - build
