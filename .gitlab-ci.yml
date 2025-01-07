@@ -96,9 +96,6 @@ publish-maven:
   script:
     - echo "Publishing Maven artifact..."
     - gpg --version
-    - echo "Configuring GPG..."
-    - echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
-    - gpgconf --reload gpg-agent
     - echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
     - mvn $MAVEN_CLI_OPTS clean deploy -P release
   only:
