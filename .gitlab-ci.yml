@@ -97,7 +97,7 @@ publish-maven:
     - echo "Publishing Maven artifact..."
     - gpg --version
     - echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
-    - mvn $MAVEN_CLI_OPTS clean deploy -P release
+    - mvn $MAVEN_CLI_OPTS clean deploy -P release -Dgpg.passphrase="$GPG_PASSPHRASE"
   only:
     - /^release\/.*$/
   variables:
