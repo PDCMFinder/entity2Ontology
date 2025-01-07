@@ -96,6 +96,9 @@ publish-maven:
   script:
     - echo "Publishing Maven artifact..."
     - gpg --version
+    - echo "Starting GPG agent..."
+    - gpgconf --create-socketdir
+    - gpg-agent --daemon --allow-preset-passphrase
     - echo "$GPG_PRIVATE_KEY" | gpg --import
     - echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback
     - mvn $MAVEN_CLI_OPTS clean deploy -P release
