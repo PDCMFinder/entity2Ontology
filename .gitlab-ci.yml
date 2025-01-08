@@ -74,10 +74,10 @@ publish-docker-prod:
     - VERSION=$(grep -m1 '<version>' pom.xml | sed -e 's/<[^>]*>//g' | xargs)
     - |
       mvn jib:build \
-        -Djib.to.image=$IMAGE_NAME:$CI_IMAGE_TAG_DEV \
+        -Djib.to.image=$IMAGE_NAME:$VERSION \
         -Djib.to.auth.username=$DOCKER_HUB_USER \
         -Djib.to.auth.password=$DOCKER_HUB_TOKEN \
-        -Djib.to.tags=$CI_IMAGE_TAG_DEV
+        -Djib.to.tags=$VERSION,latest
   dependencies:
     - build-maven  # Ensure Docker image build depends on Maven build
   only:
