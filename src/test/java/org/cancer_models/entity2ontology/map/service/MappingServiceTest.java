@@ -140,7 +140,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    void shouldGeExpectedMappingsForDiagnosisSet() throws IOException {
+    void shouldGetExpectedMappingsForDiagnosisSet() throws IOException {
         // Given we have an index with diagnosis at src/test/output/small_diagnosis_index
         String smallDiagnosisIndexLocation = IndexTestCreator.createIndex(
             "input_data_small_diagnosis_index/data.json");
@@ -171,12 +171,14 @@ public class MappingServiceTest {
         // `Index Path` in the file only contains the directory name. Adding here the path where the index was created
         String indexName = "src/test/output/" + entry.getIndexPath();
 
-        String label = "";
+        String label = "NONE";
         double score = 0;
 
         Suggestion bestSuggestion = getTopSuggestion(sourceEntity, indexName, NUM_SUGGESTIONS);
-        label = bestSuggestion.getTermLabel();
-        score = bestSuggestion.getScore();
+        if (bestSuggestion != null) {
+            label = bestSuggestion.getTermLabel();
+            score = bestSuggestion.getScore();
+        }
 
         try {
             // Gets the expected mapping
@@ -192,7 +194,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    void shouldGeExpectedMappingsForTreatmentsSet() throws IOException {
+    void shouldGetExpectedMappingsForTreatmentsSet() throws IOException {
         // Given we have an index with diagnosis at src/test/output/small_diagnosis_index
         String smallDiagnosisIndexLocation = IndexTestCreator.createIndex(
             "input_data_small_treatments_index/data.json");
@@ -209,6 +211,28 @@ public class MappingServiceTest {
 
         // Delete the index
         FileUtils.deleteRecursively(new File(smallDiagnosisIndexLocation));
+    }
+
+    @Test
+    void shouldReturnEmptyIfTooLongText() {
+
+        SourceEntity entity = new SourceEntity();
+        Map<String, String> data = new HashMap<>();
+        data.put("SampleDiagnosis", "endometrioid endomet adenocar secretory and clear cell features final pathology dx confirmed in bilateral ovaries with lymphovascular invasion tumor gradestage figo grade 1location of known metastases ovary large bowel");
+        data.put("TumorType", "metastatic");
+        data.put("OriginTissue", "gynecologic");
+        entity.setId("1");
+
+        entity.setData(data);
+       // instance.mapEntity(entity, )
+//        // When we try to map an entity that is null
+//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+//        {
+//            instance.mapEntity(null, "", 0, config);
+//        });
+//
+//        // Then we get an IOException
+//        assertEquals("Entity cannot be null", exception.getMessage());
     }
 
     private void testExpectedTreatmentMapping(TreatmentMappingInputFileEntry entry) {
@@ -247,7 +271,9 @@ public class MappingServiceTest {
         Suggestion bestSuggestion = null;
         try {
             List<Suggestion> suggestions = instance.mapEntity(sourceEntity, indexName, numSuggestions, config);
-            bestSuggestion = suggestions.getFirst();
+            if (!suggestions.isEmpty()) {
+                bestSuggestion = suggestions.getFirst();
+            }
         } catch (Exception e) {
             System.err.println("Exception: " + e.getMessage());
             throw new RuntimeException(e);

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -45,8 +46,16 @@ public class MappingService {
         validateSourceEntity(entity);
         validateIndex(indexPath);
         validateMappingConfiguration(config);
+        cleanSourceEntityData(entity);
 
         return suggestionsFinder.findSuggestions(entity, indexPath, maxNumSuggestions, config);
+    }
+
+    private void cleanSourceEntityData(SourceEntity entity) {
+        entity.getData().forEach((key, value) -> {
+            String cleanedValue = value.trim().replaceAll(" +", " ");
+            entity.getData().put(key, cleanedValue);
+        });
     }
 
     private void validateSourceEntity(SourceEntity entity) {
