@@ -4,6 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.*;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.cancer_models.entity2ontology.common.mappers.TargetEntityDocumentMapper;
@@ -96,14 +99,20 @@ public class Indexer {
     }
 
     /**
-     * Delete all documents which entityType is {@code entityType}.
+     * Delete all documents which entityType is {@code entityType} and target type is {@code targetType}.
      * @param entityType The type of entity to delete (treatment or diagnosis, for instance).
      * @param indexPath Path of the index.
      */
-    public void deleteAllByEntityType(String entityType, String indexPath) throws IOException {
+    public void deleteAllByEntityTypeAndTargetType(
+        String entityType, String targetType, String indexPath) throws IOException {
         IndexWriter writer = getIndexWriter(indexPath);
-        Term term = new Term("entityType", entityType);
-        writer.deleteDocuments(term);
+        // Create a BooleanQuery to match both entityType and targetType
+        BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+        queryBuilder.add(new TermQuery(new Term("entityType", entityType)), BooleanClause.Occur.MUST);
+        queryBuilder.add(new TermQuery(new Term("targetType", targetType)), BooleanClause.Occur.MUST);
+
+        // Delete documents matching the query
+        writer.deleteDocuments(queryBuilder.build());
         writer.commit();
     }
 

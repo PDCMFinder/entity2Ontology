@@ -2,6 +2,7 @@ package org.cancer_models.entity2ontology.index.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cancer_models.entity2ontology.common.model.TargetEntityType;
 import org.cancer_models.entity2ontology.index.model.OntologyLocation;
 import org.cancer_models.entity2ontology.index.model.RuleLocation;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
@@ -67,7 +68,7 @@ public class IndexingService {
         logger.info("Rules will be indexed at {}", indexPath);
         List<TargetEntity> targetEntities = rulesetExtractor.extract(ruleLocation);
         logger.info("Deleting all rules documents with type '{}'", ruleLocation.name());
-        indexer.deleteAllByEntityType(ruleLocation.name(), indexPath);
+        indexer.deleteAllByEntityTypeAndTargetType(ruleLocation.name(), TargetEntityType.RULE.getValue(), indexPath);
         indexer.indexEntities(targetEntities, indexPath);
         return targetEntities.size();
     }
@@ -103,7 +104,7 @@ public class IndexingService {
         logger.info("Ontologies will be indexed at {}", indexPath);
         List<TargetEntity> targetEntities = ontologyExtractor.extract(ontologyLocation);
         logger.info("Deleting all ontologies documents with type '{}'", ontologyLocation.name());
-        indexer.deleteAllByEntityType(ontologyLocation.name(), indexPath);
+        indexer.deleteAllByEntityTypeAndTargetType(ontologyLocation.name(), TargetEntityType.ONTOLOGY.getValue(), indexPath);
         indexer.indexEntities(targetEntities, indexPath);
         return targetEntities.size();
     }
