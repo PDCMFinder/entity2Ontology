@@ -1,3 +1,4 @@
 Index Path	Entry Id	SampleDiagnosis	OriginTissue	TumorType	Expected Label	Minimum Score
 small_diagnosis_index	entry_1	fusion negative rhabdomyosarcoma	orbit	primary	Fusion-Negative Alveolar Rhabdomyosarcoma	100.0
 small_diagnosis_index	entry_2	endometrioid endomet adenocar secretory and clear cell features final pathology dx confirmed in bilateral ovaries with lymphovascular invasion  tumor gradestage figo grade 1location of known metastases ovary large bowel	gynecologic	metastatic	NONE	0
+small_diagnosis_index	entry_3	breast cancer	breast	primary	Breast Cancer	0

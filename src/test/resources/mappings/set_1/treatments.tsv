@@ -1,2 +1,3 @@
 Index Path	Entry Id	TreatmentName	Expected Label	Minimum Score
 small_treatments_index	entry_1	temozolomide	Temozolomide	100
+small_treatments_index	entry_2	Tamoxifen	Tamoxifen	100

@@ -92,14 +92,6 @@ class ScoreCalculator {
     }
 
     /**
-     * Calculates the score of a {@link Suggestion} that represents an ontology.
-     * @param searchQueryItems List of {@link SearchQueryItem} representing each term in the query (field, value, weight).
-     * @param suggestion A {@link Suggestion} which contains an ontology term. Returned by the searcher after executing
-     *                  a query based on `searchQueryItems`.
-     * @return A number representing the percentage of similarity for the suggestion. 100 represents a perfect suggestion.
-     */
-
-    /**
      * Calculates the similarity score for a {@link Suggestion} that represents an ontology term. It compares the
      * string representation of `searchQueryItems` against the label and synonyms in the suggestion. The highest
      * score is returned.
