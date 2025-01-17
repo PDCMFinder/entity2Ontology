@@ -2,6 +2,7 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.IndexTestCreator;
 import org.cancer_models.entity2ontology.common.utils.FileUtils;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.index.service.AnalyzerProvider;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
@@ -61,7 +62,7 @@ class RulesSearcherTest {
     }
 
     @Test
-    void testFindExactMatchingRules_exactMatch() throws IOException {
+    void testFindExactMatchingRules_exactMatch() throws IOException, MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -85,7 +86,7 @@ class RulesSearcherTest {
     }
 
     @Test
-    void testFindExactMatchingRules_NoMatch() throws IOException {
+    void testFindExactMatchingRules_NoMatch() throws IOException, MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -106,7 +107,7 @@ class RulesSearcherTest {
     }
 
     @Test
-    void testFindSimilarRules_similarMatch() throws IOException {
+    void testFindSimilarRules_similarMatch() throws IOException, MappingException {
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
         sourceEntity.setType("diagnosis");
@@ -129,7 +130,7 @@ class RulesSearcherTest {
     }
 
     @Test
-    void testFindSimilarRules_NoMatch() throws IOException {
+    void testFindSimilarRules_NoMatch() throws IOException, MappingException {
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
         sourceEntity.setType("diagnosis");

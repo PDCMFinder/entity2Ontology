@@ -3,10 +3,10 @@ package org.cancer_models.entity2ontology.map.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.Query;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.map.model.*;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -50,10 +50,10 @@ class OntologiesSearcher {
      * @param indexPath The path to the Lucene index to search in.
      * @param config    The configuration object providing the templates and weights to use.
      * @return A list of ontology suggestions with updated scores.
-     * @throws IOException If an error occurs while accessing the Lucene index.
+     * @throws MappingException if an error occurs during the search
      */
     public List<Suggestion> findExactMatchingOntologies(
-        SourceEntity entity, String indexPath, MappingConfiguration config) throws IOException {
+        SourceEntity entity, String indexPath, MappingConfiguration config) throws MappingException {
         return findMatchingOntologies(entity, indexPath, config, true);
     }
 
@@ -65,10 +65,10 @@ class OntologiesSearcher {
      * @param indexPath The path to the Lucene index to search in.
      * @param config    The configuration object providing the templates and weights to use.
      * @return A list of ontology suggestions with updated scores.
-     * @throws IOException If an error occurs while accessing the Lucene index.
+     * @throws MappingException if an error occurs during the search
      */
     public List<Suggestion> findSimilarMatchingOntologies(
-        SourceEntity entity, String indexPath, MappingConfiguration config) throws IOException {
+        SourceEntity entity, String indexPath, MappingConfiguration config) throws MappingException {
         return findMatchingOntologies(entity, indexPath, config, false);
     }
 
@@ -81,10 +81,10 @@ class OntologiesSearcher {
      * @param config    The configuration object providing the templates and weights to use.
      * @param exactMatch Indicates if the suggestion should be exact matches or not.
      * @return A list of ontology suggestions with updated scores.
-     * @throws IOException If an error occurs while accessing the Lucene index.
+     * @throws MappingException if an error occurs during the search
      */
     private List<Suggestion> findMatchingOntologies(
-        SourceEntity entity, String indexPath, MappingConfiguration config, boolean exactMatch) throws IOException {
+        SourceEntity entity, String indexPath, MappingConfiguration config, boolean exactMatch) throws MappingException {
 
         List<Suggestion> suggestions;
         // The same suggestion can have different scores if compared against different templates so this structure
@@ -133,10 +133,10 @@ class OntologiesSearcher {
      * @param searchQueryItems List of {@link SearchQueryItem} to use in the query.
      * @param indexPath  The path to the Lucene index to search in.
      * @return A list of ontology suggestions with calculated scores.
-     * @throws IOException If an error occurs while searching or processing the Lucene query.
+     * @throws MappingException if an error occurs during the search
      */
     private List<Suggestion> processSearchItems(
-        List<SearchQueryItem> searchQueryItems, String indexPath, boolean exactMatch) throws IOException {
+        List<SearchQueryItem> searchQueryItems, String indexPath, boolean exactMatch) throws MappingException {
 
         List<Suggestion> suggestions;
         Query query;

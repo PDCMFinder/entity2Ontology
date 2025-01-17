@@ -1,6 +1,7 @@
 package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +91,7 @@ class DefaultSuggestionsFinderTest {
     }
 
     @Test
-    void testFindSuggestions_foundOneExactRuleMatch() throws IOException {
+    void testFindSuggestions_foundOneExactRuleMatch() throws MappingException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(suggestionExactRule));
 
@@ -103,7 +103,7 @@ class DefaultSuggestionsFinderTest {
     }
 
     @Test
-    void testFindSuggestions_foundOneSimilarRuleMatch() throws IOException {
+    void testFindSuggestions_foundOneSimilarRuleMatch() throws MappingException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(suggestionSimilarRule));
 
@@ -115,7 +115,7 @@ class DefaultSuggestionsFinderTest {
     }
 
     @Test
-    void testFindSuggestions_foundOneExactOntologyMatch() throws IOException {
+    void testFindSuggestions_foundOneExactOntologyMatch() throws MappingException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(suggestionExactOntology));
 
@@ -127,7 +127,7 @@ class DefaultSuggestionsFinderTest {
     }
 
     @Test
-    void testFindSuggestions_foundOneSimilarOntologyMatch() throws IOException {
+    void testFindSuggestions_foundOneSimilarOntologyMatch() throws MappingException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(suggestionSimilarOntology));
 
@@ -139,7 +139,7 @@ class DefaultSuggestionsFinderTest {
     }
 
     @Test
-    void testFindSuggestions_foundOneSuggestionEachStep() throws IOException {
+    void testFindSuggestions_foundOneSuggestionEachStep() throws MappingException {
         when(rulesSearcher.findExactMatchingRules(sourceEntity, INDEX_PATH, conf))
             .thenReturn(List.of(
                 suggestionExactRule, suggestionSimilarRule, suggestionExactOntology, suggestionSimilarOntology));

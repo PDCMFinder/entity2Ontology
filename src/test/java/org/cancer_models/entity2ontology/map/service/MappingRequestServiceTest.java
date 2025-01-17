@@ -2,6 +2,8 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.common.utils.FileUtils;
 import org.cancer_models.entity2ontology.common.utils.JsonConverter;
+import org.cancer_models.entity2ontology.exceptions.MalformedMappingConfigurationException;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.map.model.MappingRequest;
 import org.cancer_models.entity2ontology.map.model.MappingResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +36,7 @@ class MappingRequestServiceTest {
     }
 
     @Test
-    void shouldProcessMappingRequestWithRequestFile() throws IOException {
+    void shouldProcessMappingRequestWithRequestFile() throws MappingException, IOException {
         // Given a file that has right data
         String fileToRead = DATA_DIR + "mappingRequest.json";
 
@@ -44,7 +46,7 @@ class MappingRequestServiceTest {
 
         try {
             instance.processMappingRequest(fileToRead, outputFileName);
-        } catch (IOException ioe) {
+        } catch (IOException | MalformedMappingConfigurationException ioe) {
             System.err.println("Error processing mapping request: " + ioe.getMessage());
         }
 
@@ -61,7 +63,7 @@ class MappingRequestServiceTest {
     }
 
     @Test
-    void shouldProcessMappingRequestWithRequestObject() throws IOException {
+    void shouldProcessMappingRequestWithRequestObject() throws IOException, MalformedMappingConfigurationException, MappingException {
         // Given a mapping request object
         MappingRequest request = MappingIO.readMappingRequest(DATA_DIR + "mappingRequest.json");
 

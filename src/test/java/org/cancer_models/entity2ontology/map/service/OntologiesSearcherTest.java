@@ -2,6 +2,7 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.IndexTestCreator;
 import org.cancer_models.entity2ontology.common.utils.FileUtils;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.index.service.AnalyzerProvider;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
@@ -63,7 +64,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindExactMatchingOntologies_exactMatchLabel() throws IOException {
+    void testFindExactMatchingOntologies_exactMatchLabel() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -85,7 +86,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindExactMatchingOntologies_exactMatchSynonym() throws IOException {
+    void testFindExactMatchingOntologies_exactMatchSynonym() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_2");
@@ -108,7 +109,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindExactMatchingOntologies_noMatch() throws IOException {
+    void testFindExactMatchingOntologies_noMatch() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -126,7 +127,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindSimilarMatchingOntologies_similarMatchLabel() throws IOException {
+    void testFindSimilarMatchingOntologies_similarMatchLabel() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -148,7 +149,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindSimilarMatchingOntologies_similarMatchLabelWithSlash() throws IOException {
+    void testFindSimilarMatchingOntologies_similarMatchLabelWithSlash() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -167,7 +168,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindSimilarMatchingOntologies_similarMatchSynonym() throws IOException {
+    void testFindSimilarMatchingOntologies_similarMatchSynonym() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -190,7 +191,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindSimilarMatchingOntologies_noMatch() throws IOException {
+    void testFindSimilarMatchingOntologies_noMatch() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
