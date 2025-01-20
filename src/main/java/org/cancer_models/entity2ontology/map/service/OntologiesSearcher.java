@@ -132,6 +132,7 @@ class OntologiesSearcher {
      *
      * @param searchQueryItems List of {@link SearchQueryItem} to use in the query.
      * @param indexPath  The path to the Lucene index to search in.
+     * @param exactMatch  If the score is being calculated for a search that is exact or similar.
      * @return A list of ontology suggestions with calculated scores.
      * @throws MappingException if an error occurs during the search
      */
@@ -152,7 +153,7 @@ class OntologiesSearcher {
         suggestions = queryProcessor.executeQuery(query, indexPath);
         // Calculate the score for each suggestion
         for (Suggestion suggestion : suggestions) {
-            double score = scoreCalculator.calculateScoreInOntologySuggestion(searchQueryItems, suggestion);
+            double score = scoreCalculator.calculateScoreInOntologySuggestion(searchQueryItems, suggestion, exactMatch);
             suggestion.setScore(score);
         }
 
