@@ -26,7 +26,7 @@ class FuzzyPhraseSimilarity {
     private static final LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
 
     // List of stop words to ignore
-    private static final List<String> STOP_WORDS = Arrays.asList("in", "on", "the", "a", "an", "is", "at", "by");
+    private static final List<String> STOP_WORDS = Arrays.asList("in", "on", "the", "of", "is", "at", "by");
 
     // Method to calculate fuzzy Jaccard similarity
     public static double fuzzyJaccardSimilarity(String phrase1, String phrase2, double fuzzinessThreshold) {
