@@ -17,6 +17,10 @@ class FuzzyPhraseSimilarity {
     // Regexp to be used to split phrases by spaces or "/" symbol ("/" is frequently found in the labels of ontologies)
     private static final String WORDS_SEPARATOR_REGEXP = "[\\s/]+";
 
+    // For short words, applying fuzziness is problematic as can make 2 different words the same. This value reduces
+    // that risk
+    private final static int MINUMUM_WORD_LENGTH_TO_APPLY_FUZZINESS = 5;
+
     // Suppress default constructor for non-instantiability
     private FuzzyPhraseSimilarity() {
         throw new AssertionError();
@@ -26,7 +30,7 @@ class FuzzyPhraseSimilarity {
     private static final LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
 
     // List of stop words to ignore
-    private static final List<String> STOP_WORDS = Arrays.asList("in", "on", "the", "of", "is", "at", "by");
+    private static final List<String> STOP_WORDS = Arrays.asList("in", "on", "the", "of", "is", "at", "by", "the");
 
     // Method to calculate fuzzy Jaccard similarity
     public static double fuzzyJaccardSimilarity(String phrase1, String phrase2, double fuzzinessThreshold) {
@@ -34,8 +38,12 @@ class FuzzyPhraseSimilarity {
         Set<String> set1 = new HashSet<>(filterStopWords(phrase1.toLowerCase().split(WORDS_SEPARATOR_REGEXP)));
         Set<String> set2 = new HashSet<>(filterStopWords(phrase2.toLowerCase().split(WORDS_SEPARATOR_REGEXP)));
 
+        double adjustedFuzzinessTheshold =
+            phrase1.length() > MINUMUM_WORD_LENGTH_TO_APPLY_FUZZINESS
+                && phrase2.length() > MINUMUM_WORD_LENGTH_TO_APPLY_FUZZINESS ? fuzzinessThreshold : 0;
+
         // Calculate fuzzy intersection and adjust the second set accordingly
-        int intersectionSize = fuzzyIntersection(set1, set2, fuzzinessThreshold);
+        int intersectionSize = fuzzyIntersection(set1, set2, adjustedFuzzinessTheshold);
 
         // Union size is now the size of the first set plus remaining words in the second set
         int unionSize = set1.size() + set2.size();

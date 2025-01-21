@@ -28,4 +28,13 @@ class FuzzyPhraseSimilarityTest {
         double similarity = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase1, phrase2, 0);
         assertNotEquals(1.0, similarity);
     }
+
+    @Test
+    void testFuzzyJaccardSimilarity_shortWords_withFuzziness() {
+        String phrase1 = "d5w";
+        String phrase2 = "d53";
+        double similarity = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase1, phrase2, 2);
+        System.out.println("similarity "+similarity);
+        assertNotEquals(1.0, similarity);
+    }
 }
