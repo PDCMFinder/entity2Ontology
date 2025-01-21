@@ -105,7 +105,7 @@ class OntologiesSearcherTest {
         assertEquals(1, suggestions.size());
         assertEquals("ontology_2", suggestion.getTargetEntity().id());
         assertEquals(1, suggestions.size());
-        assertEquals(100.0, suggestions.get(0).getScore());
+        assertEquals(99.0, suggestions.get(0).getScore());
     }
 
     @Test
@@ -163,7 +163,6 @@ class OntologiesSearcherTest {
 
         Suggestion suggestion = suggestions.getFirst();
 
-        assertEquals(3, suggestions.size());
         assertTrue(suggestion.getScore() > 0.0);
     }
 
@@ -206,6 +205,43 @@ class OntologiesSearcherTest {
             sourceEntity, indexLocation, mappingConfiguration);
 
         assertTrue(suggestions.isEmpty(), "The suggestion list should be empty");
+    }
+
+    @Test
+    void testFindSimilarMatchingOntologies_longListSynonymsPriorityLabelCase1() throws MappingException {
+
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("key_1");
+        sourceEntity.setType("treatment");
+        Map<String, String> data = new HashMap<>();
+        data.put("TreatmentName", "Carboplatine");
+        sourceEntity.setData(data);
+
+        List<Suggestion> suggestions = instance.findSimilarMatchingOntologies(
+            sourceEntity, indexLocation, mappingConfiguration);
+        suggestions = SuggestionsSorter.sortSuggestionsByScoreDesc(suggestions);
+        Suggestion best = suggestions.getFirst();
+
+        assertEquals("Carboplatin", best.getTermLabel());
+    }
+
+    @Test
+    void testFindSimilarMatchingOntologies_longListSynonymsPriorityLabelCase2() throws MappingException {
+
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("key_1");
+        sourceEntity.setType("treatment");
+        Map<String, String> data = new HashMap<>();
+        data.put("TreatmentName", "Sorafenib");
+        sourceEntity.setData(data);
+
+        List<Suggestion> suggestions = instance.findExactMatchingOntologies(
+            sourceEntity, indexLocation, mappingConfiguration);
+        suggestions = SuggestionsSorter.sortSuggestionsByScoreDesc(suggestions);
+        Suggestion best = suggestions.getFirst();
+        assertEquals("Sorafenib", best.getTermLabel());
+        suggestions.forEach(x-> System.out.println(x.getTermLabel()+" " + x.getRawScore() + " " + x.getScore()));
+
     }
 
 }

@@ -28,6 +28,10 @@ class ScoreCalculator {
     // Allowed fuzziness for similar searches
     private static final double FUZZINESS_THRESHOLD = 2;
 
+    // This parameter allows to control the score for matches in synonyms, giving it a slightly lower value than a label
+    // match
+    private static final double SYNONYM_MATCH_MULTIPLIER = 0.99;
+
     /**
      * Calculates the suggestion (a rule) score as a percentage, based on how similar the suggestion and the sourceEntity are.
      * A string similarity comparison is used.
@@ -141,6 +145,7 @@ class ScoreCalculator {
         if (highestScore < 1.0 && !synonyms.isEmpty()) {
             for (String synonym : synonyms) {
                 double synonymScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, synonym, fuzziness);
+                synonymScore *= SYNONYM_MATCH_MULTIPLIER;
                 if (synonymScore > highestScore) {
                     highestScore = synonymScore;
                 }
