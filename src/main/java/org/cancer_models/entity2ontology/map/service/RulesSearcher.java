@@ -1,12 +1,12 @@
 package org.cancer_models.entity2ontology.map.service;
 
 import org.apache.lucene.search.Query;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -58,10 +58,10 @@ class RulesSearcher {
      * @param indexPath the path to the Lucene index to search
      * @param config    the mapping configuration to use
      * @return a list of suggestions that match exactly
-     * @throws IOException if an I/O error occurs during the search
+     * @throws MappingException if an error occurs during the search
      */
     public List<Suggestion> findExactMatchingRules(
-        SourceEntity entity, String indexPath, MappingConfiguration config) throws IOException {
+        SourceEntity entity, String indexPath, MappingConfiguration config) throws MappingException {
         Query query = queryBuilder.buildExactMatchRulesQuery(entity, config);
         List<Suggestion> suggestions = queryProcessor.executeQuery(query, indexPath);
 
@@ -81,10 +81,10 @@ class RulesSearcher {
      * @param indexPath the path to the Lucene index to search
      * @param config    the mapping configuration to use
      * @return a list of suggestions that closely match the entity
-     * @throws IOException if an I/O error occurs during the search
+     * @throws MappingException if an error occurs during the search
      */
     public List<Suggestion> findSimilarRules(
-        SourceEntity entity, String indexPath, MappingConfiguration config) throws IOException {
+        SourceEntity entity, String indexPath, MappingConfiguration config) throws MappingException {
         Query query = queryBuilder.buildSimilarMatchRulesQuery(entity, config);
         List<Suggestion> suggestions = queryProcessor.executeQuery(query, indexPath);
 

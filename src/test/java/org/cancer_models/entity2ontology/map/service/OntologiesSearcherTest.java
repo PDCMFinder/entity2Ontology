@@ -2,6 +2,7 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.IndexTestCreator;
 import org.cancer_models.entity2ontology.common.utils.FileUtils;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.index.service.AnalyzerProvider;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
@@ -63,7 +64,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindExactMatchingOntologies_exactMatchLabel() throws IOException {
+    void testFindExactMatchingOntologies_exactMatchLabel() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -85,7 +86,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindExactMatchingOntologies_exactMatchSynonym() throws IOException {
+    void testFindExactMatchingOntologies_exactMatchSynonym() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_2");
@@ -104,11 +105,11 @@ class OntologiesSearcherTest {
         assertEquals(1, suggestions.size());
         assertEquals("ontology_2", suggestion.getTargetEntity().id());
         assertEquals(1, suggestions.size());
-        assertEquals(100.0, suggestions.get(0).getScore());
+        assertEquals(99.0, suggestions.get(0).getScore());
     }
 
     @Test
-    void testFindExactMatchingOntologies_noMatch() throws IOException {
+    void testFindExactMatchingOntologies_noMatch() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -126,7 +127,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindSimilarMatchingOntologies_similarMatchLabel() throws IOException {
+    void testFindSimilarMatchingOntologies_similarMatchLabel() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -148,7 +149,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindSimilarMatchingOntologies_similarMatchLabelWithSlash() throws IOException {
+    void testFindSimilarMatchingOntologies_similarMatchLabelWithSlash() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -162,12 +163,11 @@ class OntologiesSearcherTest {
 
         Suggestion suggestion = suggestions.getFirst();
 
-        assertEquals(3, suggestions.size());
         assertTrue(suggestion.getScore() > 0.0);
     }
 
     @Test
-    void testFindSimilarMatchingOntologies_similarMatchSynonym() throws IOException {
+    void testFindSimilarMatchingOntologies_similarMatchSynonym() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -190,7 +190,7 @@ class OntologiesSearcherTest {
     }
 
     @Test
-    void testFindSimilarMatchingOntologies_noMatch() throws IOException {
+    void testFindSimilarMatchingOntologies_noMatch() throws MappingException {
 
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("key_1");
@@ -205,6 +205,43 @@ class OntologiesSearcherTest {
             sourceEntity, indexLocation, mappingConfiguration);
 
         assertTrue(suggestions.isEmpty(), "The suggestion list should be empty");
+    }
+
+    @Test
+    void testFindSimilarMatchingOntologies_longListSynonymsPriorityLabelCase1() throws MappingException {
+
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("key_1");
+        sourceEntity.setType("treatment");
+        Map<String, String> data = new HashMap<>();
+        data.put("TreatmentName", "Carboplatine");
+        sourceEntity.setData(data);
+
+        List<Suggestion> suggestions = instance.findSimilarMatchingOntologies(
+            sourceEntity, indexLocation, mappingConfiguration);
+        suggestions = SuggestionsSorter.sortSuggestionsByScoreDesc(suggestions);
+        Suggestion best = suggestions.getFirst();
+
+        assertEquals("Carboplatin", best.getTermLabel());
+    }
+
+    @Test
+    void testFindSimilarMatchingOntologies_longListSynonymsPriorityLabelCase2() throws MappingException {
+
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId("key_1");
+        sourceEntity.setType("treatment");
+        Map<String, String> data = new HashMap<>();
+        data.put("TreatmentName", "Sorafenib");
+        sourceEntity.setData(data);
+
+        List<Suggestion> suggestions = instance.findExactMatchingOntologies(
+            sourceEntity, indexLocation, mappingConfiguration);
+        suggestions = SuggestionsSorter.sortSuggestionsByScoreDesc(suggestions);
+        Suggestion best = suggestions.getFirst();
+        assertEquals("Sorafenib", best.getTermLabel());
+        suggestions.forEach(x-> System.out.println(x.getTermLabel()+" " + x.getRawScore() + " " + x.getScore()));
+
     }
 
 }

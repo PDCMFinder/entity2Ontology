@@ -113,6 +113,98 @@
       },
       "label": "Lapatinib/Temozolomide Regimen",
       "url": "http://purl.obolibrary.org/obo/NCIT_C166359"
+    },
+    {
+      "id": "ontology_6",
+      "entityType": "treatment",
+      "targetType": "ontology",
+      "dataFields": {
+        "stringFields": {
+          "label" : "Carboplatin",
+          "description" : "A second-generation platinum compound with a broad spectrum of antineoplastic properties"
+        },
+        "listFields": {
+          "synonyms": [
+            "Blastocarb",
+            "Carboplat",
+            "Carboplatin Hexal",
+            "carboplatin",
+            "Carboplatino",
+            "Carboplatinum",
+            "lapatinib-temozolomide"
+          ]
+        }
+      },
+      "label": "Carboplatin",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C1282"
+    },
+    {
+      "id": "ontology_7",
+      "entityType": "treatment",
+      "targetType": "ontology",
+      "dataFields": {
+        "stringFields": {
+          "label" : "Carboplatin/Gemcitabine Regimen",
+          "description" : "A regimen consisting of gemcitabine and carboplatin"
+        },
+        "listFields": {
+          "synonyms": [
+            "Carboplatin + Gemcitabine Regimen",
+            "Carboplatin and Gemcitabine (GCb)",
+            "Carboplatin-Gemcitabine",
+            "Carboplatin/Gemcitabine Regimen",
+            "Carboplatin/Gemcitabine",
+            "Gemcitabine-Carboplatin Regimen",
+            "Gemcitabine-Carboplatin",
+            "Gemcitabine/Carboplatin"
+          ]
+        }
+      },
+      "label": "Carboplatin/Gemcitabine Regimen",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C1282"
+    },
+    {
+      "id": "ontology_5",
+      "entityType": "treatment",
+      "targetType": "ontology",
+      "dataFields": {
+        "stringFields": {
+          "label" : "Sorafenib",
+          "description" : "A synthetic compound targeting growth signaling and angiogenesis"
+        },
+        "listFields": {
+          "synonyms": [
+            "BA4 43 9006",
+            "BAY 43-9006",
+            "Bay-439006",
+            "sorafenib"
+          ]
+        }
+      },
+      "label": "Sorafenib",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C61948"
+    },
+    {
+      "id": "ontology_6",
+      "entityType": "treatment",
+      "targetType": "ontology",
+      "dataFields": {
+        "stringFields": {
+          "label" : "Sorafenib Tosylate",
+          "description" : "The tosylate salt of sorafenib, a synthetic compound targeting growth signaling and angiogenesis"
+        },
+        "listFields": {
+          "synonyms": [
+            "BAY 43-9006 Tosylate",
+            "BAY 54-9085",
+            "Nexavar",
+            "sorafenib tosylate",
+            "sorafenib"
+          ]
+        }
+      },
+      "label": "Sorafenib Tosylate",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C2194"
     }
   ]
 }

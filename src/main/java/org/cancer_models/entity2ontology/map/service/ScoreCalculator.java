@@ -25,6 +25,16 @@ class ScoreCalculator {
     // The similarity between two strings will be calculated with the Levenshtein distance algorithm.
     private final LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
 
+    // Allowed fuzziness for similar searches
+    private static final double FUZZINESS_THRESHOLD = 2;
+
+    // This parameter allows to control the score for matches in synonyms, giving it a slightly lower value than a label
+    // match
+    private static final double SYNONYM_MATCH_MULTIPLIER = 0.99;
+
+    // Similar matches will have a lower score than exact matches
+    private static final double SIMILAR_MATCH_MULTIPLIER = 0.99;
+
     /**
      * Calculates the suggestion (a rule) score as a percentage, based on how similar the suggestion and the sourceEntity are.
      * A string similarity comparison is used.
@@ -92,32 +102,26 @@ class ScoreCalculator {
     }
 
     /**
-     * Calculates the score of a {@link Suggestion} that represents an ontology.
-     * @param searchQueryItems List of {@link SearchQueryItem} representing each term in the query (field, value, weight).
-     * @param suggestion A {@link Suggestion} which contains an ontology term. Returned by the searcher after executing
-     *                  a query based on `searchQueryItems`.
-     * @return A number representing the percentage of similarity for the suggestion. 100 represents a perfect suggestion.
-     */
-
-    /**
      * Calculates the similarity score for a {@link Suggestion} that represents an ontology term. It compares the
      * string representation of `searchQueryItems` against the label and synonyms in the suggestion. The highest
      * score is returned.
      *
      * @param searchQueryItems List of {@link SearchQueryItem} objects, where each item represents a field, value,
      *                         and weight from the query. These are used to assess the relevance of the suggestion.
-     * @param suggestion A {@link Suggestion} that contains the ontology term returned by the searcher. This term
-     *                   is evaluated against a string representation `searchQueryItems` to determine how well it matches.
+     * @param suggestion       A {@link Suggestion} that contains the ontology term returned by the searcher. This term
+     *                         is evaluated against a string representation `searchQueryItems` to determine how well it matches.
+     * @param exactMatch       if the search is exact or similar
      * @return A score between 0 and 100, where 100 represents a perfect match between the {@link Suggestion} and
-     *         the search query items, and 0 represents no similarity.
+     * the search query items, and 0 represents no similarity.
      */
-    public double calculateScoreInOntologySuggestion(List<SearchQueryItem> searchQueryItems, Suggestion suggestion) {
+    public double calculateScoreInOntologySuggestion(
+        List<SearchQueryItem> searchQueryItems, Suggestion suggestion, boolean exactMatch) {
         // To calculate the score of the suggestions, we need to compare them with an approximation of the
         // "phrase" that was used in the query. As it was actually a list of values, we will replicate
         // the phrase by concatenating the keys from the template
         String phrase = searchQueryItems.stream().map(SearchQueryItem::getValue).collect(Collectors.joining(" "));
 
-        int fuzzinessThreshold = 2;
+        double fuzziness = exactMatch ? 0.0 : FUZZINESS_THRESHOLD;
 
         double highestScore = 0;
 
@@ -139,17 +143,21 @@ class ScoreCalculator {
         }
 
         // First let's calculate the similarity between `phrase` and the ontology label
-        highestScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, suggestionLabel, fuzzinessThreshold);
+        highestScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, suggestionLabel, fuzziness);
 
         // Only look for similarity in synonyms if there is need to
         if (highestScore < 1.0 && !synonyms.isEmpty()) {
             for (String synonym : synonyms) {
-                double synonymScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, synonym, fuzzinessThreshold);
+                double synonymScore = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase, synonym, fuzziness);
+                synonymScore *= SYNONYM_MATCH_MULTIPLIER;
                 if (synonymScore > highestScore) {
                     highestScore = synonymScore;
                 }
             }
         }
+
+        // Slightly reduce score if match was obtained with similar search
+        highestScore = exactMatch ? highestScore : highestScore * SIMILAR_MATCH_MULTIPLIER;
 
         return highestScore * 100;
     }

@@ -1,20 +1,21 @@
 package org.cancer_models.entity2ontology.exceptions;
 
+import org.cancer_models.entity2ontology.map.model.SourceEntity;
+
 /**
- * This exception is thrown to indicate that there is an error
- * in the configuration represented by the {@code MappingConfiguration} object.
+ * This exception is thrown to indicate that there was an error
+ * trying to execute the mapping process for a {@link SourceEntity} .
  *
- * <p>MalformedMappingConfiguration is an unchecked exception,
- * extending {@code RuntimeException}, to indicate an issue that
- * typically results from programming errors or invalid configuration.
+ * <p>MappingException is a checked exception,
+ * extending {@code Exception}, to indicate an issue in the mapping process.
  */
-public class MalformedMappingConfiguration extends RuntimeException {
+public class MappingException extends Exception {
 
     /**
      * Constructs a new exception with {@code null} as its detail message.
      * The cause is not initialized and may be set later with {@link #initCause}.
      */
-    public MalformedMappingConfiguration() {
+    public MappingException() {
         super();
     }
 
@@ -24,7 +25,7 @@ public class MalformedMappingConfiguration extends RuntimeException {
      *
      * @param message the detail message, which can be retrieved later with {@link #getMessage()}
      */
-    public MalformedMappingConfiguration(String message) {
+    public MappingException(String message) {
         super(message);
     }
 
@@ -34,7 +35,7 @@ public class MalformedMappingConfiguration extends RuntimeException {
      * @param message the detail message, which can be retrieved later with {@link #getMessage()}
      * @param cause the cause of the exception, which can be retrieved later with {@link #getCause()}
      */
-    public MalformedMappingConfiguration(String message, Throwable cause) {
+    public MappingException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -44,7 +45,7 @@ public class MalformedMappingConfiguration extends RuntimeException {
      *
      * @param cause the cause of the exception, which can be retrieved later with {@link #getCause()}
      */
-    public MalformedMappingConfiguration(Throwable cause) {
+    public MappingException(Throwable cause) {
         super(cause);
     }
 }

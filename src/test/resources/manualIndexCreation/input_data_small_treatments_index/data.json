@@ -52,6 +52,49 @@
       },
       "label": "Irinotecan/Temozolomide Regimen",
       "url": "http://purl.obolibrary.org/obo/NCIT_C11820"
+    },
+    {
+      "id": "ontology_3",
+      "entityType": "treatment",
+      "targetType": "ontology",
+      "dataFields": {
+        "stringFields": {
+          "label" : "Tamoxifen",
+          "description" : "An antineoplastic nonsteroidal selective estrogen receptor modulator (SERM)"
+        },
+        "listFields": {
+          "synonyms": [
+            "1-p-beta-dimethylamino-ethoxyphenyl-trans-1,2-diphenylbut-1-ene",
+            "Tamoxifen",
+            "TMX"
+          ]
+        }
+      },
+      "label": "Tamoxifen",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C62078"
+    },
+    {
+      "id": "ontology_4",
+      "entityType": "treatment",
+      "targetType": "ontology",
+      "dataFields": {
+        "stringFields": {
+          "label" : "Tamoxifen Citrate",
+          "description" : "The citrate salt of an antineoplastic nonsteroidal selective estrogen receptor modulator (SERM)."
+        },
+        "listFields": {
+          "synonyms": [
+            "(Z)-2-[4-(1,2-Diphenyl-1-butenyl)phenoxy]-N,N-dimethylethanamine 2-Hydroxy-1,2,3-propanetricarboxylate",
+            "(Z)-2-[4-(1,2-diphenyl-1-butenyl)phenoxy]-N,N-dimethylethanamine citrate",
+            "Gen-Tamoxifen",
+            "Novo-Tamoxifen",
+            "PMS-Tamoxifen",
+            "Tamoxifeni Citras"
+          ]
+        }
+      },
+      "label": "Tamoxifen Citrate",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C855"
     }
   ]
 }

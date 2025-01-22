@@ -178,6 +178,7 @@ class QueryBuilder {
 
             // The presence of the term in the label is optional
             Query labelPhraseQuery = buildPhraseQuery(labelFieldName, value, maxEdits, BooleanClause.Occur.SHOULD);
+            labelPhraseQuery = new BoostQuery(labelPhraseQuery, weight * LABEL_MULTIPLIER);
             labelQueryBuilder.add(labelPhraseQuery, BooleanClause.Occur.SHOULD);
 
             // The presence of the term in the synonym is optional

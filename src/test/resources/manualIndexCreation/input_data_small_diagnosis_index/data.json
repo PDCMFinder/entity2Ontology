@@ -41,6 +41,68 @@
       },
       "label": "Fusion-Negative Alveolar Rhabdomyosarcoma",
       "url": "http://purl.obolibrary.org/obo/NCIT_C123732"
+    },
+    {
+      "id": "rule_3",
+      "entityType": "diagnosis",
+      "targetType": "rule",
+      "dataFields": {
+        "stringFields": {
+          "OriginTissue" : "breast",
+          "TumorType" : "primary",
+          "SampleDiagnosis" : "breast cancer",
+          "DataSource" : "hci-bcm"
+        }
+      },
+      "label": "Breast Cancer",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C9335"
+    },
+    {
+      "id": "rule_4",
+      "entityType": "diagnosis",
+      "targetType": "ontology",
+      "dataFields": {
+        "stringFields": {
+          "label" : "Stage 0 Breast Cancer AJCC v6 and v7",
+          "description" : "Stage 0 includes: Tis, N0, M0. Tis: Carcinoma in situ. N0: No regional lymph node metastasis. M0: No distant metastasis. (AJCC 6th and 7th eds.)"
+        },
+        "listFields": {
+          "synonyms": [
+            "Breast Cancer in situ",
+            "Breast Cancer Stage 0",
+            "Breast Carcinoma in situ",
+            "Carcinoma in situ of breast",
+            "Carcinoma in situ of Breast",
+            "Carcinoma in situ of the Breast",
+            "In situ Breast Cancer",
+            "Non-Infiltrating Breast Carcinoma",
+            "Non-Infiltrating Carcinoma of Breast",
+            "Non-Infiltrating Carcinoma of the Breast",
+            "Non-Invasive Breast Carcinoma",
+            "Non-Invasive Carcinoma of Breast",
+            "Non-Invasive Carcinoma of the Breast",
+            "Stage 0 Breast Cancer AJCC v6 and v7",
+            "Stage 0 Breast Cancer AJCC v6",
+            "Stage 0 Breast Cancer AJCC v7",
+            "Stage 0 Breast Cancer",
+            "stage 0 breast carcinoma in situ",
+            "Stage 0 Breast Carcinoma",
+            "Stage 0 Carcinoma of Breast",
+            "Stage 0 Carcinoma of the Breast",
+            "Unspecified type of carcinoma in situ of breast",
+            "Unspecified type of carcinoma in situ of unspecified breast"
+          ]
+        }
+      },
+      "data": {
+        "label" : "fusion negative rhabdomyosarcoma",
+        "description" : "An alveolar rhabdomyosarcoma characterized by the absence of chromosomal translocation t(1;13)(p36;q14) or t(2;13)(q35;q14) and therefore the absence of PAX7-FOXO1 or PAX3-FOXO1 gene fusion",
+        "synonyms": [
+          "Fusion Gene Negative Alveolar Rhabdomyosarcoma"
+        ]
+      },
+      "label": "Fusion-Negative Alveolar Rhabdomyosarcoma",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C123732"
     }
   ]
 }

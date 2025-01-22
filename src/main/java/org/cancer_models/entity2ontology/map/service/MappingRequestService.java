@@ -2,6 +2,8 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.cancer_models.entity2ontology.exceptions.MalformedMappingConfigurationException;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.map.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,7 +50,7 @@ public class MappingRequestService {
      * @param outputFile the path to the file where the mapping results will be written
      * @throws IOException if an error occurs while reading the request file or writing to the output file
      */
-    public void processMappingRequest(String requestFile, String outputFile) throws IOException {
+    public void processMappingRequest(String requestFile, String outputFile) throws IOException, MalformedMappingConfigurationException, MappingException {
         MappingRequest request = MappingIO.readMappingRequest(requestFile);
         validateRequest(request);
         MappingResponse response = processMappingRequest(request);
@@ -81,19 +83,30 @@ public class MappingRequestService {
      * @param request the {@link MappingRequest} containing the entities to map and other relevant parameters
      * @return A {@link MappingResponse} with the results of the mapping process
      */
-    public MappingResponse processMappingRequest(MappingRequest request) throws IOException {
+    public MappingResponse processMappingRequest(MappingRequest request) throws MalformedMappingConfigurationException, MappingException {
         logger.info("Starts processing mapping request with {} entities", request.getEntities().size());
         MappingResponse response = new MappingResponse();
 
         response.setStart(LocalDateTime.now());
         response.setIndexPath(request.getIndexPath());
 
-        MappingConfiguration config = readMappingConfiguration(request.getMappingConfigurationFile());
+        MappingConfiguration config;
+
+        try {
+            config = readMappingConfiguration(request.getMappingConfigurationFile());
+        } catch (IOException e) {
+            throw new MappingException(e);
+        }
 
         List<MappingResponseEntry> entries = new ArrayList<>();
 
         for (SourceEntity entity : request.getEntities()) {
-            entries.add(processEntity(entity, config, request.getIndexPath(), request.getMaxSuggestions()));
+            try {
+                entries.add(processEntity(entity, config, request.getIndexPath(), request.getMaxSuggestions()));
+            } catch (MappingException e) {
+                logger.error("Mapping error in entity {}", entity);
+                logger.error(e.getMessage());
+            }
         }
 
         response.setMappingsResults(entries);
@@ -128,9 +141,12 @@ public class MappingRequestService {
      * @param indexPath      The location of the Lucene index to use
      * @param maxSuggestions Maximum number of suggestions
      * @return a MappingResponseEntry object (entity - list of suggestions)
+     * @throws MalformedMappingConfigurationException If the used configuration is invalid
+     * @throws MappingException If an error occurs while searching the index
      */
     private MappingResponseEntry processEntity(
-        SourceEntity entity, MappingConfiguration config, String indexPath, int maxSuggestions) throws IOException {
+        SourceEntity entity, MappingConfiguration config, String indexPath, int maxSuggestions)
+        throws MalformedMappingConfigurationException, MappingException {
         MappingResponseEntry entry = new MappingResponseEntry();
         List<Suggestion> suggestions = mappingService.mapEntity(entity, indexPath, maxSuggestions, config);
         entry.setEntity(entity);

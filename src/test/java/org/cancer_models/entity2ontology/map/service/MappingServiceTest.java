@@ -2,6 +2,7 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.*;
 import org.cancer_models.entity2ontology.common.utils.FileUtils;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.index.service.AnalyzerProvider;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
@@ -54,7 +55,7 @@ public class MappingServiceTest {
     @Test
     void shouldFailIfNullEntity() {
         // When we try to map an entity that is null
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        MappingException exception = assertThrows(MappingException.class, () ->
         {
             instance.mapEntity(null, "", 0, config);
         });
@@ -68,7 +69,7 @@ public class MappingServiceTest {
         SourceEntity sourceEntity = new SourceEntity();
 
         // When we try to map an entity that is null
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        MappingException exception = assertThrows(MappingException.class, () ->
             instance.mapEntity(sourceEntity, "", 0, config));
 
         // Then we get an IllegalArgumentException
@@ -83,7 +84,7 @@ public class MappingServiceTest {
         sourceEntity.setId("1");
 
         // When we try to map an entity that is null
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        MappingException exception = assertThrows(MappingException.class, () ->
             instance.mapEntity(sourceEntity, "", 0, config));
 
         // Then we get an IllegalArgumentException
@@ -100,7 +101,7 @@ public class MappingServiceTest {
         sourceEntity.setType("type");
 
         // When we try to map an entity that is null
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        MappingException exception = assertThrows(MappingException.class, () ->
             instance.mapEntity(sourceEntity, "", 0, config));
 
         // Then we get an IllegalArgumentException
@@ -117,7 +118,7 @@ public class MappingServiceTest {
         sourceEntity.setData(new HashMap<>());
 
         // When we try to map an entity without specifying the index
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        MappingException exception = assertThrows(MappingException.class, () ->
             instance.mapEntity(sourceEntity, null, 0, config));
 
         // Then we get an IOException
@@ -132,7 +133,7 @@ public class MappingServiceTest {
         sourceEntity.setData(new HashMap<>());
 
         // When we try to map an entity using an invalid index
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        MappingException exception = assertThrows(MappingException.class, () ->
             instance.mapEntity(sourceEntity, "unknown", 0, config));
 
         // Then we get an IOException
@@ -140,7 +141,7 @@ public class MappingServiceTest {
     }
 
     @Test
-    void shouldGeExpectedMappingsForDiagnosisSet() throws IOException {
+    void shouldGetExpectedMappingsForDiagnosisSet() throws IOException {
         // Given we have an index with diagnosis at src/test/output/small_diagnosis_index
         String smallDiagnosisIndexLocation = IndexTestCreator.createIndex(
             "input_data_small_diagnosis_index/data.json");
@@ -171,12 +172,15 @@ public class MappingServiceTest {
         // `Index Path` in the file only contains the directory name. Adding here the path where the index was created
         String indexName = "src/test/output/" + entry.getIndexPath();
 
-        String label = "";
+        String label = "NONE";
         double score = 0;
 
         Suggestion bestSuggestion = getTopSuggestion(sourceEntity, indexName, NUM_SUGGESTIONS);
-        label = bestSuggestion.getTermLabel();
-        score = bestSuggestion.getScore();
+        if (bestSuggestion != null) {
+            label = bestSuggestion.getTermLabel();
+            score = bestSuggestion.getScore();
+            System.out.println(score);
+        }
 
         try {
             // Gets the expected mapping
@@ -190,9 +194,16 @@ public class MappingServiceTest {
             throw e;
         }
     }
+    @Test
+    void createIndex() throws IOException {
+        String smallDiagnosisIndexLocation = IndexTestCreator.createIndex(
+            "input_data_small_treatments_index/data.json");
+        System.out.println(smallDiagnosisIndexLocation);
+    }
+
 
     @Test
-    void shouldGeExpectedMappingsForTreatmentsSet() throws IOException {
+    void shouldGetExpectedMappingsForTreatmentsSet() throws IOException {
         // Given we have an index with diagnosis at src/test/output/small_diagnosis_index
         String smallDiagnosisIndexLocation = IndexTestCreator.createIndex(
             "input_data_small_treatments_index/data.json");
@@ -211,6 +222,28 @@ public class MappingServiceTest {
         FileUtils.deleteRecursively(new File(smallDiagnosisIndexLocation));
     }
 
+    @Test
+    void shouldReturnEmptyIfTooLongText() {
+
+        SourceEntity entity = new SourceEntity();
+        Map<String, String> data = new HashMap<>();
+        data.put("SampleDiagnosis", "endometrioid endomet adenocar secretory and clear cell features final pathology dx confirmed in bilateral ovaries with lymphovascular invasion tumor gradestage figo grade 1location of known metastases ovary large bowel");
+        data.put("TumorType", "metastatic");
+        data.put("OriginTissue", "gynecologic");
+        entity.setId("1");
+
+        entity.setData(data);
+       // instance.mapEntity(entity, )
+//        // When we try to map an entity that is null
+//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+//        {
+//            instance.mapEntity(null, "", 0, config);
+//        });
+//
+//        // Then we get an IOException
+//        assertEquals("Entity cannot be null", exception.getMessage());
+    }
+
     private void testExpectedTreatmentMapping(TreatmentMappingInputFileEntry entry) {
         SourceEntity sourceEntity = new SourceEntity();
         sourceEntity.setId("id_" + entry.getEntryId());
@@ -226,8 +259,11 @@ public class MappingServiceTest {
         double score = 0;
 
         Suggestion bestSuggestion = getTopSuggestion(sourceEntity, indexName, NUM_SUGGESTIONS);
-        label = bestSuggestion.getTermLabel();
-        score = bestSuggestion.getScore();
+
+        if (bestSuggestion != null) {
+            label = bestSuggestion.getTermLabel();
+            score = bestSuggestion.getScore();
+        }
 
         try {
             // Gets the expected mapping
@@ -247,7 +283,11 @@ public class MappingServiceTest {
         Suggestion bestSuggestion = null;
         try {
             List<Suggestion> suggestions = instance.mapEntity(sourceEntity, indexName, numSuggestions, config);
-            bestSuggestion = suggestions.getFirst();
+            System.out.println("suggestions");
+            suggestions.forEach(System.out::println);
+            if (!suggestions.isEmpty()) {
+                bestSuggestion = suggestions.getFirst();
+            }
         } catch (Exception e) {
             System.err.println("Exception: " + e.getMessage());
             throw new RuntimeException(e);

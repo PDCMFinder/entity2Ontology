@@ -7,6 +7,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.cancer_models.entity2ontology.common.mappers.TargetEntityDocumentMapper;
+import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.springframework.stereotype.Component;
@@ -33,13 +34,20 @@ class QueryProcessor {
      * @param query     The Lucene query to execute.
      * @param indexPath The path to the Lucene index.
      * @return A list of suggestions based on the query results.
-     * @throws IOException If an error occurs while searching the index.
+     * @throws MappingException If an error occurs while searching the index.
      */
-    public List<Suggestion> executeQuery(Query query, String indexPath) throws IOException {
+    public List<Suggestion> executeQuery(Query query, String indexPath) throws MappingException {
         Objects.requireNonNull(query, "query cannot be null");
         Objects.requireNonNull(indexPath, "indexPath cannot be null");
-        TopDocs topDocs = searcher.search(query, indexPath);
-        return processQueryResponse(topDocs, searcher.getIndexSearcher(indexPath));
+
+        List<Suggestion> suggestions = new ArrayList<>();
+        try {
+            TopDocs topDocs = searcher.search(query, indexPath);
+            suggestions = processQueryResponse(topDocs, searcher.getIndexSearcher(indexPath));
+        } catch (Exception e) {
+            throw new MappingException(e);
+        }
+        return suggestions;
     }
 
     /**
