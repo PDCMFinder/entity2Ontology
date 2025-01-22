@@ -19,7 +19,7 @@ class FuzzyPhraseSimilarity {
 
     // For short words, applying fuzziness is problematic as can make 2 different words the same. This value reduces
     // that risk
-    private final static int MINUMUM_WORD_LENGTH_TO_APPLY_FUZZINESS = 5;
+    private final static int MINIMUM_WORD_LENGTH_TO_APPLY_FUZZINESS = 6;
 
     // Suppress default constructor for non-instantiability
     private FuzzyPhraseSimilarity() {
@@ -38,18 +38,24 @@ class FuzzyPhraseSimilarity {
         Set<String> set1 = new HashSet<>(filterStopWords(phrase1.toLowerCase().split(WORDS_SEPARATOR_REGEXP)));
         Set<String> set2 = new HashSet<>(filterStopWords(phrase2.toLowerCase().split(WORDS_SEPARATOR_REGEXP)));
 
-        double adjustedFuzzinessTheshold =
-            phrase1.length() > MINUMUM_WORD_LENGTH_TO_APPLY_FUZZINESS
-                && phrase2.length() > MINUMUM_WORD_LENGTH_TO_APPLY_FUZZINESS ? fuzzinessThreshold : 0;
-
         // Calculate fuzzy intersection and adjust the second set accordingly
-        int intersectionSize = fuzzyIntersection(set1, set2, adjustedFuzzinessTheshold);
+        int intersectionSize = fuzzyIntersection(set1, set2, fuzzinessThreshold);
 
         // Union size is now the size of the first set plus remaining words in the second set
         int unionSize = set1.size() + set2.size();
 
         // Calculate and return fuzzy Jaccard similarity
         return (double) intersectionSize / unionSize;
+    }
+
+    // Get adjusted fuzziness threshold, so it does not apply to short words
+    public static double getAdjustedFuzzinessThreshold(String word1, String word2, double fuzzinessThreshold) {
+        double adjustedFuzzinessThreshold = fuzzinessThreshold;
+        if (word1.length() < MINIMUM_WORD_LENGTH_TO_APPLY_FUZZINESS
+            || word2.length() < MINIMUM_WORD_LENGTH_TO_APPLY_FUZZINESS) {
+            adjustedFuzzinessThreshold = 0;
+        }
+        return adjustedFuzzinessThreshold;
     }
 
     // Method to calculate fuzzy intersection based on Levenshtein distance
@@ -59,8 +65,9 @@ class FuzzyPhraseSimilarity {
 
         for (String word1 : set1) {
             for (String word2 : set2) {
+                double adjustedFuzzinessThreshold = getAdjustedFuzzinessThreshold(word1, word2, fuzzinessThreshold);
                 // Use Levenshtein distance to check similarity
-                if (levenshteinDistance.apply(word1, word2) <= fuzzinessThreshold) {
+                if (levenshteinDistance.apply(word1, word2) <= adjustedFuzzinessThreshold) {
                     count++;
                     toRemove.add(word2);  // Mark for removal to avoid duplicate counting
                     break;
