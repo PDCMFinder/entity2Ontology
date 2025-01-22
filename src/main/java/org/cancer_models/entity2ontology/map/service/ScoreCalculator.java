@@ -32,6 +32,9 @@ class ScoreCalculator {
     // match
     private static final double SYNONYM_MATCH_MULTIPLIER = 0.99;
 
+    // Similar matches will have a lower score than exact matches
+    private static final double SIMILAR_MATCH_MULTIPLIER = 0.99;
+
     /**
      * Calculates the suggestion (a rule) score as a percentage, based on how similar the suggestion and the sourceEntity are.
      * A string similarity comparison is used.
@@ -111,7 +114,8 @@ class ScoreCalculator {
      * @return A score between 0 and 100, where 100 represents a perfect match between the {@link Suggestion} and
      * the search query items, and 0 represents no similarity.
      */
-    public double calculateScoreInOntologySuggestion(List<SearchQueryItem> searchQueryItems, Suggestion suggestion, boolean exactMatch) {
+    public double calculateScoreInOntologySuggestion(
+        List<SearchQueryItem> searchQueryItems, Suggestion suggestion, boolean exactMatch) {
         // To calculate the score of the suggestions, we need to compare them with an approximation of the
         // "phrase" that was used in the query. As it was actually a list of values, we will replicate
         // the phrase by concatenating the keys from the template
@@ -151,6 +155,9 @@ class ScoreCalculator {
                 }
             }
         }
+
+        // Slightly reduce score if match was obtained with similar search
+        highestScore = exactMatch ? highestScore : highestScore * SIMILAR_MATCH_MULTIPLIER;
 
         return highestScore * 100;
     }
