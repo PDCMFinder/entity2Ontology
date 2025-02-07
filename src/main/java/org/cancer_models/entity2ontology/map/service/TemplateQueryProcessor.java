@@ -9,7 +9,6 @@ import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A class that manipulates templates. A template is a string with placeholders
@@ -65,88 +64,9 @@ public class TemplateQueryProcessor {
             logger.error(exception);
             throw new IllegalArgumentException(exception.getMessage());
         }
-        searchQueryItems = removeOverlappingTerms(searchQueryItems);
+        searchQueryItems = SearchQueryItemUtil.removeOverlappingTerms(searchQueryItems);
 
         return searchQueryItems;
-    }
-
-    /**
-     * Returns a new list of {@link SearchQueryItem} where repeated words, the same word in different terms, are removed.
-     * This helps to build queries that make more sense. So instead of having, for instance, a (simplified) query like
-     * "recurrent lung lung carcinona", we get "recurrent carcinoma".
-     *
-     * if a word is present in more than one item/term, the one to keep is the one in the term with more weight.
-     *
-     * The number of terms in the final list could be less than the original one, if all the words in an item are also
-     * in other items with more weight.
-     *
-     * @param searchQueryItems Original list of {@link SearchQueryItem}.
-     * @return The new list of {@link SearchQueryItem} with removed repetition of words.
-     */
-    private List<SearchQueryItem> removeOverlappingTerms(List<SearchQueryItem> searchQueryItems) {
-        List<SearchQueryItem> cleanedSearchQueryItems = new ArrayList<>();
-        Map<SearchQueryItem, String[]> wordsByItem = new HashMap<>();
-
-        // Get the words that compose each item
-        for (SearchQueryItem searchQueryItem : searchQueryItems) {
-            wordsByItem.put(searchQueryItem, searchQueryItem.getValue().toLowerCase().trim().split(" "));
-        }
-
-        // Find in which terms each word appears
-        Map<String, SearchQueryItem> highestWeightItemByWords = findHighestWeightItemByWords(wordsByItem);
-
-        // Rebuild the list of items but removing repeated words. This could lead to have fewer items than at the beginning
-        for (SearchQueryItem searchQueryItem : searchQueryItems) {
-            processWordsByItem(searchQueryItem, wordsByItem, highestWeightItemByWords, cleanedSearchQueryItems);
-        }
-        return cleanedSearchQueryItems;
-    }
-
-    // Finds the SearchQueryItem with the highest score where each word is present.
-    private Map<String, SearchQueryItem> findHighestWeightItemByWords(Map<SearchQueryItem, String[]> wordsByItem) {
-        Map<String, SearchQueryItem> highestWeightItemByWords = new HashMap<>();
-        wordsByItem.forEach((searchQueryItem, words) -> {
-            for (String word : words) {
-                if (!highestWeightItemByWords.containsKey(word)) {
-                    highestWeightItemByWords.put(word, searchQueryItem);
-                } else {
-                    // Update if new item has a higher weight
-                    SearchQueryItem current = highestWeightItemByWords.get(word);
-                    if (searchQueryItem.getWeight() > current.getWeight()) {
-                        highestWeightItemByWords.put(word, searchQueryItem);
-                    }
-                }
-            }
-        });
-        return highestWeightItemByWords;
-    }
-
-    // Rebuilds a list of {@code SearchQueryItem} by ignoring repeated words
-    private void processWordsByItem(
-        SearchQueryItem searchQueryItem,
-        Map<SearchQueryItem, String[]> wordsByItem,
-        Map<String, SearchQueryItem> highestWeightItemByWords,
-        List<SearchQueryItem> cleanedSearchQueryItems) {
-
-        StringBuilder newValueBuilder = new StringBuilder();
-        // Analyze each word in the item. If it appears in more than one term, leave only the one with
-        // the greatest weight.
-        String[] words = wordsByItem.get(searchQueryItem);
-
-        for (String word : words) {
-            SearchQueryItem highestWeight = highestWeightItemByWords.get(word);
-            // Keep the word only if this term is the one with the highest weight
-            if (highestWeight == searchQueryItem) {
-                newValueBuilder.append(" ").append(word.trim());
-            }
-        }
-
-        // Keep the item only if there were words left after the cleaning
-        if (!newValueBuilder.isEmpty()) {
-            String newValue = newValueBuilder.toString().trim();
-            searchQueryItem.setValue(newValue);
-            cleanedSearchQueryItems.add(searchQueryItem);
-        }
     }
 
     private static void validateInput(QueryTemplate template, SourceEntity entity, Map<String, Double> weightsMap) {
@@ -165,15 +85,5 @@ public class TemplateQueryProcessor {
         if (weightsMap.isEmpty()) {
             throw new IllegalArgumentException("Weights map cannot be empty");
         }
-    }
-
-    /**
-     * Translates a list of SearchQueryItem into an approximation of the phrase used in a template based query.
-     * It is useful to compute the similarity of the obtained suggestions.
-     * @param items A list of {@link SearchQueryItem} derived from a template.
-     * @return The phrase representing the query
-     */
-    public String convertItemListToPhrase(List<SearchQueryItem> items) {
-        return items.stream().map(SearchQueryItem::getValue).collect(Collectors.joining(" "));
     }
 }

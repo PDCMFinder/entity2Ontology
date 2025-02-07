@@ -1,6 +1,7 @@
 package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
+import org.cancer_models.entity2ontology.common.model.TargetEntityType;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
@@ -33,7 +34,7 @@ class ScoreCalculatorTest {
         dataFields.addStringField("TumorType", "primary");
 
         TargetEntity targetEntity = new TargetEntity(
-            "key_1", "diagnosis", "rule", dataFields, null, null);
+            "key_1", "diagnosis", TargetEntityType.RULE, dataFields, null, null);
         Suggestion suggestion = new Suggestion(targetEntity);
 
         Map<String, Double> fieldsWeights = new HashMap<>();
@@ -64,7 +65,7 @@ class ScoreCalculatorTest {
         dataFields.addStringField("TumorType", "primary");
 
         TargetEntity targetEntity = new TargetEntity(
-            "key_1", "diagnosis", "rule", dataFields, null, null);
+            "key_1", "diagnosis", TargetEntityType.RULE, dataFields, null, null);
         Suggestion suggestion = new Suggestion(targetEntity);
 
         Map<String, Double> fieldsWeights = new HashMap<>();

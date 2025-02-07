@@ -2,6 +2,8 @@ package org.cancer_models.entity2ontology.common.model;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public enum TargetEntityFieldName {
     ID("id"),
@@ -15,5 +17,4 @@ public enum TargetEntityFieldName {
     TargetEntityFieldName(String value) {
         this.value = value;
     }
-
 }

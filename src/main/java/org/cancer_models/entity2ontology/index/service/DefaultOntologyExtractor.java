@@ -73,7 +73,7 @@ class DefaultOntologyExtractor implements OntologyExtractor {
         return new TargetEntity(
             ontologyTerm.id(),
             ontologyTerm.type(),
-            TargetEntityType.ONTOLOGY.getValue(),
+            TargetEntityType.ONTOLOGY,
             dataFields, ontologyTerm.label(),
             ontologyTerm.url());
     }

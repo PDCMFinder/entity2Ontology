@@ -18,7 +18,7 @@
       "url": "http://purl.obolibrary.org/obo/NCIT_C123732"
     },
     {
-      "id": "rule_2",
+      "id": "ontology_2",
       "entityType": "diagnosis",
       "targetType": "ontology",
       "dataFields": {
@@ -58,7 +58,7 @@
       "url": "http://purl.obolibrary.org/obo/NCIT_C9335"
     },
     {
-      "id": "rule_4",
+      "id": "ontology_4",
       "entityType": "diagnosis",
       "targetType": "ontology",
       "dataFields": {
@@ -94,15 +94,45 @@
           ]
         }
       },
-      "data": {
-        "label" : "fusion negative rhabdomyosarcoma",
-        "description" : "An alveolar rhabdomyosarcoma characterized by the absence of chromosomal translocation t(1;13)(p36;q14) or t(2;13)(q35;q14) and therefore the absence of PAX7-FOXO1 or PAX3-FOXO1 gene fusion",
-        "synonyms": [
-          "Fusion Gene Negative Alveolar Rhabdomyosarcoma"
-        ]
-      },
       "label": "Fusion-Negative Alveolar Rhabdomyosarcoma",
       "url": "http://purl.obolibrary.org/obo/NCIT_C123732"
+    },
+    {
+      "id": "ontology_5",
+      "entityType": "diagnosis",
+      "targetType": "ontology",
+      "dataFields": {
+        "stringFields": {
+          "label" : "Fusion-Positive Rhabdomyosarcoma",
+          "description" : "A rhabdomyosarcoma characterized by the presence of chromosomal translocation"
+        },
+        "listFields": {
+          "synonyms": [
+            "Fusion-Positive Rhabdomyosarcoma"
+          ]
+        }
+      },
+      "label": "Fusion-Positive Rhabdomyosarcoma",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C123735"
+    },
+    {
+      "id": "ontology_6",
+      "entityType": "diagnosis",
+      "targetType": "ontology",
+      "dataFields": {
+        "stringFields": {
+          "label" : "Retroperitoneal Rhabdomyosarcoma",
+          "description" : "A rhabdomyosarcoma arising from the retroperitoneum"
+        },
+        "listFields": {
+          "synonyms": [
+            "Primary Retroperitoneal Rhabdomyosarcoma",
+            "Retroperitoneal Rhabdomyosarcoma"
+          ]
+        }
+      },
+      "label": "Retroperitoneal Rhabdomyosarcoma",
+      "url": "http://purl.obolibrary.org/obo/NCIT_C188071"
     }
   ]
 }

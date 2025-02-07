@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 public record TargetEntity(
     String id,
     String entityType,
-    String targetType,
+    TargetEntityType targetType,
     TargetEntityDataFields dataFields,
     String label,
     String url) {

@@ -8,6 +8,7 @@ import org.apache.lucene.index.IndexableField;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
 import org.cancer_models.entity2ontology.common.model.TargetEntityFieldName;
+import org.cancer_models.entity2ontology.common.model.TargetEntityType;
 
 import java.util.*;
 
@@ -29,7 +30,8 @@ public class TargetEntityDocumentMapper {
             new StringField(TargetEntityFieldName.ID.getValue(), targetEntity.id(), Field.Store.YES));
         document.add(
             new StringField(TargetEntityFieldName.ENTITY_TYPE.getValue(), targetEntity.entityType(), Field.Store.YES));
-        document.add(new StringField(TargetEntityFieldName.TARGET_TYPE.getValue(), targetEntity.targetType(), Field.Store.YES));
+        document.add(new StringField(
+            TargetEntityFieldName.TARGET_TYPE.getValue(), targetEntity.targetType().getValue(), Field.Store.YES));
         document.add(new TextField(TargetEntityFieldName.LABEL.getValue(), targetEntity.label(), Field.Store.YES));
         document.add(new StringField(TargetEntityFieldName.URL.getValue(), targetEntity.url(), Field.Store.YES));
 
@@ -37,7 +39,7 @@ public class TargetEntityDocumentMapper {
         Map<String, String> stringFields = targetEntity.dataFields().getStringFields();
         if (stringFields != null) {
             stringFields.forEach((k, v) -> {
-                String fieldName = targetEntity.targetType() + "." + k;
+                String fieldName = targetEntity.targetType().getValue() + "." + k;
                 document.add(new TextField(fieldName, v, Field.Store.YES));
             });
         }
@@ -47,7 +49,7 @@ public class TargetEntityDocumentMapper {
         if (listFields != null) {
             listFields.forEach((k, v) -> {
                 for (var element : v) {
-                    String fieldName = targetEntity.targetType() + "." + k;
+                    String fieldName = targetEntity.targetType().getValue() + "." + k;
                     document.add(new TextField(fieldName, element, Field.Store.YES));
                 }
             });
@@ -59,11 +61,12 @@ public class TargetEntityDocumentMapper {
     public static TargetEntity documentToTargetEntity(Document document) {
         String id = document.get(TargetEntityFieldName.ID.getValue());
         String entityType = document.get(TargetEntityFieldName.ENTITY_TYPE.getValue());
-        String targetType = document.get(TargetEntityFieldName.TARGET_TYPE.getValue());
+        String targetTypeString = document.get(TargetEntityFieldName.TARGET_TYPE.getValue());
+        TargetEntityType targetEntityType = TargetEntityType.fromString(targetTypeString);
         String label = document.get(TargetEntityFieldName.LABEL.getValue());
         String url = document.get(TargetEntityFieldName.URL.getValue());
         TargetEntityDataFields dataFields = extractDataMap(document);
-        return new TargetEntity(id, entityType, targetType, dataFields, label, url);
+        return new TargetEntity(id, entityType, targetEntityType, dataFields, label, url);
     }
 
     // Builds a TargetEntityDataFields with the data stored in the document. An attribute is part of the data
