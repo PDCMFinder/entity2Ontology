@@ -4,10 +4,12 @@ import org.cancer_models.entity2ontology.common.model.OntologyEntityDataFieldNam
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
 import org.cancer_models.entity2ontology.common.model.TargetEntityType;
 import org.cancer_models.entity2ontology.map.model.*;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-public class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculator {
+@Component
+class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculator {
 
     // List of words to skip when converting text to sets
     private static final List<String> STOP_WORDS = Arrays.asList("in", "on", "the", "of", "is", "at", "by", "the");
@@ -18,13 +20,30 @@ public class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculat
 
     private static final double SIMILARITY_THRESHOLD = 50;
 
-    // A record to help in intermediate calculations of score
-    private record ItemScoreResult(double score, List<String> remainingTargetWords) {}
+    private static final double MAX_SCORE = 100;
+
+    // This parameter allows to control the score for matches in synonyms, giving it a slightly lower value than a label
+    // match
+    private static final double SYNONYM_MATCH_MULTIPLIER = 0.99;
+
+    // Method to filter out stop words
+    private static List<String> filterStopWords(String[] words) {
+        List<String> filteredWords = new ArrayList<>();
+        for (String word : words) {
+            if (!STOP_WORDS.contains(word)) {
+                filteredWords.add(word);
+            }
+        }
+        return filteredWords;
+    }
+
+    private static List<String> textToList(String text) {
+        return new ArrayList<>(filterStopWords(text.toLowerCase().split(WORDS_SEPARATOR_REGEXP)));
+    }
 
     /**
-     * Calculates the score of a {@code suggestion} based on how similar it is respect to a {@code sourceEntity},
-     * when the suggestion was obtained using an exact match (so it's more "strict" when
-     * evaluating the similarity). {@code configuration} is used to provide additional information like the
+     * Calculates the score of a {@code suggestion} based on how similar it is respect to a {@code sourceEntity}.
+     * The object {@code configuration} is used to provide additional information like the
      * relevance of fields.
      *
      * @param suggestion    The suggestion found in the mapping process
@@ -32,19 +51,22 @@ public class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculat
      * @param configuration A configuration object with additional information about the mapping process
      * @return a number between 0 and 100 indicating how good the suggestion is.
      */
-    @Override
-    public double computeScoreExactMatch(Suggestion suggestion, SourceEntity sourceEntity, MappingConfiguration configuration) {
-        double score = 0;
-        Objects.requireNonNull(suggestion);
-        Objects.requireNonNull(sourceEntity);
-        Objects.requireNonNull(configuration);
-        if (suggestion.getTargetEntity().targetType().equals(TargetEntityType.RULE)) {
-            score = computeScoreRule(suggestion, sourceEntity, configuration);
-        } else {
-            score = computeScoreOntology(suggestion, sourceEntity, configuration);
-        }
-        return score;
-    }
+//    @Override
+//    public double computeScore(Suggestion suggestion, SourceEntity sourceEntity, MappingConfiguration configuration) {
+//        double score = 0;
+//        Objects.requireNonNull(suggestion);
+//        Objects.requireNonNull(sourceEntity);
+//        Objects.requireNonNull(configuration);
+//
+//        TargetEntityType targetEntityType = suggestion.getTargetEntity().targetType();
+//
+//        if (targetEntityType.equals(TargetEntityType.RULE)) {
+//            score = computeScoreRule(suggestion, sourceEntity, configuration);
+//        } else {
+//            score = computeScoreOntology(suggestion);
+//        }
+//        return score;
+//    }
 
     /**
      * Calculates the suggestion (a rule) score as a percentage, based on how similar the suggestion and the sourceEntity are.
@@ -52,12 +74,13 @@ public class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculat
      * Note that {@link Suggestion} has a `rawScore` assigned by Lucene. We are not using it as that's a value that helps
      * in sorting results but doesn't say anything about how good the result by its own is.
      *
-     * @param suggestion   The suggestion for the mapping
-     * @param sourceEntity The entity we are trying to map
+     * @param suggestion    The suggestion for the mapping
+     * @param sourceEntity  The entity we are trying to map
      * @param configuration A configuration object with additional information about the mapping process
      * @return A number (percentage) representing how similar the suggestion and the source entity are.
      */
-    private double computeScoreRule(Suggestion suggestion, SourceEntity sourceEntity, MappingConfiguration configuration) {
+    @Override
+    public double computeScoreRule(Suggestion suggestion, SourceEntity sourceEntity, MappingConfiguration configuration) {
         double score = 0.0;
 
         var fieldsWeights = configuration.getFieldsWeightsByEntityType(sourceEntity.getType());
@@ -79,9 +102,7 @@ public class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculat
         String sourceEntityFieldValue, String suggestionFieldValue, double fieldWeight, double totalWeight) {
 
         // Calculate the similarity between the value of the source entity field vs the one in the suggestion (0 - 100).
-        double stringsSimilarityPercentage = calculateScoreWeightedItems(
-            Collections.singletonList(sourceEntityFieldValue), List.of(1.0), suggestionFieldValue);
-        System.out.println("NEW stringsSimilarityPercentage:" + stringsSimilarityPercentage);
+        double stringsSimilarityPercentage = calculateScoreWeightedItems(sourceEntityFieldValue, suggestionFieldValue);
 
         if (stringsSimilarityPercentage < SIMILARITY_THRESHOLD) {
             return 0;
@@ -94,155 +115,73 @@ public class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculat
         return stringsSimilarityPercentage * fieldRelevance;
     }
 
-    private double computeScoreOntology(Suggestion suggestion, SourceEntity sourceEntity, MappingConfiguration configuration) {
-        double score = 0.0;
+    /**
+     * Calculates the suggestion (an ontology term) score as a percentage, based on how similar the suggestion and the
+     * sourceEntity are.
+     * A string similarity comparison is used.
+     * Note that {@link Suggestion} has a `rawScore` assigned by Lucene. We are not using it as that's a value that helps
+     * in sorting results but doesn't say anything about how good the result by its own is.
+     * @param suggestion  The suggestion for the mapping
+     * @return A number (percentage) representing how similar the suggestion and the source entity are.
+     */
+    @Override
+    public double computeScoreOntology(Suggestion suggestion) {
+        double score;
 
-        TargetEntityDataFields dataFields = suggestion.getTargetEntity().dataFields();
-
-        // First we check the score of the label
-        String suggestionLabel = suggestion.getTermLabel();
-
-        List<SearchQueryItem> items = null;
-        MappingDetails mappingDetails = suggestion.getMappingDetails();
-        if (mappingDetails != null) {
-            items = mappingDetails.getSearchQueryItems();
-        }
-        if (items == null || items.isEmpty()) {
-            throw new IllegalArgumentException("Error obtaining mapping details from suggestion: " + suggestion);
-        }
-        items = cleanSearchQueryItems(suggestion.getMappingDetails().getSearchQueryItems());
+        List<SearchQueryItem> items = getCleanedItemsFromSuggestion(suggestion);
         List<String> itemsTexts = new ArrayList<>();
         List<Double> itemsWeights = new ArrayList<>();
+        TargetEntityDataFields dataFields = suggestion.getTargetEntity().dataFields();
         items.forEach(i -> {
             itemsTexts.add(i.getValue());
             itemsWeights.add(i.getWeight());
         });
 
-        score = calculateScoreWeightedItems(itemsTexts, itemsWeights, suggestionLabel);
-        System.out.println("LABEL SCORE:" + score);
-        return score;
-    }
-
-    /**
-     * Calculates the score of a {@code suggestion} based on how similar it is respect to a {@code sourceEntity},
-     * when the suggestion was obtained using a similar match (so it's less "strict" when
-     * evaluating the similarity). {@code configuration} is used to provide additional information like the
-     * relevance of fields.
-     *
-     * @param suggestion    The suggestion found in the mapping process
-     * @param sourceEntity  The entity for which the suggestion was found
-     * @param configuration A configuration object with additional information about the mapping process
-     * @return a number between 0 and 100 indicating how good the suggestion is.
-     */
-    @Override
-    public double computeScoreSimilarMatch(Suggestion suggestion, SourceEntity sourceEntity, MappingConfiguration configuration) {
-        return 0;
-    }
-
-    /**
-     * Calculates the score of a {@code suggestion} based on how similar it is respect to a {@code sourceEntity}.
-     * The object {@code configuration} is used to provide additional information like the
-     * relevance of fields.
-     *
-     * @param suggestion    The suggestion found in the mapping process
-     * @param sourceEntity  The entity for which the suggestion was found
-     * @param configuration A configuration object with additional information about the mapping process
-     * @return a number between 0 and 100 indicating how good the suggestion is.
-     */
-    @Override
-    public double computeScore(Suggestion suggestion, SourceEntity sourceEntity, MappingConfiguration configuration) {
-        double score = 0;
-        Objects.requireNonNull(suggestion);
-        Objects.requireNonNull(sourceEntity);
-        Objects.requireNonNull(configuration);
-
-        TargetEntityType targetEntityType = suggestion.getTargetEntity().targetType();
-
-        if (targetEntityType.equals(TargetEntityType.RULE)) {
-            score = computeScoreRule(suggestion, sourceEntity, configuration);
-        } else {
-            score = computeScoreOntology(suggestion, sourceEntity, configuration);
-        }
-        return score;
-    }
-
-    /**
-     * Calculates the similarity between a collection of {@code SearchQueryItem} and a text, which usually
-     * represents the {@code label} or a {@code synonym} on an ontology term.
-     * This comparison method uses a combination of ways to determine how similar both elements are:
-     * - Literal matches (like text contained in the other one) generate the highest score (per attribute/SearchQueryItem)
-     * - When no literal match, a set-based comparison is done. If matches are found, text shrinks
-     * - If there are no common words, then LevenshteinDistance is used to see how different the words are
-     * @param searchQueryItems List of {@code SearchQueryItem} which were used in the query
-     * @param targetText Label or synonym in the ontology term
-     * @return a number between 0 and 100 indicating the similarity.
-     */
-    double calculateSearchQueryItemsAndTextSimilarity(List<SearchQueryItem> searchQueryItems, String targetText) {
-        double score = 0.0;
-        List<SearchQueryItem> items = cleanSearchQueryItems(searchQueryItems);
-
-        // A collection of all words in the items to use when comparing how much extra information text has
-        Set<String> allItemsWords = new HashSet<>();
-
-        // The total weight of the items
-        double totalWeight = items.stream().map(SearchQueryItem::getWeight).reduce(0.0, Double::sum);
-
-        // A list version of the targetText to use in comparisons. Using list because order is
-        // important when converting back to string
-        List<String> targetTextAsList = textToList(targetText);
-        // A "cleaned" version of the target text
-        String targetTextFormatted = listToText(targetTextAsList);
-        int originalTargetTextSize = targetTextFormatted.length();
-
-        for (SearchQueryItem item : items) {
-            score += processItem(item, totalWeight, allItemsWords, targetTextAsList);
-            System.out.println("Score: " + score);
+        String mappingDetailNote = "";
+        String suggestionLabel = suggestion.getTermLabel();
+        List<String> suggestionSynonyms = new ArrayList<>();
+        if (dataFields.hasListField(OntologyEntityDataFieldName.SYNONYMS.getValue())) {
+            suggestionSynonyms = dataFields.getListField(OntologyEntityDataFieldName.SYNONYMS.getValue());
         }
 
-        targetTextFormatted = listToText(targetTextAsList);
+        double highestScore;
 
-        String allWordsText = listToText(allItemsWords);
-        double penalty = (double) (targetTextFormatted.length() * 100) /originalTargetTextSize;
+        // First we check the score of the label
+        double labelScore = calculateScoreWeightedItems(itemsTexts, itemsWeights, suggestionLabel);
 
-        score -= penalty;
-        return score;
-    }
+        highestScore = labelScore;
+        mappingDetailNote = "Matched label:[" + suggestionLabel + "]";
 
-    public double processItem(
-        SearchQueryItem item,
-        double totalWeight,
-        Set<String> allItemsWords,
-        List<String> targetTextAsList) {
+        // If needed, search for a good score in the synonyms
+        if (labelScore < MAX_SCORE && !suggestionSynonyms.isEmpty()) {
 
-        double itemScore = 0;
-        double itemRelevance = item.getWeight() / totalWeight;
-        String targetTextFormatted = listToText(targetTextAsList);
-
-        List<String> itemWords = textToList(item.getValue());
-        System.out.println("itemWords: " + itemWords);
-        allItemsWords.addAll(itemWords);
-        String itemTextFormatted = listToText(itemWords);
-
-        Set<String> toRemove = new HashSet<>();
-
-        for (String element : itemWords) {
-            for (String targetWord : targetTextAsList) {
-                double similarity = StringsSimilarityScoreCalculator.calculateSimilarityScore(element, targetWord);
-
-                if (similarity > 0.8) {
-                    toRemove.add(targetWord);
-                    double p = similarity*100/itemWords.size();
-                    itemScore += p * itemRelevance;
-                    break;
+            for (String synonym : suggestionSynonyms) {
+                double synonymScore = calculateScoreWeightedItems(itemsTexts, itemsWeights, synonym);
+                synonymScore *= SYNONYM_MATCH_MULTIPLIER;
+                if (synonymScore > highestScore) {
+                    mappingDetailNote = "Matched synonym:[" + synonym + "]";
+                    highestScore = synonymScore;
                 }
             }
         }
-
-        targetTextAsList.removeAll(toRemove);
-        return itemScore;
+        suggestion.getScoringDetails().setNote(mappingDetailNote);
+        score = highestScore;
+        return score;
     }
 
-    public double calculateScoreWeightedItems(String itemsText, String targetText) {
+    private List<SearchQueryItem> getCleanedItemsFromSuggestion(Suggestion suggestion) {
+        List<SearchQueryItem> items = null;
+        ScoringDetails scoringDetails = suggestion.getScoringDetails();
+        if (scoringDetails != null) {
+            items = scoringDetails.getSearchQueryItems();
+        }
+        if (items == null || items.isEmpty()) {
+            throw new IllegalArgumentException("Error obtaining mapping details from suggestion: " + suggestion);
+        }
+        return cleanSearchQueryItems(suggestion.getScoringDetails().getSearchQueryItems());
+    }
+
+    private double calculateScoreWeightedItems(String itemsText, String targetText) {
         List<String> itemsTexts = new ArrayList<>();
         itemsTexts.add(itemsText);
         List<Double> itemWeightedTexts = new ArrayList<>();
@@ -250,17 +189,21 @@ public class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculat
         return calculateScoreWeightedItems(itemsTexts, itemWeightedTexts, targetText);
     }
 
-
-        public double calculateScoreWeightedItems(List<String> itemsTexts, List<Double> itemsWeights, String targetText) {
+    private double calculateScoreWeightedItems(List<String> itemsTexts, List<Double> itemsWeights, String targetText) {
         double score = 0;
         if (itemsTexts.size() != itemsWeights.size()) {
             throw new IllegalArgumentException("Error calculating mapping score: number of weights does not" +
                 "match number of items");
         }
 
+        if (targetText == null || targetText.isEmpty()) {
+            throw new IllegalArgumentException("Error calculating mapping score: target text is null or empty");
+        }
+
         List<String> targetWords = textToList(targetText);
 
-        //List<String> allIItemsWords = new ArrayList<>();
+        int initialTargetWordsSize = targetWords.stream().mapToInt(String::length).sum();
+
         List<String> remainingTargetWords = new ArrayList<>();
 
         // The total weight of the items
@@ -270,29 +213,24 @@ public class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculat
             String itemText = itemsTexts.get(i);
             List<String> itemWords = textToList(itemText);
 
-
-           // allIItemsWords.addAll(itemWords);
             double weight = itemsWeights.get(i);
             double itemRelevance = weight / totalWeight;
-            ItemScoreResult result = calculate2(itemWords, targetWords);
+            ItemScoreResult result = calculateItemScore(itemWords, targetWords);
             score += result.score * itemRelevance;
-            remainingTargetWords.addAll(result.remainingTargetWords);
+            remainingTargetWords = result.remainingTargetWords;
+            targetWords = remainingTargetWords;
         }
 
         if (score > 0) {
-            System.out.println("Calculating penalty");
             int remainingTargetTextSize = remainingTargetWords.stream().mapToInt(String::length).sum();
-            int targetWordsSize = targetWords.stream().mapToInt(String::length).sum();
-            double penalty = (double) (remainingTargetTextSize * 100) /targetWordsSize;
-            System.out.println("penalty: " + penalty);
+            double penalty = (double) (remainingTargetTextSize * 100) / initialTargetWordsSize;
             score -= penalty;
         }
 
         return score;
     }
 
-
-    ItemScoreResult calculate2(List<String> itemWords, List<String> targetWords) {
+    private ItemScoreResult calculateItemScore(List<String> itemWords, List<String> targetWords) {
         double itemScore = 0;
         Set<String> matchedTargetWords = new HashSet<>();
         List<String> remainingTargetWords = new ArrayList<>(targetWords);
@@ -321,22 +259,7 @@ public class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculat
         return items;
     }
 
-    // Method to filter out stop words
-    private static List<String> filterStopWords(String[] words) {
-        List<String> filteredWords = new ArrayList<>();
-        for (String word : words) {
-            if (!STOP_WORDS.contains(word)) {
-                filteredWords.add(word);
-            }
-        }
-        return filteredWords;
-    }
-
-    private static List<String> textToList(String text) {
-        return new ArrayList<>(filterStopWords(text.toLowerCase().split(WORDS_SEPARATOR_REGEXP)));
-    }
-
-    private static String listToText(Collection<String> list) {
-        return String.join(" ", list);
+    // A record to help in intermediate calculations of score
+    private record ItemScoreResult(double score, List<String> remainingTargetWords) {
     }
 }

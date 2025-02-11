@@ -7,6 +7,7 @@ import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EntityCreatorUtil {
@@ -55,5 +56,16 @@ public class EntityCreatorUtil {
 
         return new TargetEntity(
             key, "treatment", TargetEntityType.RULE, dataFields, label, url);
+    }
+
+    public static TargetEntity createDiagnosisOntologyTargetEntity(
+        String key, String label, List<String> synonyms, String url) {
+
+        TargetEntityDataFields dataFields = new TargetEntityDataFields();
+        dataFields.addStringField("label", label);
+        dataFields.addListField("synonyms", synonyms);
+
+        return new TargetEntity(
+            key, "diagnosis", TargetEntityType.ONTOLOGY, dataFields, label, url);
     }
 }

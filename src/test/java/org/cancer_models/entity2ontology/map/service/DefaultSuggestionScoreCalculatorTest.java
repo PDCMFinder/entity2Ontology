@@ -2,12 +2,7 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.common.EntityCreatorUtil;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
-import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
-import org.cancer_models.entity2ontology.map.model.SearchQueryItem;
-import org.cancer_models.entity2ontology.map.model.SourceEntity;
-import org.cancer_models.entity2ontology.map.model.Suggestion;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.cancer_models.entity2ontology.map.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -19,6 +14,11 @@ class DefaultSuggestionScoreCalculatorTest {
 
     private final DefaultSuggestionScoreCalculator instance = new DefaultSuggestionScoreCalculator();
 
+    private final TemplateQueryProcessor templateQueryProcessor = new TemplateQueryProcessor();
+
+    private static final String DIAGNOSIS_TEMPLATE_TEXT = "${TumorType} ${OriginTissue} ${SampleDiagnosis}";
+    private static final QueryTemplate DIAGNOSIS_TEMPLATE = new QueryTemplate(DIAGNOSIS_TEMPLATE_TEXT);
+
     private static final String CONFIGURATION_FILE =
         "src/test/resources/mappingConfigurations/pdcmMappingConfiguration.json";
 
@@ -28,13 +28,7 @@ class DefaultSuggestionScoreCalculatorTest {
         config = MappingIO.readMappingConfiguration(CONFIGURATION_FILE);
     }
 
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
+    // Section 1: Testing score for diagnosis with rule suggestions
 
     @Test
     void testComputeScore_ruleDiagnosisWithPerfectMatch_perfectScore() {
@@ -57,7 +51,7 @@ class DefaultSuggestionScoreCalculatorTest {
 
         Suggestion suggestion = new Suggestion(targetEntity);
 
-        double score = instance.computeScore(suggestion, sourceEntity, config);
+        double score = instance.computeScoreRule(suggestion, sourceEntity, config);
         assertEquals(100, score);
     }
 
@@ -85,7 +79,7 @@ class DefaultSuggestionScoreCalculatorTest {
         // 25 is the relevance of OriginTissue, for which we expect a contribution of 0 in this case
         double expectedScore = 100 - 25;
 
-        double score = instance.computeScore(suggestion, sourceEntity, config);
+        double score = instance.computeScoreRule(suggestion, sourceEntity, config);
         assertEquals(expectedScore, score);
     }
 
@@ -112,9 +106,8 @@ class DefaultSuggestionScoreCalculatorTest {
 
         // 25 is the relevance of TumorType, for which we expect a contribution of 0 in this case
         double expectedScore = 100 - 25;
-        System.out.println(config.getConfigurationByEntityType("diagnosis").getFields());
 
-        double score = instance.computeScore(suggestion, sourceEntity, config);
+        double score = instance.computeScoreRule(suggestion, sourceEntity, config);
         assertEquals(expectedScore, score);
     }
 
@@ -139,15 +132,14 @@ class DefaultSuggestionScoreCalculatorTest {
 
         Suggestion suggestion = new Suggestion(targetEntity);
 
-        // 25 is the relevance of SampleDiagnosis, for which we expect a contribution of 0 in this case
+        // 50 is the relevance of SampleDiagnosis, for which we expect a contribution of 0 in this case
         double expectedScore = 100 - 50;
-        System.out.println(config.getConfigurationByEntityType("diagnosis").getFields());
 
-        double score = instance.computeScore(suggestion, sourceEntity, config);
+        double score = instance.computeScoreRule(suggestion, sourceEntity, config);
         assertEquals(expectedScore, score);
     }
 
-
+    // Section 2: Testing score for treatments with rule suggestions
 
     @Test
     void testComputeScore_ruleTreatmentWithPerfectMatch_perfectScore() {
@@ -166,7 +158,8 @@ class DefaultSuggestionScoreCalculatorTest {
 
         Suggestion suggestion = new Suggestion(targetEntity);
 
-        double score = instance.computeScore(suggestion, sourceEntity, config);
+        double score = instance.computeScoreRule(suggestion, sourceEntity, config);
+
         assertEquals(100, score);
     }
 
@@ -187,7 +180,8 @@ class DefaultSuggestionScoreCalculatorTest {
 
         Suggestion suggestion = new Suggestion(targetEntity);
 
-        double score = instance.computeScore(suggestion, sourceEntity, config);
+        double score = instance.computeScoreRule(suggestion, sourceEntity, config);
+
         assertEquals(90, score);
     }
 
@@ -208,100 +202,150 @@ class DefaultSuggestionScoreCalculatorTest {
 
         Suggestion suggestion = new Suggestion(targetEntity);
 
-        double score = instance.computeScore(suggestion, sourceEntity, config);
+        double score = instance.computeScoreRule(suggestion, sourceEntity, config);
+
         assertEquals(80, score);
     }
 
-    private List<SearchQueryItem> buildDiagnosisItems(String sampleDiagnosis, String tumorType, String originTissue) {
-        List<SearchQueryItem> items = new ArrayList<>();
-
-        SearchQueryItem item1 = SearchQueryItem.builder()
-            .field("SampleDiagnosis")
-            .value(sampleDiagnosis)
-            .weight(10)
-            .build();
-
-        SearchQueryItem item2 = SearchQueryItem.builder()
-            .field("TumourType")
-            .value(tumorType)
-            .weight(1)
-            .build();
-
-        SearchQueryItem item3 = SearchQueryItem.builder()
-            .field("PrimarySite")
-            .value(originTissue)
-            .weight(5)
-            .build();
-
-        items.add(item1);
-        items.add(item2);
-        items.add(item3);
-
-        return items;
-    }
+    // Section 3: Testing score for diagnosis with ontology suggestions
 
     @Test
-    void testCalculateSearchQueryItemsAndTextSimilarity_diagnosis_sameData_perfectScore() {
-        String sampleDiagnosis = "non small cell carcinoma";
-        String tumourType = "metastatic";
-        String primarySite = "lung";
-        String targetText = "Lung metastatic Non Small Cell Carcinoma";
-        List<SearchQueryItem> queryItems = buildDiagnosisItems(sampleDiagnosis, tumourType, primarySite);
+    void testComputeScore_ontologyDiagnosisWithPerfectMatchLabel_perfectScore() {
+        String key = "key_1";
 
-        double score = instance.calculateSearchQueryItemsAndTextSimilarity(queryItems, targetText);
+        String sourceSampleDiagnosis = "fusion negative rhabdomyosarcoma";
+        String sourceOriginTissue = "orbit";
+        String sourceTumorType = "primary";
+
+        String targetLabel = "primary orbit fusion negative rhabdomyosarcoma";
+        List<String> targetSynonyms = Arrays.asList("");
+        String targetUrl = "url";
+
+        SourceEntity sourceEntity =
+            EntityCreatorUtil.createDiagnosisSourceEntity(key, sourceSampleDiagnosis, sourceOriginTissue, sourceTumorType);
+
+        TargetEntity targetEntity = EntityCreatorUtil.createDiagnosisOntologyTargetEntity(
+            key, targetLabel, targetSynonyms, targetUrl);
+
+        Suggestion suggestion = new Suggestion(targetEntity);
+        List<SearchQueryItem> items = templateQueryProcessor.extractSearchQueryItems(
+            DIAGNOSIS_TEMPLATE, sourceEntity, config.getFieldsWeightsByEntityType("diagnosis"));
+        ScoringDetails scoringDetails = new ScoringDetails();
+        scoringDetails.setSearchQueryItems(items);
+        suggestion.setScoringDetails(scoringDetails);
+        suggestion.setTermLabel(targetLabel);
+
+        double score = instance.computeScoreOntology(suggestion);
+
+        String expectedScoringDetailsNote = "Matched label:[primary orbit fusion negative rhabdomyosarcoma]";
+        String obtainedScoringDetailsNote = suggestion.getScoringDetails().getNote();
 
         assertEquals(100, score);
+        assertEquals(expectedScoringDetailsNote, obtainedScoringDetailsNote);
     }
 
     @Test
-    void testCalculateSearchQueryItemsAndTextSimilarity_diagnosis_sameDataWithSeparator_perfectScore() {
-        String sampleDiagnosis = "non small cell carcinoma";
-        String tumourType = "metastatic";
-        String primarySite = "lung";
-        String targetText = "Lung metastatic Non-Small Cell Carcinoma";
-        List<SearchQueryItem> queryItems = buildDiagnosisItems(sampleDiagnosis, tumourType, primarySite);
+    void testComputeScore_ontologyDiagnosisWithPerfectMatchSynonym_perfectScore() {
+        String key = "key_1";
 
-        double score = instance.calculateSearchQueryItemsAndTextSimilarity(queryItems, targetText);
+        String sourceSampleDiagnosis = "fusion negative rhabdomyosarcoma";
+        String sourceOriginTissue = "orbit";
+        String sourceTumorType = "primary";
 
-        assertEquals(100, score);
+        String targetLabel = "-";
+        List<String> targetSynonyms = Arrays.asList("primary orbit fusion negative rhabdomyosarcoma");
+        String targetUrl = "url";
+
+        SourceEntity sourceEntity =
+            EntityCreatorUtil.createDiagnosisSourceEntity(key, sourceSampleDiagnosis, sourceOriginTissue, sourceTumorType);
+
+        TargetEntity targetEntity = EntityCreatorUtil.createDiagnosisOntologyTargetEntity(
+            key, targetLabel, targetSynonyms, targetUrl);
+
+        Suggestion suggestion = new Suggestion(targetEntity);
+        List<SearchQueryItem> items = templateQueryProcessor.extractSearchQueryItems(
+            DIAGNOSIS_TEMPLATE, sourceEntity, config.getFieldsWeightsByEntityType("diagnosis"));
+        ScoringDetails scoringDetails = new ScoringDetails();
+        scoringDetails.setSearchQueryItems(items);
+        suggestion.setScoringDetails(scoringDetails);
+        suggestion.setTermLabel(targetLabel);
+
+        double score = instance.computeScoreOntology(suggestion);
+
+        String expectedScoringDetailsNote = "Matched synonym:[primary orbit fusion negative rhabdomyosarcoma]";
+        String obtainedScoringDetailsNote = suggestion.getScoringDetails().getNote();
+
+        assertEquals(99, score);
+        assertEquals(expectedScoringDetailsNote, obtainedScoringDetailsNote);
     }
 
     @Test
-    void testCalculateSearchQueryItemsAndTextSimilarity_diagnosis_sameDataNoOrder_perfectScore() {
-        String sampleDiagnosis = "ductal breast carcinoma";
-        String tumourType = "metastatic";
-        String primarySite = "breast";
-        String targetText = "Metastatic Breast Ductal Carcinoma";
-        List<SearchQueryItem> queryItems = buildDiagnosisItems(sampleDiagnosis, tumourType, primarySite);
+    void testComputeScore_ontologyDiagnosisWithAlmostPerfectMatchLabel_lessPerfectScore() {
+        String key = "key_1";
 
-        double score = instance.calculateSearchQueryItemsAndTextSimilarity(queryItems, targetText);
+        String sourceSampleDiagnosis = "fusion negative rhabdomyosarcoma";
+        String sourceOriginTissue = "orbit";
+        String sourceTumorType = "primary";
 
-        assertEquals(100, score);
+        String targetLabel = "primary orbit fusion positive rhabdomyosarcoma";
+        List<String> targetSynonyms = Arrays.asList("s1");
+        String targetUrl = "url";
+
+        SourceEntity sourceEntity =
+            EntityCreatorUtil.createDiagnosisSourceEntity(key, sourceSampleDiagnosis, sourceOriginTissue, sourceTumorType);
+
+        TargetEntity targetEntity = EntityCreatorUtil.createDiagnosisOntologyTargetEntity(
+            key, targetLabel, targetSynonyms, targetUrl);
+
+        Suggestion suggestion = new Suggestion(targetEntity);
+        List<SearchQueryItem> items = templateQueryProcessor.extractSearchQueryItems(
+            DIAGNOSIS_TEMPLATE, sourceEntity, config.getFieldsWeightsByEntityType("diagnosis"));
+        ScoringDetails scoringDetails = new ScoringDetails();
+        scoringDetails.setSearchQueryItems(items);
+        suggestion.setScoringDetails(scoringDetails);
+        suggestion.setTermLabel(targetLabel);
+
+        double score = instance.computeScoreOntology(suggestion);
+
+        String expectedScoringDetailsNote = "Matched label:[primary orbit fusion positive rhabdomyosarcoma]";
+        String obtainedScoringDetailsNote = suggestion.getScoringDetails().getNote();
+
+        assertTrue(score > 65.0 && score < 100);
+        assertEquals(expectedScoringDetailsNote, obtainedScoringDetailsNote);
     }
 
     @Test
-    void testCalculateSearchQueryItemsAndTextSimilarity_diagnosis_sameDataNonMeaningfulContent_perfectScore() {
-        String sampleDiagnosis = "ductal breast carcinoma";
-        String tumourType = "unknown";
-        String primarySite = "breast";
-        String targetText = "Breast Ductal Carcinoma";
-        List<SearchQueryItem> queryItems = buildDiagnosisItems(sampleDiagnosis, tumourType, primarySite);
+    void testComputeScore_ontologyDiagnosisNonMeaningfulContent_perfectScore() {
+        String key = "key_1";
 
-        double score = instance.calculateSearchQueryItemsAndTextSimilarity(queryItems, targetText);
+        String sourceSampleDiagnosis = "fusion negative rhabdomyosarcoma";
+        String sourceOriginTissue = "orbit";
+        String sourceTumorType = "unknown";
 
-        assertEquals(100, score);
-    }
+        String targetLabel = "orbit fusion negative rhabdomyosarcoma";
+        List<String> targetSynonyms = Arrays.asList("s1");
+        String targetUrl = "url";
 
-    @Test
-    void testCalculateSearchQueryItemsAndTextSimilarity_diagnosis_extraDataTarget_lessPerfectScore() {
-        String sampleDiagnosis = "ductal breast carcinoma";
-        String tumourType = "metastatic";
-        String primarySite = "breast";
-        String targetText = "Metastatic Breast Ductal Carcinoma xyz";
-        List<SearchQueryItem> queryItems = buildDiagnosisItems(sampleDiagnosis, tumourType, primarySite);
+        SourceEntity sourceEntity =
+            EntityCreatorUtil.createDiagnosisSourceEntity(key, sourceSampleDiagnosis, sourceOriginTissue, sourceTumorType);
 
-        double score = instance.calculateSearchQueryItemsAndTextSimilarity(queryItems, targetText);
-        System.out.println(score);
-        assertTrue(score > 90 && score < 100);
+        TargetEntity targetEntity = EntityCreatorUtil.createDiagnosisOntologyTargetEntity(
+            key, targetLabel, targetSynonyms, targetUrl);
+
+        Suggestion suggestion = new Suggestion(targetEntity);
+        List<SearchQueryItem> items = templateQueryProcessor.extractSearchQueryItems(
+            DIAGNOSIS_TEMPLATE, sourceEntity, config.getFieldsWeightsByEntityType("diagnosis"));
+        ScoringDetails scoringDetails = new ScoringDetails();
+        scoringDetails.setSearchQueryItems(items);
+        suggestion.setScoringDetails(scoringDetails);
+        suggestion.setTermLabel(targetLabel);
+
+        double score = instance.computeScoreOntology(suggestion);
+
+        String expectedScoringDetailsNote = "Matched label:[orbit fusion negative rhabdomyosarcoma]";
+        String obtainedScoringDetailsNote = suggestion.getScoringDetails().getNote();
+
+        assertTrue(score > 99.9);
+        assertEquals(expectedScoringDetailsNote, obtainedScoringDetailsNote);
     }
 }

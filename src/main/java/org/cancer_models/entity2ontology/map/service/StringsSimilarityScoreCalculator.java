@@ -51,7 +51,6 @@ public class StringsSimilarityScoreCalculator {
         } else {
             double maxDistancePossible = Math.max(word1.length(), word2.length());
             int distanceValue = LEVENSHTEIN_DISTANCE.apply(word1, word2);
-            System.out.println(distanceValue);
             similarity = 1 - (distanceValue / maxDistancePossible);
         }
         return similarity;

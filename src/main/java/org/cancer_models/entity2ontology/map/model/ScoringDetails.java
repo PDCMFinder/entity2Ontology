@@ -8,7 +8,7 @@ import java.util.List;
  * A class that contains some internal details about how the mapping was done.
  */
 @Data
-public class MappingDetails {
+public class ScoringDetails {
     /**
      * Indicates if the match was found using an exact search.
      */
@@ -18,4 +18,8 @@ public class MappingDetails {
      * the suggestion.
      */
     private List<SearchQueryItem> searchQueryItems;
+    /**
+     * Additional information.
+     */
+    private String note;
 }

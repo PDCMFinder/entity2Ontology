@@ -37,7 +37,7 @@ class RulesSearcherTest {
     private static String indexLocation;
 
     private final QueryBuilder queryBuilder = new QueryBuilder();
-    private final ScoreCalculator scoreCalculator = new ScoreCalculator();
+    private final SuggestionScoreCalculator scoreCalculator = new DefaultSuggestionScoreCalculator();
 
     private final Searcher searcher = new Searcher(new AnalyzerProvider());
     private final QueryProcessor queryProcessor = new QueryProcessor(searcher);

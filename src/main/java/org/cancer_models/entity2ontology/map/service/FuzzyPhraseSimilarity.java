@@ -40,11 +40,9 @@ class FuzzyPhraseSimilarity {
 
         // Calculate fuzzy intersection and adjust the second set accordingly
         int intersectionSize = fuzzyIntersection(set1, set2, fuzzinessThreshold);
-        System.out.println("intersectionSize: " + intersectionSize);
 
         // Union size is now the size of the first set plus remaining words in the second set
         int unionSize = set1.size() + set2.size();
-        System.out.println("unionSize: " + unionSize);
 
         // Calculate and return fuzzy Jaccard similarity
         return (double) intersectionSize / unionSize;
@@ -62,15 +60,11 @@ class FuzzyPhraseSimilarity {
 
     // Method to calculate fuzzy intersection based on Levenshtein distance
     private static int fuzzyIntersection(Set<String> set1, Set<String> set2, double fuzzinessThreshold) {
-        System.out.println("in");
-        System.out.println(set1);
-        System.out.println(set2);
         int count = 0;
         Set<String> toRemove = new HashSet<>(); // Track words to remove from set2 after fuzzy match
 
         for (String word1 : set1) {
             for (String word2 : set2) {
-                System.out.println("checking word1: " + word1 + " word2: " + word2);
                 double adjustedFuzzinessThreshold = getAdjustedFuzzinessThreshold(word1, word2, fuzzinessThreshold);
                 // Use Levenshtein distance to check similarity
                 if (levenshteinDistance.apply(word1, word2) <= adjustedFuzzinessThreshold) {
@@ -81,9 +75,6 @@ class FuzzyPhraseSimilarity {
             }
         }
         set2.removeAll(toRemove);  // Remove fuzzy-matched words from set2
-        System.out.println("out: " + count);
-        System.out.println(set1);
-        System.out.println(set2);
         return count;
     }
 

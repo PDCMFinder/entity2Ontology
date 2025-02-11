@@ -8,7 +8,6 @@ import org.cancer_models.entity2ontology.map.model.Suggestion;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * A component responsible for searching rules using Lucene queries.
@@ -29,7 +28,7 @@ class RulesSearcher {
     /**
      * Calculates a match score for each suggestion, used to rank results.
      */
-    private final ScoreCalculator scoreCalculator;
+    private final SuggestionScoreCalculator scoreCalculator;
 
     /**
      * Constructs a new RulesSearcher with dependencies for building, executing,
@@ -42,7 +41,7 @@ class RulesSearcher {
     public RulesSearcher(
         QueryBuilder queryBuilder,
         QueryProcessor queryProcessor,
-        ScoreCalculator scoreCalculator) {
+        SuggestionScoreCalculator scoreCalculator) {
 
         this.queryBuilder = queryBuilder;
         this.queryProcessor = queryProcessor;
@@ -88,11 +87,8 @@ class RulesSearcher {
         Query query = queryBuilder.buildSimilarMatchRulesQuery(entity, config);
         List<Suggestion> suggestions = queryProcessor.executeQuery(query, indexPath);
 
-        Map<String, Double> fieldsWeightsByEntityType = config.getFieldsWeightsByEntityType(entity.getType());
-
         suggestions.forEach(suggestion -> {
-            double score = scoreCalculator.calculateRuleSuggestionScoreAsPercentage(
-                suggestion, entity, fieldsWeightsByEntityType);
+            double score = scoreCalculator.computeScoreRule(suggestion, entity, config);
             suggestion.setScore(score);
         });
 
