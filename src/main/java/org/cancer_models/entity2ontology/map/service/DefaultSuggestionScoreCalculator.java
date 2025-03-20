@@ -2,7 +2,6 @@ package org.cancer_models.entity2ontology.map.service;
 
 import org.cancer_models.entity2ontology.common.model.OntologyEntityDataFieldName;
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
-import org.cancer_models.entity2ontology.common.model.TargetEntityType;
 import org.cancer_models.entity2ontology.map.model.*;
 import org.springframework.stereotype.Component;
 
@@ -13,13 +12,16 @@ class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculator {
 
     // List of words to skip when converting text to sets
     private static final List<String> STOP_WORDS = Arrays.asList("in", "on", "the", "of", "is", "at", "by", "the");
+
     // If a search query item contains one of these words, it can be ignored
     private static final List<String> NON_MEANINGFUL_WORDS = List.of("unknown");
+
     // A pattern to help when splitting text to words
     private static final String WORDS_SEPARATOR_REGEXP = "[\\s/\\-]+";
 
     private static final double SIMILARITY_THRESHOLD = 50;
 
+    // Maximum score possible (percentage)
     private static final double MAX_SCORE = 100;
 
     // This parameter allows to control the score for matches in synonyms, giving it a slightly lower value than a label
@@ -104,6 +106,7 @@ class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculator {
         // Calculate the similarity between the value of the source entity field vs the one in the suggestion (0 - 100).
         double stringsSimilarityPercentage = calculateScoreWeightedItems(sourceEntityFieldValue, suggestionFieldValue);
 
+        // A field contributes only if its similarity with the value is greater than a specified threshold
         if (stringsSimilarityPercentage < SIMILARITY_THRESHOLD) {
             return 0;
         }
@@ -221,12 +224,12 @@ class DefaultSuggestionScoreCalculator implements SuggestionScoreCalculator {
             targetWords = remainingTargetWords;
         }
 
-        if (score > 0) {
-            int remainingTargetTextSize = remainingTargetWords.stream().mapToInt(String::length).sum();
-            double penalty = (double) (remainingTargetTextSize * 100) / initialTargetWordsSize;
+        // Calculate the penalty: how much of the target words were not matched
+        int remainingTargetTextSize = remainingTargetWords.stream().mapToInt(String::length).sum();
+        double penalty = (double) (remainingTargetTextSize * 100) / initialTargetWordsSize;
+        if (penalty < score) {
             score -= penalty;
         }
-
         return score;
     }
 

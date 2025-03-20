@@ -19,6 +19,9 @@ class DefaultSuggestionScoreCalculatorTest {
     private static final String DIAGNOSIS_TEMPLATE_TEXT = "${TumorType} ${OriginTissue} ${SampleDiagnosis}";
     private static final QueryTemplate DIAGNOSIS_TEMPLATE = new QueryTemplate(DIAGNOSIS_TEMPLATE_TEXT);
 
+    private static final String TREATMENT_TEMPLATE_TEXT = "${TreatmentName}";
+    private static final QueryTemplate TREATMENT_TEMPLATE = new QueryTemplate(TREATMENT_TEMPLATE_TEXT);
+
     private static final String CONFIGURATION_FILE =
         "src/test/resources/mappingConfigurations/pdcmMappingConfiguration.json";
 
@@ -348,4 +351,5 @@ class DefaultSuggestionScoreCalculatorTest {
         assertTrue(score > 99.9);
         assertEquals(expectedScoringDetailsNote, obtainedScoringDetailsNote);
     }
+
 }
