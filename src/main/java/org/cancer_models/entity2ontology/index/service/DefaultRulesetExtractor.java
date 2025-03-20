@@ -80,7 +80,7 @@ class DefaultRulesetExtractor implements RulesetExtractor {
                     dataFields.addStringField(field.getKey(), field.getValue().textValue());
                 }
                 TargetEntity targetEntity = new TargetEntity(
-                    id, entityType, TargetEntityType.RULE.getValue(), dataFields, label, url);
+                    id, entityType, TargetEntityType.RULE, dataFields, label, url);
                 targetEntities.add(targetEntity);
             }
         } else {

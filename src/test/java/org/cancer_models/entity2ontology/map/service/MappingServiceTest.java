@@ -33,7 +33,7 @@ public class MappingServiceTest {
 
     private final QueryProcessor queryProcessor = new QueryProcessor(searcher);
 
-    private final ScoreCalculator scoreCalculator = new ScoreCalculator();
+    private final SuggestionScoreCalculator scoreCalculator = new DefaultSuggestionScoreCalculator();
 
     private final RulesSearcher rulesSearcher = new RulesSearcher(queryBuilder, queryProcessor, scoreCalculator);
 

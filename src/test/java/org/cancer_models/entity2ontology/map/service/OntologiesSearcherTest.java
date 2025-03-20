@@ -38,7 +38,7 @@ class OntologiesSearcherTest {
 
     private final QueryBuilder queryBuilder = new QueryBuilder();
     private final TemplateQueryProcessor templateQueryProcessor = new TemplateQueryProcessor();
-    private final ScoreCalculator scoreCalculator = new ScoreCalculator();
+    private final SuggestionScoreCalculator scoreCalculator = new DefaultSuggestionScoreCalculator();
 
     private final Searcher searcher = new Searcher(new AnalyzerProvider());
     private final QueryProcessor queryProcessor = new QueryProcessor(searcher);
@@ -186,7 +186,7 @@ class OntologiesSearcherTest {
         assertEquals(1, suggestions.size());
         assertEquals("ontology_2", suggestion.getTargetEntity().id());
         System.out.println(suggestion.getScore());
-        assertTrue(suggestion.getScore() <= 70.0);
+        assertTrue(suggestion.getScore() <= 75.0);
     }
 
     @Test

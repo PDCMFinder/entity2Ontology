@@ -6,6 +6,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.cancer_models.entity2ontology.common.model.TargetEntity;
 import org.cancer_models.entity2ontology.common.model.TargetEntityDataFields;
+import org.cancer_models.entity2ontology.common.model.TargetEntityType;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -16,7 +17,7 @@ class TargetEntityDocumentMapperTest {
 
     private static final String ENTITY_ID_TEST = "entity_id";
     private static final String ENTITY_TYPE_TEST = "treatment";
-    private static final String TARGET_TYPE_TEST = "ontology";
+    private static final TargetEntityType TARGET_TYPE_TEST = TargetEntityType.ONTOLOGY;
     private static final String LABEL_TEST = "Irinotecan/Temozolomide Regimen";
     private static final String URL_TEST = "http://purl.obolibrary.org/obo/NCIT_C11820";
     private static final String DESCRIPTION_TEST = "A regimen consisting of irinotecan and temozolomide that...";
@@ -53,7 +54,7 @@ class TargetEntityDocumentMapperTest {
         String labelData = document.get("ontology.label");
         assertEquals(ENTITY_ID_TEST, id);
         assertEquals(ENTITY_TYPE_TEST, entityType);
-        assertEquals(TARGET_TYPE_TEST, targetType);
+        assertEquals(TARGET_TYPE_TEST.getValue(), targetType);
         assertEquals(LABEL_TEST, label);
         assertEquals(URL_TEST, url);
         assertEquals(LABEL_TEST, labelData);
@@ -66,7 +67,7 @@ class TargetEntityDocumentMapperTest {
         Document document = new Document();
         document.add(new StringField("id", ENTITY_ID_TEST, Field.Store.YES));
         document.add(new StringField("entityType", ENTITY_TYPE_TEST, Field.Store.YES));
-        document.add(new StringField("targetType", TARGET_TYPE_TEST, Field.Store.YES));
+        document.add(new StringField("targetType", TARGET_TYPE_TEST.getValue(), Field.Store.YES));
         document.add(new TextField("label", LABEL_TEST, Field.Store.YES));
         document.add(new StringField("url", URL_TEST, Field.Store.YES));
         document.add(new StringField("ontology.description", DESCRIPTION_TEST, Field.Store.YES));
