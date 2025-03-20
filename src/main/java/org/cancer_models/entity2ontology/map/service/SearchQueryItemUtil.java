@@ -57,7 +57,7 @@ public class SearchQueryItemUtil {
      * @param nonMeaningWords List of words that are not meaningful in the mapping process
      * @return A new list of {@code SearchQueryItem} where terms with non-meaningful content are removed
      */
-    static public List<SearchQueryItem> removeNonMeaningItems(
+    public static List<SearchQueryItem> removeNonMeaningItems(
         List<SearchQueryItem> searchQueryItems, List<String> nonMeaningWords) {
         List<SearchQueryItem> cleanedSearchQueryItems = new ArrayList<>();
         for (SearchQueryItem searchQueryItem : searchQueryItems) {

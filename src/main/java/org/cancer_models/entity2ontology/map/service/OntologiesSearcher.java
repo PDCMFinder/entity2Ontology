@@ -106,7 +106,7 @@ class OntologiesSearcher {
                 queryTemplate, entity, confByType.getWeightsMap());
 
             // We get the suggestions for the specific template
-            List<Suggestion> suggestionsPerTemplate = processSearchItems(searchQueryItems, entity, indexPath, exactMatch);
+            List<Suggestion> suggestionsPerTemplate = processSearchItems(searchQueryItems, indexPath, exactMatch);
 
             // Keep the highest scoring suggestions
             for (Suggestion suggestion : suggestionsPerTemplate) {
@@ -131,14 +131,13 @@ class OntologiesSearcher {
      * Searches for ontology suggestions using a given list of search terms, and calculates the scores.
      *
      * @param searchQueryItems List of {@link SearchQueryItem} to use in the query.
-     * @param entity
      * @param indexPath        The path to the Lucene index to search in.
      * @param exactMatch       If the score is being calculated for a search that is exact or similar.
      * @return A list of ontology suggestions with calculated scores.
      * @throws MappingException if an error occurs during the search
      */
     private List<Suggestion> processSearchItems(
-        List<SearchQueryItem> searchQueryItems, SourceEntity entity, String indexPath, boolean exactMatch) throws MappingException {
+        List<SearchQueryItem> searchQueryItems, String indexPath, boolean exactMatch) throws MappingException {
 
         List<Suggestion> suggestions;
         Query query;

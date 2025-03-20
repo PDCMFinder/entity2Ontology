@@ -13,6 +13,11 @@ public class JaccardSimilarity {
     // Regexp to be used to split phrases by spaces or "/" symbol ("/" is frequently found in the labels of ontologies)
     private static final String WORDS_SEPARATOR_REGEXP = "[\\s/]+";
 
+    // Suppress default constructor for non-instantiability
+    private JaccardSimilarity() {
+        throw new AssertionError();
+    }
+
     public static double calculate(String phrase1, String phrase2) {
         // Convert the phrases to sets of words, filtering out stop words
         Set<String> set1 = new HashSet<>(filterStopWords(phrase1.toLowerCase().split(WORDS_SEPARATOR_REGEXP)));
