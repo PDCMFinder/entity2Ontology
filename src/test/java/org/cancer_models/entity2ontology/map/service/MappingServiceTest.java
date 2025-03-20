@@ -33,7 +33,7 @@ public class MappingServiceTest {
 
     private final QueryProcessor queryProcessor = new QueryProcessor(searcher);
 
-    private final ScoreCalculator scoreCalculator = new ScoreCalculator();
+    private final SuggestionScoreCalculator scoreCalculator = new DefaultSuggestionScoreCalculator();
 
     private final RulesSearcher rulesSearcher = new RulesSearcher(queryBuilder, queryProcessor, scoreCalculator);
 
@@ -194,13 +194,6 @@ public class MappingServiceTest {
             throw e;
         }
     }
-    @Test
-    void createIndex() throws IOException {
-        String smallDiagnosisIndexLocation = IndexTestCreator.createIndex(
-            "input_data_small_treatments_index/data.json");
-        System.out.println(smallDiagnosisIndexLocation);
-    }
-
 
     @Test
     void shouldGetExpectedMappingsForTreatmentsSet() throws IOException {
@@ -220,28 +213,6 @@ public class MappingServiceTest {
 
         // Delete the index
         FileUtils.deleteRecursively(new File(smallDiagnosisIndexLocation));
-    }
-
-    @Test
-    void shouldReturnEmptyIfTooLongText() {
-
-        SourceEntity entity = new SourceEntity();
-        Map<String, String> data = new HashMap<>();
-        data.put("SampleDiagnosis", "endometrioid endomet adenocar secretory and clear cell features final pathology dx confirmed in bilateral ovaries with lymphovascular invasion tumor gradestage figo grade 1location of known metastases ovary large bowel");
-        data.put("TumorType", "metastatic");
-        data.put("OriginTissue", "gynecologic");
-        entity.setId("1");
-
-        entity.setData(data);
-       // instance.mapEntity(entity, )
-//        // When we try to map an entity that is null
-//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-//        {
-//            instance.mapEntity(null, "", 0, config);
-//        });
-//
-//        // Then we get an IOException
-//        assertEquals("Entity cannot be null", exception.getMessage());
     }
 
     private void testExpectedTreatmentMapping(TreatmentMappingInputFileEntry entry) {

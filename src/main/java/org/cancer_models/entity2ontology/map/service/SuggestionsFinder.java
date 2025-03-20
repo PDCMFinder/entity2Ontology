@@ -5,7 +5,6 @@ import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
 
-import java.io.IOException;
 import java.util.List;
 
 /**

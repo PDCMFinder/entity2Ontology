@@ -19,7 +19,7 @@ class FuzzyPhraseSimilarity {
 
     // For short words, applying fuzziness is problematic as can make 2 different words the same. This value reduces
     // that risk
-    private final static int MINIMUM_WORD_LENGTH_TO_APPLY_FUZZINESS = 6;
+    private static final int MINIMUM_WORD_LENGTH_TO_APPLY_FUZZINESS = 6;
 
     // Suppress default constructor for non-instantiability
     private FuzzyPhraseSimilarity() {

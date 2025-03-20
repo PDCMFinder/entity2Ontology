@@ -15,5 +15,4 @@ public enum TargetEntityFieldName {
     TargetEntityFieldName(String value) {
         this.value = value;
     }
-
 }

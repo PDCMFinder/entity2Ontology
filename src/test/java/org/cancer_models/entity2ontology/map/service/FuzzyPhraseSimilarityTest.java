@@ -37,4 +37,13 @@ class FuzzyPhraseSimilarityTest {
         System.out.println("similarity "+similarity);
         assertNotEquals(1.0, similarity);
     }
+
+    @Test
+    void dummy() {
+        String phrase1 = "word_a word_b";
+        String phrase2 = "word_a word_c";
+        double similarity = FuzzyPhraseSimilarity.fuzzyJaccardSimilarity(phrase1, phrase2, 0);
+        System.out.println("similarity "+similarity);
+        assertNotEquals(1.0, similarity);
+    }
 }

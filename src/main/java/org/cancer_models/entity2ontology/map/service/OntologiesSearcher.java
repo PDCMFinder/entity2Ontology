@@ -20,26 +20,26 @@ class OntologiesSearcher {
     private final QueryBuilder queryBuilder;
     private final TemplateQueryProcessor templateQueryProcessor;
     private final QueryProcessor queryProcessor;
-    private final ScoreCalculator scoreCalculator;
+    private final SuggestionScoreCalculator suggestionScoreCalculator;
 
     /**
      * Constructs an {@code OntologiesSearcher} with the provided components for building, processing, and scoring
      * Lucene queries.
      *
-     * @param queryBuilder           The component responsible for building Lucene queries.
-     * @param templateQueryProcessor The component responsible for processing query templates.
-     * @param queryProcessor         The component responsible for processing queries.
-     * @param scoreCalculator        The component responsible for calculating scores for ontology suggestions.
+     * @param queryBuilder                      The component responsible for building Lucene queries.
+     * @param templateQueryProcessor            The component responsible for processing query templates.
+     * @param queryProcessor                    The component responsible for processing queries.
+     * @param suggestionScoreCalculator         The component responsible for calculating scores for ontology suggestions.
      */
     public OntologiesSearcher(
         QueryBuilder queryBuilder,
         TemplateQueryProcessor templateQueryProcessor,
         QueryProcessor queryProcessor,
-        ScoreCalculator scoreCalculator) {
+        SuggestionScoreCalculator suggestionScoreCalculator) {
         this.queryBuilder = queryBuilder;
         this.templateQueryProcessor = templateQueryProcessor;
         this.queryProcessor = queryProcessor;
-        this.scoreCalculator = scoreCalculator;
+        this.suggestionScoreCalculator = suggestionScoreCalculator;
     }
 
     /**
@@ -102,8 +102,8 @@ class OntologiesSearcher {
             QueryTemplate queryTemplate = new QueryTemplate(ontologyTemplateAsText);
 
             // Builds the query terms for that template
-            List<SearchQueryItem> searchQueryItems =
-                buildSearchQueryItemsFromTemplate(queryTemplate, entity, confByType.getWeightsMap());
+            List<SearchQueryItem> searchQueryItems = templateQueryProcessor.extractSearchQueryItems(
+                queryTemplate, entity, confByType.getWeightsMap());
 
             // We get the suggestions for the specific template
             List<Suggestion> suggestionsPerTemplate = processSearchItems(searchQueryItems, indexPath, exactMatch);
@@ -131,8 +131,8 @@ class OntologiesSearcher {
      * Searches for ontology suggestions using a given list of search terms, and calculates the scores.
      *
      * @param searchQueryItems List of {@link SearchQueryItem} to use in the query.
-     * @param indexPath  The path to the Lucene index to search in.
-     * @param exactMatch  If the score is being calculated for a search that is exact or similar.
+     * @param indexPath        The path to the Lucene index to search in.
+     * @param exactMatch       If the score is being calculated for a search that is exact or similar.
      * @return A list of ontology suggestions with calculated scores.
      * @throws MappingException if an error occurs during the search
      */
@@ -153,26 +153,13 @@ class OntologiesSearcher {
         suggestions = queryProcessor.executeQuery(query, indexPath);
         // Calculate the score for each suggestion
         for (Suggestion suggestion : suggestions) {
-            double score = scoreCalculator.calculateScoreInOntologySuggestion(searchQueryItems, suggestion, exactMatch);
+            ScoringDetails scoringDetails = new ScoringDetails();
+            scoringDetails.setSearchQueryItems(searchQueryItems);
+            suggestion.setScoringDetails(scoringDetails);
+            double score = suggestionScoreCalculator.computeScoreOntology(suggestion);
             suggestion.setScore(score);
         }
 
         return suggestions;
     }
-
-    private List<SearchQueryItem> buildSearchQueryItemsFromTemplate(
-        QueryTemplate template, SourceEntity entity, Map<String, Double> weightsMap) {
-
-        List<SearchQueryItem> searchQueryItems;
-
-        try {
-            searchQueryItems = templateQueryProcessor.extractSearchQueryItems(
-                template, entity, weightsMap);
-        } catch (IllegalArgumentException exception) {
-            logger.error("Error processing template [{}]: ", template, exception);
-            throw new IllegalArgumentException(exception.getMessage());
-        }
-        return searchQueryItems;
-    }
-
 }

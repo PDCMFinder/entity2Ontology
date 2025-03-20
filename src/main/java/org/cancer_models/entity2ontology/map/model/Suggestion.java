@@ -50,6 +50,8 @@ public class Suggestion {
      */
     private double rawScore;
 
+    private ScoringDetails scoringDetails;
+
     private String calculateUniqueSuggestionId(TargetEntity targetEntity) {
         return targetEntity.targetType() + "|" + targetEntity.entityType() + "|" + targetEntity.id();
     }
