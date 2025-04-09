@@ -13,6 +13,7 @@ import java.util.List;
  * Default implementation of the {@link SuggestionsFinder} interface.
  * This class provides a search strategy that prioritizes matches in rules and then tries to find good
  * matches in ontologies.
+ * In this implementation, only suggestions whose score is greater than 50% are considered.
  */
 
 @Component
@@ -20,6 +21,7 @@ class DefaultSuggestionsFinder implements SuggestionsFinder {
 
     private final RulesSearcher rulesSearcher;
     private final OntologiesSearcher ontologiesSearcher;
+    private static final double MINIMUM_ACCEPTABLE_SCORE = 50;
 
     DefaultSuggestionsFinder(RulesSearcher rulesSearcher, OntologiesSearcher ontologiesSearcher) {
         this.rulesSearcher = rulesSearcher;
@@ -27,12 +29,19 @@ class DefaultSuggestionsFinder implements SuggestionsFinder {
     }
 
     /**
+     * <p>
      * Retrieves a list of suggestions for a given entity based on the provided configuration.
      * This implementation uses a 4-step search strategy to find matches:
-     *  - Search already existing rules (exact match)
-     *  - Search similar rules (fuzzy match)
-     *  - Search ontologies  (exact match: label or synonyms)
-     *  - Search similar ontologies (fuzzy match: label or synonyms)
+     * <ul>
+     *  <li> Search already existing rules (exact match)</li>
+     *  <li> Search similar rules (fuzzy match)</li>
+     *  <li> Search ontologies  (exact match: label or synonyms)</li>
+     *  <li> Search similar ontologies (fuzzy match: label or synonyms)</li>
+     *  </ul>
+     * </p>
+     * <p>
+     * Only suggestions with {@code score} equal or greater than 50% are considered as valid results.
+     * </p>
      *
      * @param entity            the source entity to be mapped
      * @param indexPath         the path of the index to use for the mapping
@@ -90,8 +99,9 @@ class DefaultSuggestionsFinder implements SuggestionsFinder {
 
         if (!newResults.isEmpty()) {
             for (Suggestion suggestion : newResults) {
-                // Only add new suggestions
-                if (!all.contains(suggestion)) {
+                double score = suggestion.getScore();
+                // Only add new suggestions whose score is greater than MINIMUM_ACCEPTABLE_SCORE
+                if (!all.contains(suggestion) && score >= MINIMUM_ACCEPTABLE_SCORE) {
                     all.add(suggestion);
                     found++;
                     done = found == wanted;
