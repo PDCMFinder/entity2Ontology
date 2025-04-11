@@ -8,9 +8,9 @@ import org.cancer_models.entity2ontology.index.service.Indexer;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class MappingService {
     // The maximum length of an attribute value in an entity.
     private static final int MAX_TEXT_LENGTH = 200;
 
-    public MappingService(SuggestionsFinder suggestionsFinder) {
+    public MappingService(@Qualifier("defaultSuggestionsFinder") SuggestionsFinder suggestionsFinder) {
         this.suggestionsFinder = suggestionsFinder;
     }
 
