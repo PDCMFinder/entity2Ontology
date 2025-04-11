@@ -4,6 +4,7 @@ import org.cancer_models.entity2ontology.exceptions.MappingException;
 import org.cancer_models.entity2ontology.map.model.MappingConfiguration;
 import org.cancer_models.entity2ontology.map.model.SourceEntity;
 import org.cancer_models.entity2ontology.map.model.Suggestion;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,13 +14,16 @@ import java.util.List;
  * Default implementation of the {@link SuggestionsFinder} interface.
  * This class provides a search strategy that prioritizes matches in rules and then tries to find good
  * matches in ontologies.
+ * In this implementation, only suggestions whose score is greater than 50% are considered.
  */
 
 @Component
+@Qualifier("defaultSuggestionsFinder")
 class DefaultSuggestionsFinder implements SuggestionsFinder {
 
     private final RulesSearcher rulesSearcher;
     private final OntologiesSearcher ontologiesSearcher;
+    private static final double MINIMUM_ACCEPTABLE_SCORE = 50;
 
     DefaultSuggestionsFinder(RulesSearcher rulesSearcher, OntologiesSearcher ontologiesSearcher) {
         this.rulesSearcher = rulesSearcher;
@@ -27,12 +31,19 @@ class DefaultSuggestionsFinder implements SuggestionsFinder {
     }
 
     /**
+     * <p>
      * Retrieves a list of suggestions for a given entity based on the provided configuration.
      * This implementation uses a 4-step search strategy to find matches:
-     *  - Search already existing rules (exact match)
-     *  - Search similar rules (fuzzy match)
-     *  - Search ontologies  (exact match: label or synonyms)
-     *  - Search similar ontologies (fuzzy match: label or synonyms)
+     * <ul>
+     *  <li> Search already existing rules (exact match)</li>
+     *  <li> Search similar rules (fuzzy match)</li>
+     *  <li> Search ontologies  (exact match: label or synonyms)</li>
+     *  <li> Search similar ontologies (fuzzy match: label or synonyms)</li>
+     *  </ul>
+     * </p>
+     * <p>
+     * Only suggestions with {@code score} equal or greater than 50% are considered as valid results.
+     * </p>
      *
      * @param entity            the source entity to be mapped
      * @param indexPath         the path of the index to use for the mapping
@@ -52,55 +63,41 @@ class DefaultSuggestionsFinder implements SuggestionsFinder {
         List<Suggestion> suggestions = new ArrayList<>();
 
         // Check if there are enough exact matches in rules
-        done = collectResults(
-            suggestions, rulesSearcher.findExactMatchingRules(entity, indexPath, config), maxNumSuggestions);
+        done = SuggestionCollector.addSuggestionsUntilLimitReached(
+            suggestions,
+            rulesSearcher.findExactMatchingRules(entity, indexPath, config),
+            maxNumSuggestions,
+            MINIMUM_ACCEPTABLE_SCORE);
 
         // Check if there are enough similar matches in rules
         if (!done) {
-            done = collectResults(
-                suggestions, rulesSearcher.findSimilarRules(entity, indexPath, config), maxNumSuggestions);
+            done = SuggestionCollector.addSuggestionsUntilLimitReached(
+                suggestions,
+                rulesSearcher.findSimilarRules(entity, indexPath, config),
+                maxNumSuggestions,
+                MINIMUM_ACCEPTABLE_SCORE);
         }
 
         // Check if there are enough exact matches in ontologies
         if (!done) {
-            done = collectResults(
-                suggestions, ontologiesSearcher.findExactMatchingOntologies(entity, indexPath, config),
-                maxNumSuggestions);
+            done = SuggestionCollector.addSuggestionsUntilLimitReached(
+                suggestions,
+                ontologiesSearcher.findExactMatchingOntologies(entity, indexPath, config),
+                maxNumSuggestions,
+                MINIMUM_ACCEPTABLE_SCORE);
         }
 
         // Check if there are enough similar matches in ontologies
         if (!done) {
-            collectResults(
-                suggestions, ontologiesSearcher.findSimilarMatchingOntologies(entity, indexPath, config),
-                maxNumSuggestions);
+            SuggestionCollector.addSuggestionsUntilLimitReached(
+                suggestions,
+                ontologiesSearcher.findSimilarMatchingOntologies(entity, indexPath, config),
+                maxNumSuggestions,
+                MINIMUM_ACCEPTABLE_SCORE);
         }
         // Suggestions need to be sorted (descending order) by 'score'
         return SuggestionsSorter.sortSuggestionsByScoreDesc(suggestions);
 
     }
 
-    /**
-     * Adds obtained suggestions with a specific method to the total of found suggestions.
-     * Stops if the wanted number of results is reached, and returns true in order that we don't keep searching
-     * for more matches
-     */
-    private boolean collectResults(List<Suggestion> all, List<Suggestion> newResults, int wanted) {
-        boolean done = false;
-        int found = all.size();
-
-        if (!newResults.isEmpty()) {
-            for (Suggestion suggestion : newResults) {
-                // Only add new suggestions
-                if (!all.contains(suggestion)) {
-                    all.add(suggestion);
-                    found++;
-                    done = found == wanted;
-                    if (done) {
-                        break;
-                    }
-                }
-            }
-        }
-        return done;
-    }
 }
